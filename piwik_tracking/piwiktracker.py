@@ -62,26 +62,26 @@ class PiwikTracker:
         return datetime.datetime.now()
 
     def get_query_vars(self, document_title=False):
-        #url = "?idsite=%d&rec=1&apiv=%s&r=%s&url=%s&urlref=%s&cip=%s&token_auth=%s" % (
-        #    self.id_site,
-        #    self.VERSION,
-        #    5, # random number!
-        #    urllib.quote_plus(self.page_url),
-        #    urllib.quote_plus(self.referer),
-        #    # IP requires the auth token
-        #    self.ip,
-        #    self.token_auth,
-        #)
+        url = "?idsite=%d&rec=1&apiv=%s&r=%s&url=%s&urlref=%s&cip=%s&token_auth=%s" % (
+            self.id_site,
+            self.VERSION,
+            5, # random number!
+            urllib.quote_plus(self.page_url),
+            urllib.quote_plus(self.referer),
+            # IP requires the auth token
+            self.ip,
+            self.token_auth,
+        )
         #url = "?idsite=%d&rec=1&apiv=%s&r=%s&url=%s&urlref=%s" % (
         #    self.id_site,
         #    self.VERSION,
-        #    random.randint(0, 9999),
+        #    random.randint(0, 99999),
         #    urllib.quote_plus(self.page_url),
         #    urllib.quote_plus(self.referer),
         #)
-        url = "?idsite=%d&rec=1" % (
-            self.id_site,
-        )
+        #url = "?idsite=%d&rec=1" % (
+        #    self.id_site,
+        #)
         if document_title:
             url += '&action_name=%s' % urllib.quote_plus(document_title)
         return url
@@ -103,12 +103,12 @@ class PiwikTracker:
         url = parsed.path + url
         connection.request('GET', url, '', headers)
         response = connection.getresponse()
-        print '--------------------------------'
-        print repr(headers)
-        print repr(url)
-        print repr(response)
+        #print '--------------------------------'
+        #print repr(headers)
+        #print repr(url)
+        #print repr(response)
         #print response.get_response()
-        print '--------------------------------'
+        #print '--------------------------------'
         return response.read()
 
     def do_track_page_view(self, document_title):
