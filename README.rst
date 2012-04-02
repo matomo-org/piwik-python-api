@@ -47,7 +47,12 @@ Add ``piwik_tracking`` to your INSTALLED_APPS in settings.py::
 In your view code you can do this to track views::
 
     from piwik_tracking.piwiktracker import piwik_get_url_track_page_view
-    piwik_get_url_track_page_view(id_site, api_url, request, document_title)
+    piwik_get_url_track_page_view(
+        id_site,
+        api_url,
+        self.request,
+        document_title
+    )
 
 Parameters:
 - ``id_site``: The Piwik site you want to log to, check your Piwik install
