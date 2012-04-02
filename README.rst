@@ -2,8 +2,32 @@
 README
 ======
 
-This is a piwik tracking API implementation for django. The code should be
-easy to port to other frameworks or scripts.
+This is a simplified implementation of the PiwikTracker PHP class.
+I don't need any of the advanced features for my client's project, that's
+why I didn't implement everything. The code should be relatively easy to port
+to other frameworks or scripts. I only implemented a small subset of the
+official API because this app was created for a client who needs to track 301
+and 302 redirects.
+
+Not supported are:
+
+- Ecommerce
+- Goals
+- Cookies
+- JavaScript parameters
+- Custom parameters
+- ...
+
+It also assumes that the passed request object is a Django HttpRequest.
+I'm not really familiar with other frameworks or WSGI in general, but feel
+free to submit patches or contact me for professional support.
+
+If you work on this code please submit your changes, even if they can't be
+merged! I'm interested in packaging this in a way that doesn't depend on
+Django.
+
+You'll need to have your own `Piwik <http://piwik.org>`_ installation to send
+the tracking requests to.
 
 Usage
 -----
@@ -20,8 +44,13 @@ Add ``piwik_tracking`` to your INSTALLED_APPS in settings.py::
         ...,
     )
 
-Add settings just as::
+In your view code you can do this to track views::
 
-    PIWIK_TRACKING = <piwik-site-id>
+    from piwik_tracking.piwiktracker import piwik_get_url_track_page_view
+    piwik_get_url_track_page_view(id_site, api_url, request, document_title)
 
-TODO support sites framework
+Parameters:
+- ``id_site``: The Piwik site you want to log to, check your Piwik install
+- ``api_url``: The URL of your Piwik tracker script
+- ``request``: The current request object
+- ``document_title``: The title for the current request/view
