@@ -62,3 +62,9 @@ Parameters:
 - ``request``: The current request object
 - ``token_auth``: A user's token auth
 - ``document_title``: The title for the current request/view
+
+Development
+-----------
+If you work on the code you probably want to set
+``$GLOBALS['PIWIK_TRACKER_DEBUG']`` to ``true`` in your ``piwik.php``
+file.
