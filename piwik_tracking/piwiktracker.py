@@ -8,16 +8,11 @@ import urlparse
 class PiwikTracker:
     VERSION = 1
 
-    def __init__(self, id_site, api_url, request, token_auth):
+    def __init__(self, id_site, api_url, token_auth):
         random.seed()
         self.id_site = id_site
         self.api_url = api_url
-        self.request = request
         self.token_auth = token_auth
-
-        self.page_url = self.get_current_url()
-        self.set_request_parameters()
-        self.set_local_time(self.get_timestamp())
 
     def set_request_parameters(self):
         # django-specific
@@ -75,10 +70,10 @@ class PiwikTracker:
             'token_auth': self.token_auth,
         }
         if document_title:
-            parameters['action_name'] = urllib.quote_plus(document_title)
+            parameters['action_name'] = document_title
         return urllib.urlencode(parameters)
 
-    def send_request(self, query_vars):
+    def send_request(self, query_string):
         "Send the request to piwik"
         headers = {
             'Accept-Language': self.accept_language,
@@ -86,17 +81,21 @@ class PiwikTracker:
         }
         parsed = urlparse.urlparse(self.api_url)
         connection = httplib.HTTPConnection(parsed.hostname)
-        url = "%s?%s" % (parsed.path, query_vars)
+        url = "%s?%s" % (parsed.path, query_string)
         connection.request('GET', url, '', headers)
         response = connection.getresponse()
         return response.read()
 
-    def do_track_page_view(self, document_title):
-        query_vars = self.get_query_vars(document_title)
-        return self.send_request(query_vars)
+    def do_track_page_view(self, request, document_title):
+        self.set_local_time(self.get_timestamp())
+        self.request = request
+        self.page_url = self.get_current_url()
+        self.set_request_parameters()
+        query_string = self.get_query_vars(document_title)
+        return self.send_request(query_string)
 
 
 def piwik_get_url_track_page_view(id_site, api_url, request, token_auth,
         document_title=False):
-    tracker = PiwikTracker(id_site, api_url, request, token_auth)
-    return tracker.do_track_page_view(document_title)
+    tracker = PiwikTracker(id_site, api_url, token_auth)
+    return tracker.do_track_page_view(request, document_title)
