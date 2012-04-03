@@ -56,6 +56,7 @@ In your view code you can do this to track views::
     )
 
 Parameters:
+
 - ``id_site``: The Piwik site ID you want to log to
 - ``api_url``: The URL of your Piwik tracker script, ``/piwik.php``
 - ``request``: The current request object
