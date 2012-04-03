@@ -76,7 +76,7 @@ class PiwikTracker:
             url += '&action_name=%s' % urllib.quote_plus(document_title)
         return url
 
-    def send_request(self, url):
+    def send_request(self, query_vars):
         "Send the request to piwik"
         headers = {
             'Accept-Language': self.accept_language,
@@ -84,14 +84,14 @@ class PiwikTracker:
         }
         parsed = urlparse.urlparse(self.api_url)
         connection = httplib.HTTPConnection(parsed.hostname)
-        url = parsed.path + url
+        url = parsed.path + query_vars
         connection.request('GET', url, '', headers)
         response = connection.getresponse()
         return response.read()
 
     def do_track_page_view(self, document_title):
-        url = self.get_query_vars(document_title)
-        return self.send_request(url);
+        query_vars = self.get_query_vars(document_title)
+        return self.send_request(query_vars);
 
 def piwik_get_url_track_page_view(id_site, api_url, request, token_auth, document_title=False):
     tracker = PiwikTracker(id_site, api_url, request, token_auth)
