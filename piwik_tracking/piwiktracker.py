@@ -65,35 +65,19 @@ class PiwikTracker:
         url = "?idsite=%d&rec=1&apiv=%s&r=%s&url=%s&urlref=%s&cip=%s&token_auth=%s" % (
             self.id_site,
             self.VERSION,
-            5, # random number!
+            random.randint(0, 99999),
             urllib.quote_plus(self.page_url),
             urllib.quote_plus(self.referer),
-            # IP requires the auth token
+            # Forcing IP requires the auth token
             self.ip,
             self.token_auth,
         )
-        #url = "?idsite=%d&rec=1&apiv=%s&r=%s&url=%s&urlref=%s" % (
-        #    self.id_site,
-        #    self.VERSION,
-        #    random.randint(0, 99999),
-        #    urllib.quote_plus(self.page_url),
-        #    urllib.quote_plus(self.referer),
-        #)
-        #url = "?idsite=%d&rec=1" % (
-        #    self.id_site,
-        #)
         if document_title:
             url += '&action_name=%s' % urllib.quote_plus(document_title)
         return url
 
     def send_request(self, url):
-        """
-        Send the request to piwik
-
-        Piwik seems to ignore the request when the headers aren't sent...
-        """
-        #timeout = 600
-        #port = 80
+        "Send the request to piwik"
         headers = {
             'Accept-Language': self.accept_language,
             'User-Agent': self.user_agent,
@@ -103,12 +87,6 @@ class PiwikTracker:
         url = parsed.path + url
         connection.request('GET', url, '', headers)
         response = connection.getresponse()
-        #print '--------------------------------'
-        #print repr(headers)
-        #print repr(url)
-        #print repr(response)
-        #print response.get_response()
-        #print '--------------------------------'
         return response.read()
 
     def do_track_page_view(self, document_title):
