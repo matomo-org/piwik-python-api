@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name = "django-piwik-tracking",
-    version = "0.0.1",
+    version = "0.1",
     author = "Nicolas Kuttler",
     author_email = "pypi@nicolaskuttler.com",
     description = "Piwik tracking API for Django",
