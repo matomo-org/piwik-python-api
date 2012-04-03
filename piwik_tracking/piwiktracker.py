@@ -71,17 +71,19 @@ class PiwikTracker:
         }
         if document_title:
             parameters['action_name'] = document_title
-        return urllib.urlencode(parameters)
+        return parameters
 
-    def send_request(self, query_string):
+    def send_request(self):
         "Send the request to piwik"
         headers = {
             'Accept-Language': self.accept_language,
             'User-Agent': self.user_agent,
         }
         parsed = urlparse.urlparse(self.api_url)
-        connection = httplib.HTTPConnection(parsed.hostname)
+        query_string = urllib.urlencode(self.query_vars)
         url = "%s?%s" % (parsed.path, query_string)
+
+        connection = httplib.HTTPConnection(parsed.hostname)
         connection.request('GET', url, '', headers)
         response = connection.getresponse()
         return response.read()
@@ -91,8 +93,8 @@ class PiwikTracker:
         self.request = request
         self.page_url = self.get_current_url()
         self.set_request_parameters()
-        query_string = self.get_query_vars(document_title)
-        return self.send_request(query_string)
+        self.query_vars = self.get_query_vars(document_title)
+        return self.send_request()
 
 
 def piwik_get_url_track_page_view(id_site, api_url, request, token_auth,
