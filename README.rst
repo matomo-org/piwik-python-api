@@ -60,7 +60,7 @@ Parameters:
 - ``id_site``: The Piwik site ID you want to log to
 - ``api_url``: The URL of your Piwik tracker script, ``/piwik.php``
 - ``request``: The current request object
-- ``token_auth``: A user's token auth
+- ``token_auth``: Auth token for a superuser of the piwik site
 - ``document_title``: The title for the current request/view
 
 Development
