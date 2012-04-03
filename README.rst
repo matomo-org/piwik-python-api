@@ -20,7 +20,8 @@ Not supported are:
 
 It also assumes that the passed request object is a Django HttpRequest. I'm
 not really familiar with other frameworks or WSGI in general, but feel free
-to send pull requests or contact me for professional support.
+to send pull requests or contact me for professional support if you'd like to
+see more features.
 
 If you work on this code please send me your changes, even if they can't be
 merged! I'm interested in packaging this in a way that doesn't depend on
