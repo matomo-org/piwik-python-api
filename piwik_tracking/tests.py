@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from random import randint
 
-from piwiktracker import PiwikTracker
+from piwik_tracker import PiwikTracker
 
 
 try:
