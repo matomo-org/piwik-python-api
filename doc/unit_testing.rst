@@ -16,28 +16,22 @@ Configuring Piwik
 
 Running the tests without Django
 --------------------------------
-You probably want to create a fake settings module and import that instead
-of the one from ``django.conf``. There's already a fake request class that's
-used instead of Django Request objects for unit tests.
+You probably want to create a fake settings module that will be used
+instead of the one from ``django.conf``. There's already a fake request
+class that's used instead of Django Request objects for the unit tests.
 
-This code in ``fake_settings.py`` should work::
+Using this code in ``piwik_tracking/fake_settings.py`` should work::
 
         class FakeSettings():
                 PIWIK_API_URL = 'http://example.com/piwik.php'
                 PIWIK_SITE_ID = '<Piwik site id>'
                 PIWIK_TOKEN_AUTH = '<Piwik auth token>'
 
-Installing Django
------------------
-
-This isn't really necessary..
-
-1. ``pip install django``
-2. ``django-admin.py startproject piwikdev``
-3. Create a symlink to your ``piwik_tracking`` module inside the project.
-4. Edit ``piwikdev/settings.py`` as described in the ``README.rst``
+That file is also ignored by git for your convenience.
 
 Running the tests with Django
 -----------------------------
-You should be able to run the unit tests with
-``DJANGO_SETTINGS_MODULE=piwikdev.settings django-admin.py test --failfast piwik_tracking``
+The easiest is probably to create a symlink to your working copy of the
+``piwik_tracking`` module inside your project. You should be able to run the
+unit tests with the usual ``manage.py test --failfast piwik_tracking``.
+Don't forget to configure the app as described in the ``README.rst``.
