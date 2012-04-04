@@ -141,6 +141,6 @@ class PiwikTracker:
         return response.read()
 
 
-def piwik_get_url_track_page_view(id_site, document_title=False):
+def piwik_get_url_track_page_view(id_site, document_title=False, request):
     tracker = PiwikTracker(id_site, request)
     return tracker.do_track_page_view(document_title)
