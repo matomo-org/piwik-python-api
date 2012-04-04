@@ -101,8 +101,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
 
     def test_default_ip_is_not_changed(self):
         """
-        This test could fail because the request object has the same IP
-        as your box... TODO
+        This test can't fail we use IPs from testing networks
         """
         ip = self.request.META['REMOTE_ADDR']
         title = self.get_title('test ip %s' % ip)
