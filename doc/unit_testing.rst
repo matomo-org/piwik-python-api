@@ -22,7 +22,7 @@ class that's used instead of Django Request objects for the unit tests.
 
 Using this code in ``piwik_tracking/fake_settings.py`` should work::
 
-        class FakeSettings():
+        class FakeSettings:
                 PIWIK_API_URL = 'http://example.com/piwik.php'
                 PIWIK_SITE_ID = '<Piwik site id>'
                 PIWIK_TOKEN_AUTH = '<Piwik auth token>'
