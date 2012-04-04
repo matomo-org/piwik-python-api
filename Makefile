@@ -1,6 +1,3 @@
-test:
-	make -C tests test
-
 install:
 	python setup.py install
 
@@ -15,3 +12,6 @@ upload:
 
 clean:
 	rm -rf dist build *.egg-info django-piwik-tracking-*
+
+test:
+	python piwik_tracking/tests.py
