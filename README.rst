@@ -45,27 +45,20 @@ Add ``piwik_tracking`` to your INSTALLED_APPS in settings.py::
         ...,
     )
 
-In your view code you can do this to track views::
+Add settings to your ``settings.py`` like this::
+
+        PIWIK_API_URL = '<Your tracker, http://example.com/piwik.php>'
+        PIWIK_SITE_ID = <Piwik site id>
+        PIWIK_TOKEN_AUTH = '<Piwik auth token>'
+
+In your view code you can do this to track views (FIXME, see unit tests for
+example usage)::
 
     from piwik_tracking.piwiktracker import piwik_get_url_track_page_view
-    piwik_get_url_track_page_view(
-        id_site,
-        api_url,
-        self.request,
-        token_auth,
-        document_title
-    )
+    piwik_get_url_track_page_view(id_site, request, document_title)
 
-Parameters:
+Parameters (FIXME)::
 
 - ``id_site``: The Piwik site ID you want to log to
-- ``api_url``: The URL of your Piwik tracker script, ``/piwik.php``
 - ``request``: The current request object
-- ``token_auth``: Auth token for a superuser of the piwik site
 - ``document_title``: The title for the current request/view
-
-Development
------------
-If you work on the code you probably want to set
-``$GLOBALS['PIWIK_TRACKER_DEBUG']`` to ``true`` in your ``piwik.php``
-file.
