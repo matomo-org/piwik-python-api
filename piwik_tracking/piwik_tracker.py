@@ -22,7 +22,6 @@ class PiwikTracker:
         self.page_url = self.get_current_url()
 
     def set_request_parameters(self):
-        # django-specific
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
         self.referer = self.request.META.get('HTTP_REFERER', '')
         self.ip = self.request.META.get('REMOTE_ADDR')
@@ -35,12 +34,22 @@ class PiwikTracker:
         self.local_second = datetime.second
 
     def set_token_auth(self, token_auth):
+        """
+        Set the auth token for the request. The token can be viewed in the
+        user management section of your Piwik install.
+        """
         self.token_auth = token_auth
 
     def set_api_url(self, api_url):
+        """Set which Piwik API URL to use."""
         self.api_url = api_url
 
     def set_ip(self, ip):
+        """
+        Set the IP to be tracked. You probably want to use this as the
+        request comes from your own server.
+        Requires setting the auth token.
+        """
         self.ip = ip
 
     def get_current_scheme(self):
@@ -52,15 +61,12 @@ class PiwikTracker:
         return scheme
 
     def get_current_host(self):
-        # django-specific
-        return self.request.get_host()
+        return self.request.META.get('SERVER_NAME', '')
 
     def get_current_script_name(self):
-        # django-specific
-        return self.request.path_info
+        return self.request.META.get('PATH_INFO', '')
 
     def get_current_query_string(self):
-        # django-specific
         return self.request.META.get('QUERY_STRING', '')
 
     def get_current_url(self):
@@ -122,11 +128,24 @@ class PiwikTracker:
         return cookie_value
 
     def do_track_page_view(self, document_title):
-        url = self.get_url_track_page_view(document_title)
-        return self.send_request(url)
+        """
+        Track a page view
 
-    def send_request(self, url):
-        "Send the request to piwik"
+        Arguments:
+
+        document_title -- The title of the page the user is on
+        """
+        url = self.get_url_track_page_view(document_title)
+        return self._send_request(url)
+
+    def _send_request(self, url):
+        """
+        Make the tracking API request
+
+        Arguments:
+
+        url -- TODO
+        """
         headers = {
             'Accept-Language': self.accept_language,
             'User-Agent': self.user_agent,
