@@ -6,3 +6,8 @@ dist
 *.sqlite
 apis
 piwik_tracking/fake_settings.py
+doc/_build
+doc/_static
+doc/_templates
+doc/Makefile
+doc/conf.py
