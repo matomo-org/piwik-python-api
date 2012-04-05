@@ -22,29 +22,44 @@ except ImportError:
 
 class FakeRequest:
     """
-    A replacement for Django's Request object, used for unit tests
+    A replacement for Django's Request object. This is only used for unit
+    tests at the moment. If you're not using Django and need to create such
+    a class have a look at the source for the unit tests in tests.py.
     """
-    META = {
-        'HTTP_USER_AGENT': 'Iceweasel Gecko Linux',
-        'HTTP_REFERER': 'http://referer.example.com/referer/',
-        'REMOTE_ADDR': '192.0.2.4',
-        'HTTP_ACCEPT_LANGUAGE': 'en-us',
-        'QUERY_STRING': 'a=moo&b=foo&c=quoo',
-    }
+    #: Boolean, if the connection is secured or not
     secure = False
-    host = 'action.example.com'
-    path_info = '/path/info/'
+
+    #: HTTP headers like in the PHP $_SERVER variable, see
+    #: http://php.net/manual/en/reserved.variables.server.php
+    META = {}
+    def __init__(self, headers):
+        """
+        Init documentation
+        """
+        self.META = headers
+        if self.META['HTTPS']:
+            self.secure = True # TODO test this..
 
     def is_secure(self):
+        """
+        Returns a boolean, if the connection is secured
+        """
         return self.secure
-
-    def get_host(self):
-        return self.host
 
 
 class TestPiwikTrackerAPI(unittest.TestCase):
     def setUp(self):
-        self.request = FakeRequest()
+        headers = {
+            'HTTP_USER_AGENT': 'Iceweasel Gecko Linux',
+            'HTTP_REFERER': 'http://referer.example.com/referer/',
+            'REMOTE_ADDR': '192.0.2.4',
+            'HTTP_ACCEPT_LANGUAGE': 'en-us',
+            'QUERY_STRING': 'a=moo&b=foo&c=quoo',
+            'PATH_INFO': '/path/info/',
+            'SERVER_NAME': 'action.example.com',
+            'HTTPS': '',
+        }
+        self.request = FakeRequest(headers)
         self.pt = PiwikTracker(settings.PIWIK_SITE_ID, self.request)
         self.pt.set_api_url(settings.PIWIK_API_URL)
 
@@ -89,8 +104,8 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         action_title = self.get_title('test default action url')
         r = self.pt.do_track_page_view(action_title)
         url = 'Action URL = http://%s%s?%s' % (
-            self.request.host,
-            self.request.path_info,
+            self.request.META.get('SERVER_NAME'),
+            self.request.META.get('PATH_INFO'),
             cgi.escape(self.request.META['QUERY_STRING']),
         )
         self.assertRegexpMatches(
