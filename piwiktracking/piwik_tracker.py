@@ -21,6 +21,7 @@ class PiwikTracker:
         self.set_local_time(self.get_timestamp())
         self.page_url = self.get_current_url()
         self.cookie_support = True
+        self.has_cookies = False
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -61,6 +62,12 @@ class PiwikTracker:
         Set the request cookie, for testing purposes
         """
         self.request_cookie = cookie
+
+    def set_browser_has_cookies(self):
+        """
+        Call this is the browser supports cookies
+        """
+        self.has_cookies = True
 
     def get_current_scheme(self):
         # django-specific
@@ -111,6 +118,8 @@ class PiwikTracker:
             query_vars['token_auth'] = self.token_auth
         if document_title:
             query_vars['action_name'] = document_title
+        if self.has_cookies:
+            query_vars['cookie'] = 1
         return urllib.urlencode(query_vars)
 
     def get_url_track_page_view(self, document_title=False):
@@ -130,7 +139,7 @@ class PiwikTracker:
         id_cookie = self.get_cookie_matching_name(id_cookie_name)
         visitor_id = self.visitor_id
         if id_cookie:
-            print 'id_cookie is', id_cookie
+            #print 'id_cookie is', id_cookie
             visitor_id = id_cookie
             """
             $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
@@ -151,8 +160,8 @@ class PiwikTracker:
 
     def disable_cookie_support(self):
         """
-        By default, PiwikTracker will read third party cookies from the response
-        and sets them in the next request.
+        By default, PiwikTracker will read third party cookies from the
+        response and sets them in the next request.
         """
         self.cookie_support = False
 
@@ -185,6 +194,7 @@ class PiwikTracker:
         #url = "%s?%s" % (parsed.path, url)
 
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
+        print 'url --', url
         #print parsed.netloc
         #print parsed.scheme
         #print url
