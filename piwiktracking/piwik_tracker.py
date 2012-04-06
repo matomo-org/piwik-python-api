@@ -197,12 +197,13 @@ class PiwikTracker:
         return visitor_id[:self.LENGTH_VISITOR_ID]
 
     def get_cookie_matching_name(self, name):
-        "unused"
         cookie_value = False
-        print self.request.COOKIES
-        if name in self.request.COOKIES:
-            cookie_value = self.request.COOKIES[name]
-            print 'cookie is', cookie_value
+        if self.request.COOKIES:
+            for name in self.request.COOKIES:
+                print 'cookie name', name
+                cookie_value = self.request.COOKIES[name]
+                print 'cookie is', cookie_value
+       # print self.request.COOKIES
         return cookie_value
 
     def disable_cookie_support(self):
@@ -229,33 +230,28 @@ class PiwikTracker:
         Args:
             url -- TODO
         """
+        parsed = urlparse.urlparse(self.api_url)
+        url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
+        #url = 'http://piwik.kuttler.eu'
+        #print 'XXX', url
+        request = urllib2.Request(url)
+        request.add_header('User-Agent', self.user_agent)
+        #headers = {
+        #    'Accept-Language': self.accept_language,
+        #    'User-Agent': self.user_agent,
+        #    #'Cookie': self.request_cookie,
+        #}
+        #print headers
         if not self.cookie_support:
             self.request_cookie = ''
-        headers = {
-            'Accept-Language': self.accept_language,
-            'User-Agent': self.user_agent,
-            'Cookie': self.request_cookie,
-        }
-        print headers
-        parsed = urlparse.urlparse(self.api_url)
-        #url = "%s?%s" % (parsed.path, url)
+        elif self.request_cookie != '':
+            print 'Adding cookie', self.request_cookie
+            request.add_header('Cookie', self.request_cookie)
 
-        url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        print 'url --', url
-        #print parsed.netloc
-        #print parsed.scheme
-        #print url
-
-        response = urllib2.urlopen(url)
-        #print response.geturl()
-        #print response.info()
-
-        #connection = httplib.HTTPConnection(parsed.hostname)
-        #connection.request('GET', url, '', headers)
-        #response = connection.getresponse()
+        response = urllib2.urlopen(request)
+        print response.info()
+        #print response.headers
         body = response.read()
-        #print body
-
         # The cookie in the response will be set in the next request
         #for header, value in response.getheaders():
         #    # TODO handle cookies

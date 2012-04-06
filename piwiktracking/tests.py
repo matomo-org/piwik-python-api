@@ -32,6 +32,10 @@ class FakeRequest:
     #: HTTP headers like in the PHP $_SERVER variable, see
     #: http://php.net/manual/en/reserved.variables.server.php
     META = {}
+
+    #: Cookies...
+    COOKIES = False
+
     def __init__(self, headers):
         """
         Configure request object according to the headers we get
@@ -56,7 +60,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         headers = {
             'HTTP_USER_AGENT': 'Iceweasel Gecko Linux',
             'HTTP_REFERER': 'http://referer.example.com/referer/',
-            'REMOTE_ADDR': '192.0.2.4',
+            'REMOTE_ADDR': self.random_ip(),
             'HTTP_ACCEPT_LANGUAGE': 'en-us',
             'QUERY_STRING': 'a=moo&b=foo&c=quoo',
             'PATH_INFO': '/path/info/',
