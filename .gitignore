@@ -5,7 +5,7 @@ dist
 *.egg-info
 *.sqlite
 apis
-piwik_tracking/fake_settings.py
+piwiktracking/fake_settings.py
 doc/_build
 doc/_static
 doc/_templates
