@@ -27,6 +27,7 @@ class PiwikTracker:
         self.height = False
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
+        self.debug_append_url = False
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -99,6 +100,9 @@ class PiwikTracker:
                             self.LENGTH_VISITOR_ID)
         self.forced_visitor_id = visitor_id
 
+    def set_debug_string_append(self, string):
+        self.debug_append_url = string
+
     def get_current_scheme(self):
         # django-specific
         if self.request.is_secure():
@@ -155,7 +159,10 @@ class PiwikTracker:
             query_vars['res'] = '%dx%d' % (self.width, self.height)
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
-        return urllib.urlencode(query_vars)
+        url = urllib.urlencode(query_vars)
+        if self.debug_append_url:
+            url += self.debug_append_url
+        return url
 
     def get_url_track_page_view(self, document_title=False):
         """

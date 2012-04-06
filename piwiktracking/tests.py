@@ -279,6 +279,16 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             "User Agent was not set to %s" % ua
         )
 
+    def test_set_debug_string_append(self):
+        suffix = 'suffix'
+        self.pt.set_debug_string_append(suffix)
+        query_url = self.pt.get_request('foo', 'bar')
+        self.assertRegexpMatches(
+            query_url,
+            "%s$" % suffix,
+            "Suffix not appended to query URL: %s" % query_url,
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
