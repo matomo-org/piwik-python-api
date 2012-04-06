@@ -12,7 +12,7 @@ You definitely want to create a site specifically for running unit tests
 and development in general. In your Piwik install's ``/piwik.php`` set also
 this::
 
-    ``$GLOBALS['PIWIK_TRACKER_DEBUG'] = true;``
+    $GLOBALS['PIWIK_TRACKER_DEBUG'] = true;
 
 You probably want to create a fake settings module that will be used
 instead of the one from ``django.conf``. There's already a fake request
