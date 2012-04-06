@@ -35,7 +35,8 @@ class PiwikTracker(object):
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
         self.debug_append_url = False
-        self.page_custom_var = []
+        self.page_custom_var = [False, False, False, False, False, False]
+        self.visitor_custom_var = [False, False, False, False, False, False]
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -184,6 +185,11 @@ class PiwikTracker(object):
             query_vars['res'] = '%dx%d' % (self.width, self.height)
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
+        if self.page_custom_var:
+            query_vars['cvar'] = self.page_custom_var
+        if self.visitor_custom_var:
+            query_vars['_cvar'] = self.visitor_custom_var
+
         url = urllib.urlencode(query_vars)
         if self.debug_append_url:
             url += self.debug_append_url
@@ -296,6 +302,60 @@ class PiwikTracker(object):
         #    #print header, value
         #    self.request_cookie = ''
         return body
+
+    def set_custom_variable(self, id, name, value, scope='visit'):
+        """
+        Set custom variable, see http://piwik.org/docs/custom-variables/
+
+        Args:
+            id (int): Custom variable slot ID, 1-5
+            name (string): Variable name
+            value (string): Variable value
+            scope (string): Variable scope, either visit or page
+        """
+        #print type(id)
+        #print type(int())
+        if type(id) != type(int()):
+            raise Exception("Parameter id must be an integer")
+        if scope == 'page':
+            #print self.page_custom_var
+            self.page_custom_var[id] = (name, value)
+        elif scope == 'visit':
+            self.visitor_custom_var[id] = (name, value)
+        else:
+            raise Exception("Invalid scope parameter value")
+
+    def get_custom_variable(self, id, scope='visit'):
+        """
+        """
+        if type(id) != type(int()):
+            raise Exception("Parameter id must be an integer")
+        if scope == 'page':
+            r = self.page_custom_var[id]
+        elif scope == 'visit':
+            if self.visitor_custom_var[id]:
+                r = self.visitor_custom_var[id]
+            else:
+                custom_variables_cookie = 'cvar.%d.' % self.id_site
+                cookie = self.get_cookie_matching_name(custom_variables_cookie)
+                if not cookie:
+                    r = False
+                else:
+                    cookie_decoded = json.loads(cookie)
+                    #$cookieDecoded = json_decode($cookie, $assoc = true);
+                    print 'decoded cookie json', cookie_decode
+                    print 'decoded cookie json', repr(cookie_decode)
+                    if type(cookie_decoded) == type(list()):
+                        r = False
+                    elif id not in cookie_decoded:
+                        r = False
+                    elif len(cookie_decoded[id]) != 2:
+                        r = False
+                    else:
+                        r = cookie_decoded[id]
+        else:
+            raise Exception("Invalid scope parameter value")
+        return r
 
 
 class PiwikTrackerEcommerce(PiwikTracker):

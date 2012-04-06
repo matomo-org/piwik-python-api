@@ -296,6 +296,54 @@ class TestPiwikTrackerAPINoAutomatedVerification(PiwikTrackerTestBase):
             "Suffix not appended to query URL: %s" % query_url,
         )
 
+    def test_custom_variables(self):
+        value = 'bar'
+
+        try:
+            saved = self.pt.set_custom_variable('a', 'foo', value, 'page')
+            illegal_id = True
+        except Exception:
+            illegal_id = False
+        self.assertFalse(
+            illegal_id,
+            "No exception for trying to use an illegal ID"
+        )
+
+        try:
+            saved = self.pt.set_custom_variable(1, 'foo', value, 'foo')
+            illegal_scope = True
+        except Exception:
+            illegal_scope = False
+        self.assertFalse(
+            illegal_scope,
+            "No exception for trying to use an illegal scope"
+        )
+
+        self.pt.set_custom_variable(1, 'foo', value, 'page')
+        saved = self.pt.get_custom_variable(1, 'page')
+        self.assertEqual(
+            value,
+            saved[1],
+            "Custom page variable was not saved, got %s" % saved[1],
+        )
+
+        #c = Client()
+        url = self.pt.get_request(settings.PIWIK_SITE_ID)
+        #print url
+        value = 'quoo'
+        self.pt.set_custom_variable(1, 'foo', value, 'visit')
+        saved = self.pt.get_custom_variable(1, 'visit')
+        self.assertEqual(
+            value,
+            saved[1],
+            "Custom visit variable was not saved, got %s" % saved[1],
+        )
+
+        action_title = self.get_title('test custom var')
+        r = self.pt.do_track_page_view(action_title)
+
+        #print r
+
 
 class TestEcommerceStuff(PiwikTrackerTestBase):
     products = {
