@@ -260,6 +260,15 @@ class TestPiwikTrackerAPI(unittest.TestCase):
 
         #self.assertTrue(False)
 
+    def test_set_browser_language(self):
+        language = 'de-de'
+        self.pt.set_browser_language(language)
+        self.assertEqual(
+            language,
+            self.pt.accept_language,
+            "Browser language was not set"
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

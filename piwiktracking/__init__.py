@@ -73,6 +73,13 @@ class PiwikTracker:
         """
         self.has_cookies = True
 
+    def set_browser_language(self, language):
+        """
+        Set the browser language. Piwik uses this to guess the visitor's
+        origin when GeoIP is not enabled
+        """
+        self.accept_language = language
+
     def set_resolution(self, width, height):
         """
         Set the visitor's screen width and height
