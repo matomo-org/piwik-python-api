@@ -4,14 +4,14 @@ except ImportError:
     from distutils.core import setup
 
 setup(
-    name = "django-piwik-tracking",
+    name = "piwik-tracking",
     version = "0.1",
     author = "Nicolas Kuttler",
     author_email = "pypi@nicolaskuttler.com",
     description = "Piwik tracking API for Django",
     long_description = open("README.rst").read(),
     license = "BSD",
-    url = "http://github.com/nkuttler/django-piwik-tracking",
+    url = "http://github.com/nkuttler/python-piwik-tracking",
     packages = ['piwik_tracking'],
     include_package_data = True,
     classifiers = [
