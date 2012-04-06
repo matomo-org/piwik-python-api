@@ -159,20 +159,42 @@ class PiwikTracker:
         return url
 
     def get_visitor_id(self):
-        "unused"
-        id_cookie_name =  'id.%s.' % self.id_site
-        id_cookie = self.get_cookie_matching_name(id_cookie_name)
-        visitor_id = self.visitor_id
-        if id_cookie:
-            #print 'id_cookie is', id_cookie
-            visitor_id = id_cookie
-            """
-            $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
-            if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
-            {
-                return $visitorId;
-            """
+        """
+        If the user initiating the request has the Piwik first party cookie,
+        this function will try and return the ID parsed from this first party
+        cookie.
+
+        If you call this function from a server, where the call is triggered by a
+        cron or script not initiated by the actual visitor being tracked, then it
+        will return the random Visitor ID that was assigned to this visit object.
+
+        This can be used if you wish to record more visits, actions or goals for
+        this visitor ID later on.
+        """
+        if self.forced_visitor_id:
+            visitor_id = self.forced_visitor_id
+        else:
+            id_cookie_name =  'id.%s.' % self.id_site
+            id_cookie = self.get_cookie_matching_name(id_cookie_name)
+            visitor_id = self.visitor_id
+            if id_cookie:
+                print 'id_cookie is', id_cookie
+                visitor_id = id_cookie
+                """
+                $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
+                if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
+                {
+                    return $visitorId;
+                """
+        #print "1 get_visitor_id() returns:", visitor_id
         return visitor_id
+
+    def get_random_visitor_id(self):
+        """
+        Return a random visitor ID
+        """
+        visitor_id = md5.new(str(random.getrandbits(9999))).hexdigest()
+        return visitor_id[:self.LENGTH_VISITOR_ID]
 
     def get_cookie_matching_name(self, name):
         "unused"
