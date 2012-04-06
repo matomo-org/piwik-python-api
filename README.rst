@@ -4,12 +4,15 @@ README
 
 This is a Python implementation of the PiwikTracker PHP class.
 
-Not supported are:
+Supported:
 
-- Ecommerce
+- Normal tracking
+- Ecommerce (basic)
+
+Not supported yet:
+
 - Goals
 - Cookies
-- JavaScript parameters
 - Custom parameters
 - ...
 

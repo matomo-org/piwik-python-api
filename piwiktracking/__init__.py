@@ -1,4 +1,5 @@
 import datetime
+import json
 import md5
 import random
 import urllib
@@ -7,6 +8,12 @@ import urlparse
 
 
 class PiwikTracker:
+    """
+    The Piwik Tracker class
+
+    TODO it's probably possible to split the e-commerce stuff into a different
+    class
+    """
     VERSION = 1
     LENGTH_VISITOR_ID = 16
 
@@ -28,6 +35,9 @@ class PiwikTracker:
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
         self.debug_append_url = False
+        self.page_custom_var = []
+        self.ecommerce_items = {}
+        self.ecommerce = {}
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -103,6 +113,96 @@ class PiwikTracker:
     def set_debug_string_append(self, string):
         self.debug_append_url = string
 
+    def set_ecommerce_view(self, sku=False, name=False, category=False,
+                           price=False):
+        """
+        Set the page view as an item/product page view, or an ecommerce
+        category page view.
+
+        This method will set three custom variables of 'page' scope with the
+        SKU, name and category for this page view.
+
+        On a category page you may set the category argument only.
+
+        Tracking product/category page views will allow Piwik to report on
+        product and category conversion rates.
+
+        To enable ecommerce tracking see doc/install.rst
+
+        Args:
+            SKU (str): Product SKU being viewed
+            name (str): Name of the product
+            category (str|list): Name of the category for the current category
+                page or the product
+            price (float): Price of the product
+        """
+        if category:
+            if type(category) == type(list()):
+                category = json.dumps(category)
+        else:
+            category = ''
+        self.page_custom_var.append(('_pkc', category))
+        if price:
+            self.page_custom_var.append(('_pkp', price))
+        # On a category page do not record "Product name not defined"
+        if sku and name:
+            if sku:
+                self.page_custom_var.append(('_pks', sku))
+            if name:
+                self.page_custom_var.append(('_pkn', name))
+
+    def add_ecommerce_item(self, sku, name=False, category=False, price=False,
+                           quantity=1):
+        """
+        Add an item to the ecommerce order.
+
+        This should be called before do_track_ecommerce_order() or before
+        do_track_ecommerce_cart_update().
+
+        Thie method can be called for all individual products in the cart/order.
+
+        Args:
+            sku (str): Product SKU, mandatory
+            name (str): Name of the product
+            category (str|list): Name of the category for the current category
+                page or the product
+            price (float): Price of the product
+            quantity (int): Product quantity, defaults to 1
+        """
+        self.ecommerce_items[sku] = (
+            sku,
+            name,
+            category,
+            price,
+            quantity
+        )
+
+    def do_track_ecommerce_order(self, order_id, grand_total, sub_total=False,
+                                  tax=False, shipping=False, discount=False):
+        """
+        Track an ecommerce order
+
+        If the order contains items you must call add_ecommerce_item() first for
+        each item.
+
+        All revenues will be individually summed and reported by Piwik.
+
+        Args:
+            order_id (str): Unique order ID (required). Used to avoid
+                re-recording an order on page reload.
+            grand_total (float): Grand total revenue of the transaction,
+                including taxes, shipping, etc.
+            sub_total (float): Sub total amount, typicalle the sum of item
+                prices for all items in this order, before tax and shipping
+            tax (float): Tax amount for this order
+            shipping (float): Shipping amount for this order
+            discount (float): Discount for this order
+        """
+        url = self.get_url_track_ecommerce_order(order_id, grand_total,
+                                                 sub_total, tax, shipping,
+                                                 discount)
+        return self._send_request(url)
+
     def get_current_scheme(self):
         # django-specific
         if self.request.is_secure():
@@ -134,7 +234,7 @@ class PiwikTracker:
     def get_timestamp(self):
         return datetime.datetime.now()
 
-    def get_request(self, id_site, document_title):
+    def get_request(self, id_site):
         """
         This oddly named method returns the query var string.
         """
@@ -151,8 +251,6 @@ class PiwikTracker:
             query_vars['cip'] = self.ip
         if self.token_auth:
             query_vars['token_auth'] = self.token_auth
-        if document_title:
-            query_vars['action_name'] = document_title
         if self.has_cookies:
             query_vars['cookie'] = 1
         if self.width and self.height:
@@ -172,7 +270,63 @@ class PiwikTracker:
         Args:
             document_title (str): The title of the page the user is on
         """
-        url = self.get_request(self.id_site, document_title)
+        url = self.get_request(self.id_site)
+        if document_title:
+            url += '&%s' % urllib.urlencode({'action_name': document_title})
+        return url
+
+    def get_url_track_ecommerce_order(self, order_id, grand_total,
+                                      sub_total=False, tax=False,
+                                      shipping=False, discount=False):
+        """
+        Returns an URL used to track ecommerce orders
+
+        Calling this method will reinitialize the property ecommerce_items to
+        an empty list. So items will have to be added again via
+        add_ecommerce_item()
+        """
+        url = self.get_url_track_ecommerce(grand_total, sub_total, tax,
+                                           shipping, discount)
+        url += '&%s' % urllib.urlencode({'ec_id': order_id})
+        print '--->', url
+        self.ecommerce_last_order_timestamp = self.get_timestamp()
+        return url
+
+    def get_url_track_ecommerce(self, grand_total, sub_total=False, tax=False,
+                                shipping=False, discount=False):
+        """
+        Returns the URL used to track ecommerce orders
+
+        Calling this method reinitializes the property ecommerce_items, so
+        items will have to be added again via add_ecommerce_item()
+
+        Args:
+            Same as...
+        """
+        if type(grand_total) != type(float()):
+            raise Exception("You must specify a grant_total for the ecommerce "
+                            "transaction")
+        url = self.get_request(self.id_site)
+        args = {
+            'idgoal': 0,
+        }
+        if grand_total:
+            args['revenue'] = grand_total
+        if sub_total:
+            args['ec_st'] = sub_total
+        if tax:
+            args['ec_tx'] = tax
+        if shipping:
+            args['ec_sh'] = shipping
+        if discount:
+            args['ec_dt'] = discount
+        if len(self.ecommerce_items):
+            # Remove the SKU index in the list before JSON encoding
+            items = self.ecommerce.values()
+            args['ec_items'] = json.dumps(items)
+        self.ecommerce_items.clear()
+        url += '&%s' % urllib.urlencode(args)
+        print '2-->', url
         return url
 
     def get_visitor_id(self):

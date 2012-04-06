@@ -193,24 +193,6 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             "IP not the one we set, expected %s. Could be random error..." % ip
         )
 
-    def test_browser_has_cookies(self):
-        """
-        TODO can't verify
-        """
-        self.pt.set_browser_has_cookies()
-        cookie = "piwiktrackingtest=yes; hascookies=yes"
-        self.pt._set_request_cookie(cookie)
-        self.assertTrue(True) # FIXME
-
-    def test_set_resolution(self):
-        """
-        TODO can't verify
-        """
-        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH) # verify hack
-        self.pt.set_resolution(5760, 1080)
-        r = self.pt.do_track_page_view(self.get_title('set resolution test'))
-        self.assertTrue(True) # FIXME
-
     def test_set_visitor_id(self):
         incorrect_id = 'asdf'
         try:
@@ -260,6 +242,25 @@ class TestPiwikTrackerAPI(unittest.TestCase):
 
         #self.assertTrue(False)
 
+class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
+    """
+    Here are test we don't verify programmatically yet. I guess we'd have to
+    access the Piwik API to fetch data to verify the tracking requests were
+    processed properly. At the moment I only check this manually in my Piwik
+    dev installation.
+    """
+    def test_browser_has_cookies(self):
+        self.pt.set_browser_has_cookies()
+        cookie = "piwiktrackingtest=yes; hascookies=yes"
+        self.pt._set_request_cookie(cookie)
+        self.assertTrue(True) # FIXME
+
+    def test_set_resolution(self):
+        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH) # verify hack
+        self.pt.set_resolution(5760, 1080)
+        r = self.pt.do_track_page_view(self.get_title('set resolution test'))
+        self.assertTrue(True) # FIXME
+
     def test_set_browser_language(self):
         language = 'de-de'
         self.pt.set_browser_language(language)
@@ -282,13 +283,61 @@ class TestPiwikTrackerAPI(unittest.TestCase):
     def test_set_debug_string_append(self):
         suffix = 'suffix'
         self.pt.set_debug_string_append(suffix)
-        query_url = self.pt.get_request('foo', 'bar')
+        query_url = self.pt.get_request('foo')
         self.assertRegexpMatches(
             query_url,
             "%s$" % suffix,
             "Suffix not appended to query URL: %s" % query_url,
         )
 
+    def test_set_ecommerce_view(self):
+        # Set different IP for each test run
+        # TODO also randomize referers etc...
+        self.pt.set_ip(self.random_ip())
+        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+        products = {
+            'book': {
+                'sku': '1234',
+                'name': 'Test book',
+                'category': ('test category', 'books', ),
+                'price': 9.99,
+                'quantity': 21,
+            },
+            'car': {
+                'sku': '1235',
+                'name': 'Test car',
+                'category': ('test category', 'cars', ),
+                'price': 5.25,
+                'quantity': 1,
+            },
+        }
+        grand_total = 0
+        for key, product in products.iteritems():
+            # View all products
+            self.pt.set_ecommerce_view(
+                product['sku'],
+                product['name'],
+                product['category'],
+                product['price'],
+            )
+            r = self.pt.do_track_page_view(self.get_title('view %s'
+                                           % product['name']))
+            # Put them in the cart
+            self.pt.add_ecommerce_item(
+                product['sku'],
+                product['name'],
+                product['category'],
+                product['price'],
+                product['quantity'],
+            )
+            grand_total += product['price'] * product['quantity']
+        # Order them
+        r = self.pt.do_track_ecommerce_order(
+            randint(0, 99999), # TODO random failure
+            grand_total,
+        )
+
+        #self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
