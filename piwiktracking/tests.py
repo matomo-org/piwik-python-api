@@ -5,6 +5,7 @@ from datetime import datetime
 from random import randint
 
 from piwiktracking import PiwikTracker
+from piwiktracking import PiwikTrackerEcommerce
 
 
 try:
@@ -68,8 +69,13 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             'HTTPS': '',
         }
         self.request = FakeRequest(headers)
+        # Standard tracker
         self.pt = PiwikTracker(settings.PIWIK_SITE_ID, self.request)
         self.pt.set_api_url(settings.PIWIK_API_URL)
+        # Ecommerce tracker
+        self.pte = PiwikTrackerEcommerce(settings.PIWIK_SITE_ID,
+                                         self.request)
+        self.pte.set_api_url(settings.PIWIK_API_URL)
 
     def get_title(self, title):
         now = datetime.now()
@@ -293,8 +299,8 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
     def test_set_ecommerce_view(self):
         # Set different IP for each test run
         # TODO also randomize referers etc...
-        self.pt.set_ip(self.random_ip())
-        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+        self.pte.set_ip(self.random_ip())
+        self.pte.set_token_auth(settings.PIWIK_TOKEN_AUTH)
         products = {
             'book': {
                 'sku': '1234',
@@ -314,16 +320,16 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
         grand_total = 0
         for key, product in products.iteritems():
             # View all products
-            self.pt.set_ecommerce_view(
+            self.pte.set_ecommerce_view(
                 product['sku'],
                 product['name'],
                 product['category'],
                 product['price'],
             )
-            r = self.pt.do_track_page_view(self.get_title('view %s'
+            r = self.pte.do_track_page_view(self.get_title('view %s'
                                            % product['name']))
             # Put them in the cart
-            self.pt.add_ecommerce_item(
+            self.pte.add_ecommerce_item(
                 product['sku'],
                 product['name'],
                 product['category'],
@@ -332,7 +338,7 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
             )
             grand_total += product['price'] * product['quantity']
         # Order them
-        r = self.pt.do_track_ecommerce_order(
+        r = self.pte.do_track_ecommerce_order(
             randint(0, 99999), # TODO random failure
             grand_total,
         )

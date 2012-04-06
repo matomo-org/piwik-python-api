@@ -7,12 +7,9 @@ import urllib2
 import urlparse
 
 
-class PiwikTracker:
+class PiwikTracker(object):
     """
     The Piwik Tracker class
-
-    TODO it's probably possible to split the e-commerce stuff into a different
-    class
     """
     VERSION = 1
     LENGTH_VISITOR_ID = 16
@@ -36,8 +33,6 @@ class PiwikTracker:
         self.forced_visitor_id = False
         self.debug_append_url = False
         self.page_custom_var = []
-        self.ecommerce_items = {}
-        self.ecommerce = {}
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -112,6 +107,180 @@ class PiwikTracker:
 
     def set_debug_string_append(self, string):
         self.debug_append_url = string
+
+    def get_current_scheme(self):
+        # django-specific
+        if self.request.is_secure():
+            scheme = 'https'
+        else:
+            scheme = 'http'
+        return scheme
+
+    def get_current_host(self):
+        return self.request.META.get('SERVER_NAME', '')
+
+    def get_current_script_name(self):
+        return self.request.META.get('PATH_INFO', '')
+
+    def get_current_query_string(self):
+        return self.request.META.get('QUERY_STRING', '')
+
+    def get_current_url(self):
+        """
+        Returns the URL of the page the visitor is on.
+        """
+        url = self.get_current_scheme() + '://'
+        url += self.get_current_host()
+        url += self.get_current_script_name()
+        url += '?'
+        url += self.get_current_query_string()
+        return url
+
+    def get_timestamp(self):
+        return datetime.datetime.now()
+
+    def get_request(self, id_site):
+        """
+        This oddly named method returns the query var string.
+        """
+        query_vars = {
+            'idsite': id_site,
+            'rec': 1,
+            'apiv': self.VERSION,
+            'r': random.randint(0, 99999),
+            'url': self.page_url,
+            'urlref': self.referer,
+            'id': self.visitor_id,
+        }
+        if self.ip:
+            query_vars['cip'] = self.ip
+        if self.token_auth:
+            query_vars['token_auth'] = self.token_auth
+        if self.has_cookies:
+            query_vars['cookie'] = 1
+        if self.width and self.height:
+            query_vars['res'] = '%dx%d' % (self.width, self.height)
+        if self.forced_visitor_id:
+            query_vars['cid'] = self.forced_visitor_id
+        url = urllib.urlencode(query_vars)
+        if self.debug_append_url:
+            url += self.debug_append_url
+        return url
+
+    def get_url_track_page_view(self, document_title=False):
+        """
+        Returns the URL to piwik.php with all parameters set to track the
+        pageview
+
+        Args:
+            document_title (str): The title of the page the user is on
+        """
+        url = self.get_request(self.id_site)
+        if document_title:
+            url += '&%s' % urllib.urlencode({'action_name': document_title})
+        return url
+
+    def get_cookie_matching_name(self, name):
+        cookie_value = False
+        if self.request.COOKIES:
+            for name in self.request.COOKIES:
+                print 'cookie name', name
+                cookie_value = self.request.COOKIES[name]
+                print 'cookie is', cookie_value
+        #print self.request.COOKIES
+        return cookie_value
+
+    def get_visitor_id(self):
+        """
+        If the user initiating the request has the Piwik first party cookie,
+        this function will try and return the ID parsed from this first party
+        cookie.
+
+        If you call this function from a server, where the call is triggered by a
+        cron or script not initiated by the actual visitor being tracked, then it
+        will return the random Visitor ID that was assigned to this visit object.
+
+        This can be used if you wish to record more visits, actions or goals for
+        this visitor ID later on.
+        """
+        if self.forced_visitor_id:
+            visitor_id = self.forced_visitor_id
+        else:
+            id_cookie_name =  'id.%s.' % self.id_site
+            id_cookie = self.get_cookie_matching_name(id_cookie_name)
+            visitor_id = self.visitor_id
+            if id_cookie:
+                print 'id_cookie is', id_cookie
+                visitor_id = id_cookie
+                """
+                $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
+                if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
+                {
+                    return $visitorId;
+                """
+        return visitor_id
+
+    def get_random_visitor_id(self):
+        """
+        Return a random visitor ID
+        """
+        visitor_id = md5.new(str(random.getrandbits(9999))).hexdigest()
+        return visitor_id[:self.LENGTH_VISITOR_ID]
+
+    def disable_cookie_support(self):
+        """
+        By default, PiwikTracker will read third party cookies from the
+        response and sets them in the next request.
+        """
+        self.cookie_support = False
+
+    def do_track_page_view(self, document_title):
+        """
+        Track a page view
+
+        Args:
+            document_title (str): The title of the page the user is on
+        """
+        url = self.get_url_track_page_view(document_title)
+        return self._send_request(url)
+
+    def _send_request(self, url):
+        """
+        Make the tracking API request
+
+        Args:
+            url (str): TODO
+        """
+        parsed = urlparse.urlparse(self.api_url)
+        url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
+        request = urllib2.Request(url)
+        request.add_header('User-Agent', self.user_agent)
+        request.add_header('Accept-Language', self.accept_language)
+        if not self.cookie_support:
+            self.request_cookie = ''
+        elif self.request_cookie != '':
+            print 'Adding cookie', self.request_cookie
+            request.add_header('Cookie', self.request_cookie)
+
+        response = urllib2.urlopen(request)
+        #print response.info()
+        body = response.read()
+        # The cookie in the response will be set in the next request
+        #for header, value in response.getheaders():
+        #    # TODO handle cookies
+        #    # set cookie to la
+		#	# in case several cookies returned, we keep only the latest one
+        #    # (ie. XDEBUG puts its cookie first in the list)
+        #    #print header, value
+        #    self.request_cookie = ''
+        return body
+
+
+class PiwikTrackerEcommerce(PiwikTracker):
+    def __init__(self, id_site, request):
+        self.ecommerce_items = {}
+        self.ecommerce = {}
+        super(PiwikTrackerEcommerce, self).__init__(id_site, request)
 
     def set_ecommerce_view(self, sku=False, name=False, category=False,
                            price=False):
@@ -203,78 +372,6 @@ class PiwikTracker:
                                                  discount)
         return self._send_request(url)
 
-    def get_current_scheme(self):
-        # django-specific
-        if self.request.is_secure():
-            scheme = 'https'
-        else:
-            scheme = 'http'
-        return scheme
-
-    def get_current_host(self):
-        return self.request.META.get('SERVER_NAME', '')
-
-    def get_current_script_name(self):
-        return self.request.META.get('PATH_INFO', '')
-
-    def get_current_query_string(self):
-        return self.request.META.get('QUERY_STRING', '')
-
-    def get_current_url(self):
-        """
-        Returns the URL of the page the visitor is on.
-        """
-        url = self.get_current_scheme() + '://'
-        url += self.get_current_host()
-        url += self.get_current_script_name()
-        url += '?'
-        url += self.get_current_query_string()
-        return url
-
-    def get_timestamp(self):
-        return datetime.datetime.now()
-
-    def get_request(self, id_site):
-        """
-        This oddly named method returns the query var string.
-        """
-        query_vars = {
-            'idsite': id_site,
-            'rec': 1,
-            'apiv': self.VERSION,
-            'r': random.randint(0, 99999),
-            'url': self.page_url,
-            'urlref': self.referer,
-            'id': self.visitor_id,
-        }
-        if self.ip:
-            query_vars['cip'] = self.ip
-        if self.token_auth:
-            query_vars['token_auth'] = self.token_auth
-        if self.has_cookies:
-            query_vars['cookie'] = 1
-        if self.width and self.height:
-            query_vars['res'] = '%dx%d' % (self.width, self.height)
-        if self.forced_visitor_id:
-            query_vars['cid'] = self.forced_visitor_id
-        url = urllib.urlencode(query_vars)
-        if self.debug_append_url:
-            url += self.debug_append_url
-        return url
-
-    def get_url_track_page_view(self, document_title=False):
-        """
-        Returns the URL to piwik.php with all parameters set to track the
-        pageview
-
-        Args:
-            document_title (str): The title of the page the user is on
-        """
-        url = self.get_request(self.id_site)
-        if document_title:
-            url += '&%s' % urllib.urlencode({'action_name': document_title})
-        return url
-
     def get_url_track_ecommerce_order(self, order_id, grand_total,
                                       sub_total=False, tax=False,
                                       shipping=False, discount=False):
@@ -288,7 +385,6 @@ class PiwikTracker:
         url = self.get_url_track_ecommerce(grand_total, sub_total, tax,
                                            shipping, discount)
         url += '&%s' % urllib.urlencode({'ec_id': order_id})
-        print '--->', url
         self.ecommerce_last_order_timestamp = self.get_timestamp()
         return url
 
@@ -326,103 +422,7 @@ class PiwikTracker:
             args['ec_items'] = json.dumps(items)
         self.ecommerce_items.clear()
         url += '&%s' % urllib.urlencode(args)
-        print '2-->', url
         return url
-
-    def get_visitor_id(self):
-        """
-        If the user initiating the request has the Piwik first party cookie,
-        this function will try and return the ID parsed from this first party
-        cookie.
-
-        If you call this function from a server, where the call is triggered by a
-        cron or script not initiated by the actual visitor being tracked, then it
-        will return the random Visitor ID that was assigned to this visit object.
-
-        This can be used if you wish to record more visits, actions or goals for
-        this visitor ID later on.
-        """
-        if self.forced_visitor_id:
-            visitor_id = self.forced_visitor_id
-        else:
-            id_cookie_name =  'id.%s.' % self.id_site
-            id_cookie = self.get_cookie_matching_name(id_cookie_name)
-            visitor_id = self.visitor_id
-            if id_cookie:
-                print 'id_cookie is', id_cookie
-                visitor_id = id_cookie
-                """
-                $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
-                if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
-                {
-                    return $visitorId;
-                """
-        return visitor_id
-
-    def get_random_visitor_id(self):
-        """
-        Return a random visitor ID
-        """
-        visitor_id = md5.new(str(random.getrandbits(9999))).hexdigest()
-        return visitor_id[:self.LENGTH_VISITOR_ID]
-
-    def get_cookie_matching_name(self, name):
-        cookie_value = False
-        if self.request.COOKIES:
-            for name in self.request.COOKIES:
-                print 'cookie name', name
-                cookie_value = self.request.COOKIES[name]
-                print 'cookie is', cookie_value
-        #print self.request.COOKIES
-        return cookie_value
-
-    def disable_cookie_support(self):
-        """
-        By default, PiwikTracker will read third party cookies from the
-        response and sets them in the next request.
-        """
-        self.cookie_support = False
-
-    def do_track_page_view(self, document_title):
-        """
-        Track a page view
-
-        Args:
-            document_title (str): The title of the page the user is on
-        """
-        url = self.get_url_track_page_view(document_title)
-        return self._send_request(url)
-
-    def _send_request(self, url):
-        """
-        Make the tracking API request
-
-        Args:
-            url (str): TODO
-        """
-        parsed = urlparse.urlparse(self.api_url)
-        url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        request = urllib2.Request(url)
-        request.add_header('User-Agent', self.user_agent)
-        request.add_header('Accept-Language', self.accept_language)
-        if not self.cookie_support:
-            self.request_cookie = ''
-        elif self.request_cookie != '':
-            print 'Adding cookie', self.request_cookie
-            request.add_header('Cookie', self.request_cookie)
-
-        response = urllib2.urlopen(request)
-        #print response.info()
-        body = response.read()
-        # The cookie in the response will be set in the next request
-        #for header, value in response.getheaders():
-        #    # TODO handle cookies
-        #    # set cookie to la
-		#	# in case several cookies returned, we keep only the latest one
-        #    # (ie. XDEBUG puts its cookie first in the list)
-        #    #print header, value
-        #    self.request_cookie = ''
-        return body
 
 
 def piwik_get_url_track_page_view(id_site, request, document_title=False):
