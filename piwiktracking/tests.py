@@ -211,7 +211,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         r = self.pt.do_track_page_view('set resolution test')
         self.assertTrue(True) # FIXME
 
-    def test_aaa_set_visitor_id(self):
+    def test_set_visitor_id(self):
         incorrect_id = 'asdf'
         try:
             self.pt.set_visitor_id(incorrect_id)
@@ -250,8 +250,6 @@ class TestPiwikTrackerAPI(unittest.TestCase):
 
         id = self.pt.get_random_visitor_id()
         self.pt.set_visitor_id(id)
-        #print '----->', id
-        #print '== -->', self.pt.get_visitor_id()
         self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
         r = self.pt.do_track_page_view('visitor id test with auth')
         self.assertRegexpMatches(
@@ -259,8 +257,6 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             'Matching visitors with: visitorId=%s' % id,
             "Visitor ID not found in response"
         )
-        #print r
-        #print id
 
         self.assertTrue(False)
 
