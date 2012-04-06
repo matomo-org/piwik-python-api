@@ -35,7 +35,6 @@ class PiwikTracker:
         self.ip = self.request.META.get('REMOTE_ADDR')
         self.accept_language = self.request.META.get('HTTP_ACCEPT_LANGUAGE',
                                                      '')
-
     def set_local_time(self, datetime):
         "unused"
         self.local_hour = datetime.hour
