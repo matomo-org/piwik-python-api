@@ -1,18 +1,8 @@
 Usage
 =====
 
-You have to install and configure Piwik first. If you're not using Django you
-will also have to write some custom wrapper code, see below. Feel free to
-send pull request.
-
-Configuring Piwik
------------------
-
-1. Install Piwik
-2. Create a new development site
-3. Create a new user
-4. Make that user an admin of the development site. If you don't do this the
-   remote IP won't be logged.
+If you're not using Django you will have to write some custom wrapper code,
+see below. Feel free to send pull request.
 
 .. _usage-without-django:
 
