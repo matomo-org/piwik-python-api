@@ -16,4 +16,4 @@ Not supported are:
 The module was originally written for Django and expects a Django HttpRequest.
 However, you don't need to be using Django, you can use a mockup object.
 
-Full Documentation: http://python-piwik-tracker.readthedocs.org/en/latest/index.html
+Full Documentation: http://piwiktracking.readthedocs.org/en/latest/index.html

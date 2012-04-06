@@ -16,7 +16,8 @@ upload:
 
 .PHONY: clean
 clean:
-	rm -rf dist build *.egg-info python-piwik-tracking-*
+	rm -rf dist build *.egg-info python-piwiktracking-*
+	make -C doc clean
 
 .PHONY: test
 test:
