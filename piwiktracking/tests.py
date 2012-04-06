@@ -169,7 +169,8 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         )
 
     def test_setting_ip_works_for_authed_user_only(self):
-        self.pt.set_ip(self.random_ip())
+        ip = self.random_ip()
+        self.pt.set_ip(ip)
         title = self.get_title('test force ip %s ' % ip)
 
         r = self.pt.do_track_page_view(title)
