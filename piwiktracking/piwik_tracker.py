@@ -1,7 +1,7 @@
 import datetime
-import httplib
 import random
 import urllib
+import urllib2
 import urlparse
 
 
@@ -20,6 +20,7 @@ class PiwikTracker:
         self.set_request_parameters()
         self.set_local_time(self.get_timestamp())
         self.page_url = self.get_current_url()
+        self.cookie_support = True
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -54,6 +55,12 @@ class PiwikTracker:
         Requires setting the auth token.
         """
         self.ip = ip
+
+    def _set_request_cookie(self, cookie):
+        """
+        Set the request cookie, for testing purposes
+        """
+        self.request_cookie = cookie
 
     def get_current_scheme(self):
         # django-specific
@@ -142,6 +149,13 @@ class PiwikTracker:
             print 'cookie is', cookie_value
         return cookie_value
 
+    def disable_cookie_support(self):
+        """
+        By default, PiwikTracker will read third party cookies from the response
+        and sets them in the next request.
+        """
+        self.cookie_support = False
+
     def do_track_page_view(self, document_title):
         """
         Track a page view
@@ -159,18 +173,41 @@ class PiwikTracker:
         Args:
             url -- TODO
         """
+        if not self.cookie_support:
+            self.request_cookie = ''
         headers = {
             'Accept-Language': self.accept_language,
             'User-Agent': self.user_agent,
             'Cookie': self.request_cookie,
         }
+        print headers
         parsed = urlparse.urlparse(self.api_url)
-        url = "%s?%s" % (parsed.path, url)
+        #url = "%s?%s" % (parsed.path, url)
 
-        connection = httplib.HTTPConnection(parsed.hostname)
-        connection.request('GET', url, '', headers)
-        response = connection.getresponse()
-        return response.read()
+        url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
+        #print parsed.netloc
+        #print parsed.scheme
+        #print url
+
+        response = urllib2.urlopen(url)
+        #print response.geturl()
+        #print response.info()
+
+        #connection = httplib.HTTPConnection(parsed.hostname)
+        #connection.request('GET', url, '', headers)
+        #response = connection.getresponse()
+        body = response.read()
+        #print body
+
+        # The cookie in the response will be set in the next request
+        #for header, value in response.getheaders():
+        #    # TODO handle cookies
+        #    # set cookie to la
+		#	# in case several cookies returned, we keep only the latest one
+        #    # (ie. XDEBUG puts its cookie first in the list)
+        #    #print header, value
+        #    self.request_cookie = ''
+        return body
 
 
 def piwik_get_url_track_page_view(id_site, request, document_title=False):
