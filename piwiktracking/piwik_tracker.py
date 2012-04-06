@@ -22,6 +22,8 @@ class PiwikTracker:
         self.page_url = self.get_current_url()
         self.cookie_support = True
         self.has_cookies = False
+        self.width = False
+        self.height = False
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -68,6 +70,13 @@ class PiwikTracker:
         Call this is the browser supports cookies
         """
         self.has_cookies = True
+
+    def set_resolution(self, width, height):
+        """
+        Set the visitor's screen width and height
+        """
+        self.width = width
+        self.height = height
 
     def get_current_scheme(self):
         # django-specific
@@ -120,6 +129,8 @@ class PiwikTracker:
             query_vars['action_name'] = document_title
         if self.has_cookies:
             query_vars['cookie'] = 1
+        if self.width and self.height:
+            query_vars['res'] = '%dx%d' % (self.width, self.height)
         return urllib.urlencode(query_vars)
 
     def get_url_track_page_view(self, document_title=False):
@@ -128,7 +139,8 @@ class PiwikTracker:
         pageview
 
         Args:
-            document_title (str): Page view name as it will appear in Piwik reports
+            document_title (str): Page view name as it will appear in Piwik
+            reports
         """
         url = self.get_request(self.id_site, document_title)
         return url
