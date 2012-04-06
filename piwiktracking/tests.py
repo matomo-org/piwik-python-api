@@ -191,11 +191,12 @@ class TestPiwikTrackerAPI(unittest.TestCase):
 
     def test_browser_has_cookies(self):
         """
-        The only way to verify this seems to be to check the Piwik interface
+        TODO can't verify
         """
         self.pt.set_browser_has_cookies()
         cookie = "piwiktrackingtest=yes; hascookies=yes"
         self.pt._set_request_cookie(cookie)
+        self.assertTrue(True) # FIXME
 
     def test_set_resolution(self):
         """
@@ -208,7 +209,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         # verify hack
         self.pt.set_resolution(5760, 1080)
         r = self.pt.do_track_page_view('cookie test')
-        self.assertTrue(True)
+        self.assertTrue(True) # FIXME
 
 
 if __name__ == '__main__':
