@@ -18,7 +18,7 @@ You probably want to create a fake settings module that will be used
 instead of the one from ``django.conf``. There's already a fake request
 class that's used instead of Django Request objects for the unit tests.
 
-Using this code in ``piwik_tracking/fake_settings.py`` should work::
+Using this code in ``piwiktracking/fake_settings.py`` should work::
 
     class FakeSettings:
             PIWIK_API_URL = 'http://example.com/piwik.php'

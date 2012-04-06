@@ -16,11 +16,11 @@ upload:
 
 .PHONY: clean
 clean:
-	rm -rf dist build *.egg-info django-piwik-tracking-*
+	rm -rf dist build *.egg-info python-piwik-tracking-*
 
 .PHONY: test
 test:
-	python piwik_tracking/tests.py
+	python piwiktracking/tests.py
 
 .PHONY: html
 html:

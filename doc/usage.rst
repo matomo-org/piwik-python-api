@@ -23,7 +23,7 @@ As this code was written for usage with Django it expects a Django
 HttpRequest object in some places. If you're not using Django you'll want to
 pass an object that looks like this:
 
-.. autoclass:: piwik_tracking.tests.FakeRequest
+.. autoclass:: piwiktracking.tests.FakeRequest
     :members:
 
 You can also have a look at the official Django documentation for the
