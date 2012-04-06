@@ -248,7 +248,7 @@ class PiwikTracker:
             request.add_header('Cookie', self.request_cookie)
 
         response = urllib2.urlopen(request)
-        print response.info()
+        #print response.info()
         #print response.headers
         body = response.read()
         # The cookie in the response will be set in the next request

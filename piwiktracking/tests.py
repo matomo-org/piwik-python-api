@@ -258,7 +258,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             "Visitor ID not found in response"
         )
 
-        self.assertTrue(False)
+        #self.assertTrue(False)
 
 
 if __name__ == '__main__':
