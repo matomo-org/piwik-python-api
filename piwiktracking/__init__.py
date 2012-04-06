@@ -332,15 +332,15 @@ class PiwikTrackerEcommerce(PiwikTracker):
                 category = json.dumps(category)
         else:
             category = ''
-        self.page_custom_var.append(('_pkc', category))
+        self.page_custom_var[5] = ('_pkc', category)
         if price:
-            self.page_custom_var.append(('_pkp', price))
+            self.page_custom_var[2] = ('_pkp', price)
         # On a category page do not record "Product name not defined"
         if sku and name:
             if sku:
-                self.page_custom_var.append(('_pks', sku))
+                self.page_custom_var[3] = ('_pks', sku)
             if name:
-                self.page_custom_var.append(('_pkn', name))
+                self.page_custom_var[4] = ('_pkn', name)
 
     def add_ecommerce_item(self, sku, name=False, category=False, price=False,
                            quantity=1):
@@ -365,7 +365,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
             name,
             category,
             price,
-            quantity
+            quantity,
         )
 
     def do_track_ecommerce_order(self, order_id, grand_total, sub_total=False,
@@ -440,7 +440,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
             args['ec_dt'] = discount
         if len(self.ecommerce_items):
             # Remove the SKU index in the list before JSON encoding
-            items = self.ecommerce.values()
+            items = self.ecommerce_items.values()
             args['ec_items'] = json.dumps(items)
         self.ecommerce_items.clear()
         url += '&%s' % urllib.urlencode(args)

@@ -57,7 +57,7 @@ class FakeRequest:
         return self.secure
 
 
-class TestPiwikTrackerAPI(unittest.TestCase):
+class PiwikTrackerTestBase(unittest.TestCase):
     def setUp(self):
         headers = {
             'HTTP_USER_AGENT': 'Iceweasel Gecko Linux',
@@ -97,6 +97,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             randint(1, 254),
         )
 
+class TestPiwikTrackerAPI(PiwikTrackerTestBase):
     def test_default_action_title_is_correct(self):
         action_title = self.get_title('test default action title')
         r = self.pt.do_track_page_view(action_title)
@@ -247,9 +248,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             "Visitor ID not found in response"
         )
 
-        #self.assertTrue(False)
-
-class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
+class TestPiwikTrackerAPINoAutomatedVerification(PiwikTrackerTestBase):
     """
     Here are test we don't verify programmatically yet. I guess we'd have to
     access the Piwik API to fetch data to verify the tracking requests were
@@ -297,47 +296,64 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
             "Suffix not appended to query URL: %s" % query_url,
         )
 
+
+class TestEcommerceStuff(PiwikTrackerTestBase):
+    products = {
+        'book': {
+            'sku': '1',
+            'name': 'Book',
+            'category': ('test category', 'books', ),
+            'price': 9.99,
+            'quantity': 5,
+        },
+        'car': {
+            'sku': '2',
+            'name': 'Car',
+            'category': ('test category', 'cars', ),
+            'price': 5.25,
+            'quantity': 3,
+        },
+        'ball': {
+            'sku': '3',
+            'name': 'Ball',
+            'category': ('test category', 'balls', ),
+            'price': 7.39,
+            'quantity': 10,
+        },
+    }
+
     def browse_and_put_into_cart(self):
-        products = {
-            'book': {
-                'sku': '1',
-                'name': 'Book',
-                'category': ('test category', 'books', ),
-                'price': 9.99,
-                'quantity': 5,
-            },
-            'car': {
-                'sku': '2',
-                'name': 'Car',
-                'category': ('test category', 'cars', ),
-                'price': 5.25,
-                'quantity': 3,
-            },
-            'ball': {
-                'sku': '3',
-                'name': 'Ball',
-                'category': ('test category', 'balls', ),
-                'price': 7.39,
-                'quantity': 10,
-            },
-        }
+        # Set different IP for each test run
+        # TODO also randomize referers etc...
+        self.pte.set_ip(self.random_ip())
+        self.pte.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+
         grand_total = 0
-        for key, product in products.iteritems():
-            # View all products
+        for key, product in self.products.iteritems():
+            if randint(0, 2) == 0:
+                continue
+
+            # View the category page
+            category = product['category'][1]
+            self.pte._set_script("/category/%s/" % urllib.quote(category))
+            r = self.pte.do_track_page_view(self.get_title('Category %s' %
+                                            category))
+
+            # View the product
+            self.pte._set_host("ecommerce.example.com")
+            self.pte._set_query_string('')
+            self.pte._set_script("/view/%s/" % urllib.quote(product['name']))
             self.pte.set_ecommerce_view(
                 product['sku'],
                 product['name'],
                 product['category'],
                 product['price'],
             )
-            self.pte._set_host("ecommerce.example.com")
-            self.pte._set_query_string('')
-            self.pte._set_script("/view/%s/" % urllib.quote(product['name']))
             r = self.pte.do_track_page_view(self.get_title('view %s'
-                                           % product['name']))
+                                            % product['name']))
 
-            quantity = randint(0, product['quantity'])
-            # Put them in the cart
+            # Put it in the cart
+            quantity = randint(1, product['quantity'])
             self.pte.add_ecommerce_item(
                 product['sku'],
                 product['name'],
@@ -346,25 +362,23 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerAPI):
                 quantity,
             )
             grand_total += product['price'] * quantity
-        self.pte._set_script("/cart/add/")
-        self.pte.do_track_ecommerce_cart_update(grand_total)
-        return grand_total
 
-    def test_set_ecommerce_view(self):
-        # Set different IP for each test run
-        # TODO also randomize referers etc...
-        self.pte.set_ip(self.random_ip())
-        self.pte.set_token_auth(settings.PIWIK_TOKEN_AUTH)
-        # Browse...
-        grand_total = self.browse_and_put_into_cart()
-        grand_total = self.browse_and_put_into_cart()
+        # Update the cart
+        self.pte._set_script("/cart/checkout/")
+        #r = self.pte.do_track_ecommerce_cart_update(grand_total)
         # Order the products
         r = self.pte.do_track_ecommerce_order(
             randint(0, 99999), # TODO random failure
             grand_total,
         )
+        #print r
+        return grand_total
 
-        #self.assertTrue(False)
+    def test_set_ecommerce_view(self):
+        grand_total = self.browse_and_put_into_cart()
+        grand_total = self.browse_and_put_into_cart()
+        grand_total = self.browse_and_put_into_cart()
+
 
 if __name__ == '__main__':
     unittest.main()
