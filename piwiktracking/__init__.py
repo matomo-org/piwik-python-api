@@ -80,6 +80,12 @@ class PiwikTracker:
         """
         self.accept_language = language
 
+    def set_user_agent(self, user_agent):
+        """
+        Set the user agent. By default the original request's UA is used.
+        """
+        self.user_agent = user_agent
+
     def set_resolution(self, width, height):
         """
         Set the visitor's screen width and height

@@ -266,7 +266,17 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         self.assertEqual(
             language,
             self.pt.accept_language,
-            "Browser language was not set"
+            "Browser language was not set to %s" % language
+        )
+
+    def test_set_user_agent(self):
+        ua = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/' \
+            'bot.html)'
+        self.pt.set_user_agent(ua)
+        self.assertEqual(
+            ua,
+            self.pt.user_agent,
+            "User Agent was not set to %s" % ua
         )
 
 
