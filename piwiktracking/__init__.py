@@ -17,6 +17,9 @@ class PiwikTracker(object):
     def __init__(self, id_site, request):
         random.seed()
         self.request = request
+        self.host = self.request.META.get('SERVER_NAME', '')
+        self.script = self.request.META.get('PATH_INFO', '')
+        self.query_string = self.request.META.get('QUERY_STRING', '')
         self.id_site = id_site
         self.api_url = ''
         self.request_cookie = ''
@@ -67,12 +70,6 @@ class PiwikTracker(object):
         """
         self.ip = ip
 
-    def _set_request_cookie(self, cookie):
-        """
-        Set the request cookie, for testing purposes
-        """
-        self.request_cookie = cookie
-
     def set_browser_has_cookies(self):
         """
         Call this is the browser supports cookies
@@ -108,6 +105,30 @@ class PiwikTracker(object):
     def set_debug_string_append(self, string):
         self.debug_append_url = string
 
+    def _set_request_cookie(self, cookie):
+        """
+        Set the request cookie, for testing purposes
+        """
+        self.request_cookie = cookie
+
+    def _set_referer(self, referer):
+        """
+        Set the referer manually, for testing purposes
+        """
+        self.referer = referer
+
+    def _set_host(self, host):
+        self.host = host
+        self.page_url = self.get_current_url()
+
+    def _set_script(self, script):
+        self.script = script
+        self.page_url = self.get_current_url()
+
+    def _set_query_string(self, query_string):
+        self.query_string = query_string
+        self.page_url = self.get_current_url()
+
     def get_current_scheme(self):
         # django-specific
         if self.request.is_secure():
@@ -117,13 +138,13 @@ class PiwikTracker(object):
         return scheme
 
     def get_current_host(self):
-        return self.request.META.get('SERVER_NAME', '')
+        return self.host
 
     def get_current_script_name(self):
-        return self.request.META.get('PATH_INFO', '')
+        return self.script
 
     def get_current_query_string(self):
-        return self.request.META.get('QUERY_STRING', '')
+        return self.query_string
 
     def get_current_url(self):
         """
@@ -132,8 +153,9 @@ class PiwikTracker(object):
         url = self.get_current_scheme() + '://'
         url += self.get_current_host()
         url += self.get_current_script_name()
-        url += '?'
-        url += self.get_current_query_string()
+        if self.get_current_query_string():
+            url += '?'
+            url += self.get_current_query_string()
         return url
 
     def get_timestamp(self):
