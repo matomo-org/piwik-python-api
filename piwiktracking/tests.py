@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from random import randint
 
-from piwik_tracker import PiwikTracker
+from piwiktracking import PiwikTracker
 
 
 try:
@@ -33,7 +33,7 @@ class FakeRequest:
     #: http://php.net/manual/en/reserved.variables.server.php
     META = {}
 
-    #: Cookies...
+    #: Cookies... work in progress
     COOKIES = False
 
     def __init__(self, headers):

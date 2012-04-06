@@ -32,7 +32,7 @@ though you'll only need a small subset of this.
 
 Once you have created a compatible request object you can do this::
 
-    from piwik_tracker import PiwikTracker
+    from piwiktracking import PiwikTracker
 
     headerdict = {
         '<see unit test source or PHP documentation>',
@@ -53,7 +53,7 @@ Usage with Django
 
 In your view code do something like this, assuming you use class based views::
 
-    from piwik_tracker import PiwikTracker
+    from piwiktracking import PiwikTracker
 
     pt = PiwikTracker(1, self.request) # 1 is the Piwik site id
     pt.set_api_url('http://example.com/piwik.php')

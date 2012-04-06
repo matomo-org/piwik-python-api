@@ -1,5 +1,5 @@
 API reference
 =============
 
-.. autoclass:: piwiktracking.piwik_tracker.PiwikTracker
+.. autoclass:: piwiktracking.PiwikTracker
    :members:
