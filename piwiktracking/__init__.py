@@ -424,6 +424,24 @@ class PiwikTrackerEcommerce(PiwikTracker):
         url += '&%s' % urllib.urlencode(args)
         return url
 
+    def do_track_ecommerce_cart_update(self, grand_total):
+        """
+        Track a cart update (add/remove/update item)
+
+        On every cart update you must call add_ecommerce_item() for each item
+        in the cart, including items which were in the previous cart. Items
+        get deleted until they are re-submitted.
+
+        Args:
+            grand_total (float): Cart grand total
+        """
+        url = self.get_url_track_ecommerce_cart_update(grand_total)
+        return self._send_request(url)
+
+    def get_url_track_ecommerce_cart_update(self, grand_total):
+        url = self.get_url_track_ecommerce(grand_total)
+        return url
+
 
 def piwik_get_url_track_page_view(id_site, request, document_title=False):
     tracker = PiwikTracker(id_site, request)
