@@ -123,18 +123,17 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         r = self.pt.do_track_page_view(title)
         self.assertNotRegexpMatches(
             r,
-            "Visit is known \(IP = %s\)" % ip,
+            "(Visit is known|New Visit) \(IP = %s\)" % ip,
             "IP is different from the request IP, expected %s" % ip
         )
 
     def test_default_repeat_visits_recognized(self):
         action_title = self.get_title('test default repeat visit')
         r = self.pt.do_track_page_view(action_title)
-        # We need a second request in case this test is run from a new IP
-        r = self.pt.do_track_page_view('%s - second' % action_title)
         self.assertNotRegexpMatches(
             r,
-            "New Visit \(IP = %s\)" % self.request.META['REMOTE_ADDR'],
+            "(Visit is known|New Visit) \(IP = %s\)" %
+                self.request.META['REMOTE_ADDR'],
             "IP is different from the request IP",
         )
 
@@ -158,12 +157,10 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         title = self.get_title('test ip (auth) %s' % ip)
         self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
 
-        # We need a second request in case this test is run from a new IP
-        r = self.pt.do_track_page_view(title)
         r = self.pt.do_track_page_view(title)
         self.assertRegexpMatches(
             r,
-            "Visit is known \(IP = %s\)" % ip,
+            "(Visit is known|New Visit) \(IP = %s\)" % ip,
             "IP is different from the request IP, expected %s" % ip
         )
 
@@ -179,7 +176,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         r = self.pt.do_track_page_view(title)
         self.assertNotRegexpMatches(
             r,
-            "New Visit \(IP = %s\)" % ip,
+            "(Visit is known|New Visit) \(IP = %s\)" % ip,
             "IP is the one we set, but we're not authenticated. Could be "
                 "a random error..."
         )
@@ -188,7 +185,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         r = self.pt.do_track_page_view(title)
         self.assertRegexpMatches(
             r,
-            "New Visit \(IP = %s\)" % ip,
+            "(Visit is known|New Visit) \(IP = %s\)" % ip,
             "IP not the one we set, expected %s. Could be random error..." % ip
         )
 
