@@ -34,7 +34,11 @@ class FakeRequest:
     META = {}
     def __init__(self, headers):
         """
-        Init documentation
+        Configure request object according to the headers we get
+
+        Args:
+
+        headers -- see META
         """
         self.META = headers
         if self.META['HTTPS']:
@@ -151,7 +155,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
     def test_ip_changed_after_auth(self):
         """
         This is a little unexpected. Piwik accepts the incorrect IP from the
-        request. TODO look into this...
+        request simply because the auth token is passed.
         """
         ip = self.request.META['REMOTE_ADDR']
         title = self.get_title('test ip (auth) %s' % ip)
@@ -165,10 +169,6 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         )
 
     def test_setting_ip_works_for_authed_user_only(self):
-        """
-        Well... this unit test could fail randomly if the same random IP is
-        chosen again... TODO
-        """
         ip = self.random_ip()
         self.pt.set_ip(ip)
         title = self.get_title('test force ip %s ' % ip)

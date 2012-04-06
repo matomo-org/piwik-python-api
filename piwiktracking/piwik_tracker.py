@@ -25,10 +25,11 @@ class PiwikTracker:
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
         self.referer = self.request.META.get('HTTP_REFERER', '')
         self.ip = self.request.META.get('REMOTE_ADDR')
-        self.accept_language = self.request.META.get(
-            'HTTP_ACCEPT_LANGUAGE', '')
+        self.accept_language = self.request.META.get('HTTP_ACCEPT_LANGUAGE',
+                                                     '')
 
     def set_local_time(self, datetime):
+        "unused"
         self.local_hour = datetime.hour
         self.local_minute = datetime.minute
         self.local_second = datetime.second
@@ -41,7 +42,9 @@ class PiwikTracker:
         self.token_auth = token_auth
 
     def set_api_url(self, api_url):
-        """Set which Piwik API URL to use."""
+        """
+        Set which Piwik API URL to use.
+        """
         self.api_url = api_url
 
     def set_ip(self, ip):
@@ -70,6 +73,9 @@ class PiwikTracker:
         return self.request.META.get('QUERY_STRING', '')
 
     def get_current_url(self):
+        """
+        Returns the URL of the page the visitor is on.
+        """
         url = self.get_current_scheme() + '://'
         url += self.get_current_host()
         url += self.get_current_script_name()
@@ -81,6 +87,9 @@ class PiwikTracker:
         return datetime.datetime.now()
 
     def get_request(self, id_site, document_title):
+        """
+        This oddly named method returns the query var string.
+        """
         query_vars = {
             'idsite': id_site,
             'rec': 1,
@@ -97,29 +106,35 @@ class PiwikTracker:
             query_vars['action_name'] = document_title
         return urllib.urlencode(query_vars)
 
-    def get_visitor_id(self):
-        pass
-
     def get_url_track_page_view(self, document_title=False):
+        """
+        Returns the URL to piwik.php with all parameters set to track the
+        pageview
+
+        Args:
+            document_title (str): Page view name as it will appear in Piwik reports
+        """
         url = self.get_request(self.id_site, document_title)
         return url
 
-    #def get_visitor_id(self):
-    #    id_cookie_name =  'id.%s.' % self.id_site
-    #    id_cookie = self.get_cookie_matching_name(id_cookie_name)
-    #    visitor_id = self.visitor_id
-    #    if id_cookie:
-    #        print 'id_cookie is', id_cookie
-    #        visitor_id = id_cookie
-    #        """
-    #		$visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
-    #		if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
-    #		{
-    #			return $visitorId;
-    #        """
-    #    return visitor_id
+    def get_visitor_id(self):
+        "unused"
+        id_cookie_name =  'id.%s.' % self.id_site
+        id_cookie = self.get_cookie_matching_name(id_cookie_name)
+        visitor_id = self.visitor_id
+        if id_cookie:
+            print 'id_cookie is', id_cookie
+            visitor_id = id_cookie
+            """
+            $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
+            if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
+            {
+                return $visitorId;
+            """
+        return visitor_id
 
     def get_cookie_matching_name(self, name):
+        "unused"
         cookie_value = False
         print self.request.COOKIES
         if name in self.request.COOKIES:
@@ -131,9 +146,8 @@ class PiwikTracker:
         """
         Track a page view
 
-        Arguments:
-
-        document_title -- The title of the page the user is on
+        Args:
+            document_title: The title of the page the user is on
         """
         url = self.get_url_track_page_view(document_title)
         return self._send_request(url)
@@ -142,9 +156,8 @@ class PiwikTracker:
         """
         Make the tracking API request
 
-        Arguments:
-
-        url -- TODO
+        Args:
+            url -- TODO
         """
         headers = {
             'Accept-Language': self.accept_language,
