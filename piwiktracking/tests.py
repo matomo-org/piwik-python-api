@@ -208,7 +208,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         """
         self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH) # verify hack
         self.pt.set_resolution(5760, 1080)
-        r = self.pt.do_track_page_view('set resolution test')
+        r = self.pt.do_track_page_view(self.get_title('set resolution test'))
         self.assertTrue(True) # FIXME
 
     def test_set_visitor_id(self):
@@ -231,7 +231,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
             correct_id_allowed = False
         self.assertTrue(
             correct_id_allowed,
-            "Could not set an correct ID, %s" % incorrect_id
+            "Could not set a correct ID, %s" % incorrect_id
         )
 
         id = self.pt.get_random_visitor_id()
@@ -239,9 +239,9 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         self.assertEqual(
             self.pt.get_visitor_id(),
             id,
-            "Visitor ID was not saved, %s" % id
+            "Visitor ID %s was not saved" % id
         )
-        r = self.pt.do_track_page_view('visitor id test without auth')
+        r = self.pt.do_track_page_view(self.get_title('visitor id no auth'))
         self.assertNotRegexpMatches(
             r,
             'config_id = %s' % id,
@@ -251,7 +251,7 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         id = self.pt.get_random_visitor_id()
         self.pt.set_visitor_id(id)
         self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
-        r = self.pt.do_track_page_view('visitor id test with auth')
+        r = self.pt.do_track_page_view(self.get_title('visitor id with auth'))
         self.assertRegexpMatches(
             r,
             'Matching visitors with: visitorId=%s' % id,

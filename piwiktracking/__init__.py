@@ -157,8 +157,7 @@ class PiwikTracker:
         pageview
 
         Args:
-            document_title (str): Page view name as it will appear in Piwik
-            reports
+            document_title (str): The title of the page the user is on
         """
         url = self.get_request(self.id_site, document_title)
         return url
@@ -191,7 +190,6 @@ class PiwikTracker:
                 {
                     return $visitorId;
                 """
-        #print "1 get_visitor_id() returns:", visitor_id
         return visitor_id
 
     def get_random_visitor_id(self):
@@ -208,7 +206,7 @@ class PiwikTracker:
                 print 'cookie name', name
                 cookie_value = self.request.COOKIES[name]
                 print 'cookie is', cookie_value
-       # print self.request.COOKIES
+        #print self.request.COOKIES
         return cookie_value
 
     def disable_cookie_support(self):
@@ -223,7 +221,7 @@ class PiwikTracker:
         Track a page view
 
         Args:
-            document_title: The title of the page the user is on
+            document_title (str): The title of the page the user is on
         """
         url = self.get_url_track_page_view(document_title)
         return self._send_request(url)
@@ -233,20 +231,13 @@ class PiwikTracker:
         Make the tracking API request
 
         Args:
-            url -- TODO
+            url (str): TODO
         """
         parsed = urlparse.urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        #url = 'http://piwik.kuttler.eu'
-        #print 'XXX', url
         request = urllib2.Request(url)
         request.add_header('User-Agent', self.user_agent)
-        #headers = {
-        #    'Accept-Language': self.accept_language,
-        #    'User-Agent': self.user_agent,
-        #    #'Cookie': self.request_cookie,
-        #}
-        #print headers
+        request.add_header('Accept-Language', self.accept_language)
         if not self.cookie_support:
             self.request_cookie = ''
         elif self.request_cookie != '':
