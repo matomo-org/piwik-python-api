@@ -196,6 +196,17 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         self.pt.set_browser_has_cookies()
         cookie = "piwiktrackingtest=yes; hascookies=yes"
         self.pt._set_request_cookie(cookie)
+
+    def test_set_resolution(self):
+        """
+        TODO can't verify
+        """
+        # verify hack
+        self.pt.set_browser_has_cookies()
+        self.pt.set_ip(self.random_ip())
+        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+        # verify hack
+        self.pt.set_resolution(5760, 1080)
         r = self.pt.do_track_page_view('cookie test')
         self.assertTrue(True)
 
