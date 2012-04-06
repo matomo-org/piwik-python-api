@@ -1,4 +1,5 @@
 import datetime
+import md5
 import random
 import urllib
 import urllib2
@@ -24,6 +25,9 @@ class PiwikTracker:
         self.has_cookies = False
         self.width = False
         self.height = False
+        self.visitor_id = self.get_random_visitor_id()
+        #print 'setting visitor id to ', self.visitor_id
+        self.forced_visitor_id = False
 
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
@@ -78,6 +82,12 @@ class PiwikTracker:
         self.width = width
         self.height = height
 
+    def set_visitor_id(self, visitor_id):
+        if len(visitor_id) != self.LENGTH_VISITOR_ID:
+            raise Exception("set_visitor_id() expects a %s character ID" %
+                            self.LENGTH_VISITOR_ID)
+        self.forced_visitor_id = visitor_id
+
     def get_current_scheme(self):
         # django-specific
         if self.request.is_secure():
@@ -120,6 +130,7 @@ class PiwikTracker:
             'r': random.randint(0, 99999),
             'url': self.page_url,
             'urlref': self.referer,
+            'id': self.visitor_id,
         }
         if self.ip:
             query_vars['cip'] = self.ip
@@ -131,6 +142,8 @@ class PiwikTracker:
             query_vars['cookie'] = 1
         if self.width and self.height:
             query_vars['res'] = '%dx%d' % (self.width, self.height)
+        if self.forced_visitor_id:
+            query_vars['cid'] = self.forced_visitor_id
         return urllib.urlencode(query_vars)
 
     def get_url_track_page_view(self, document_title=False):

@@ -202,14 +202,63 @@ class TestPiwikTrackerAPI(unittest.TestCase):
         """
         TODO can't verify
         """
-        # verify hack
-        self.pt.set_browser_has_cookies()
-        self.pt.set_ip(self.random_ip())
-        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
-        # verify hack
+        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH) # verify hack
         self.pt.set_resolution(5760, 1080)
-        r = self.pt.do_track_page_view('cookie test')
+        r = self.pt.do_track_page_view('set resolution test')
         self.assertTrue(True) # FIXME
+
+    def test_aaa_set_visitor_id(self):
+        incorrect_id = 'asdf'
+        try:
+            self.pt.set_visitor_id(incorrect_id)
+            incorrect_id_allowed = True
+        except Exception:
+            incorrect_id_allowed = False
+        self.assertFalse(
+            incorrect_id_allowed,
+            "Could set an incorrect ID, %s" % incorrect_id
+        )
+
+        correct_id = self.pt.get_random_visitor_id()
+        try:
+            self.pt.set_visitor_id(correct_id)
+            correct_id_allowed = True
+        except Exception:
+            correct_id_allowed = False
+        self.assertTrue(
+            correct_id_allowed,
+            "Could not set an correct ID, %s" % incorrect_id
+        )
+
+        id = self.pt.get_random_visitor_id()
+        self.pt.set_visitor_id(id)
+        self.assertEqual(
+            self.pt.get_visitor_id(),
+            id,
+            "Visitor ID was not saved, %s" % id
+        )
+        r = self.pt.do_track_page_view('visitor id test without auth')
+        self.assertNotRegexpMatches(
+            r,
+            'config_id = %s' % id,
+            "Random visitor ID found in response..." # TODO random failure
+        )
+
+        id = self.pt.get_random_visitor_id()
+        self.pt.set_visitor_id(id)
+        #print '----->', id
+        #print '== -->', self.pt.get_visitor_id()
+        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+        r = self.pt.do_track_page_view('visitor id test with auth')
+        self.assertRegexpMatches(
+            r,
+            'Matching visitors with: visitorId=%s' % id,
+            "Visitor ID not found in response"
+        )
+        #print r
+        #print id
+
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':
