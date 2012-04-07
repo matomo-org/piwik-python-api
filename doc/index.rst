@@ -15,6 +15,7 @@ Contents:
    usage
    api_reference
    hacking
+   changelog
 
 Indices and tables
 ==================

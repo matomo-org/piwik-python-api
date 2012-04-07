@@ -48,3 +48,13 @@ In your view code do something like this, assuming you use class based views::
     pt = PiwikTracker(1, self.request) # 1 is the Piwik site id
     pt.set_api_url('http://example.com/piwik.php')
     pt.do_track_page_view('Page title')
+
+Basic Examples
+--------------
+
+There are many examples in the unit test sources. (aka TODO)
+
+Ecommerce Examples
+------------------
+
+There are examples in the unit test sources. (aka TODO)
