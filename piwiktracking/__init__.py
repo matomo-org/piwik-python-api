@@ -9,7 +9,7 @@ import urlparse
 
 class PiwikTracker(object):
     """
-    The Piwik Tracker class
+    The basic Piwik tracker class
     """
     VERSION = 1
     LENGTH_VISITOR_ID = 16
@@ -327,6 +327,13 @@ class PiwikTracker(object):
 
     def get_custom_variable(self, id, scope='visit'):
         """
+        Returns the current custom variable stored in a first party cookie.
+
+        Args:
+            id (int): Custom variable slot ID, 1-5
+            scope (string): Variable scope, either visit or page
+
+        Returns... mixed stuff TODO
         """
         if type(id) != type(int()):
             raise Exception("Parameter id must be an integer")
@@ -359,6 +366,11 @@ class PiwikTracker(object):
 
 
 class PiwikTrackerEcommerce(PiwikTracker):
+    """
+    The Piwik tracker class for ecommerce
+
+    See http://piwik.org/docs/ecommerce-analytics/
+    """
     def __init__(self, id_site, request):
         self.ecommerce_items = {}
         self.ecommerce = {}
