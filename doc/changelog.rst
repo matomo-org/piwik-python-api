@@ -14,16 +14,16 @@ after that.
 Yet to be released. 0.2 will stay close to the rather unpleasant PHP code.
 Incompatible with 0.1.
 
- - Code refactoring
- - Ecommerce support
- - Custom variables support
- - Added unit tests
- - Got rid of the Django dependency
+- Code refactoring
+- Ecommerce support
+- Custom variables support
+- Added unit tests
+- Got rid of the Django dependency
 
 0.1 (2012-04-03)
 ----------------
 
 First, premature release
 
- - Written in a few hours for a client's project that had just gone live
- - Very basic implementation
+- Written in a few hours for a client's project that had just gone live
+- Very basic implementation
