@@ -57,7 +57,7 @@ class FakeRequest:
         return self.secure
 
 
-class PiwikTrackerTestBase(unittest.TestCase):
+class TestPiwikTrackerBase(unittest.TestCase):
     def setUp(self):
         headers = {
             'HTTP_USER_AGENT': 'Iceweasel Gecko Linux',
@@ -97,7 +97,7 @@ class PiwikTrackerTestBase(unittest.TestCase):
             randint(1, 254),
         )
 
-class TestPiwikTrackerAPI(PiwikTrackerTestBase):
+class TestPiwikTrackerAPI(TestPiwikTrackerBase):
     def test_default_action_title_is_correct(self):
         action_title = self.get_title('test default action title')
         r = self.pt.do_track_page_view(action_title)
@@ -248,7 +248,7 @@ class TestPiwikTrackerAPI(PiwikTrackerTestBase):
             "Visitor ID not found in response"
         )
 
-class TestPiwikTrackerAPINoAutomatedVerification(PiwikTrackerTestBase):
+class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerBase):
     """
     Here are test we don't verify programmatically yet. I guess we'd have to
     access the Piwik API to fetch data to verify the tracking requests were
@@ -345,7 +345,7 @@ class TestPiwikTrackerAPINoAutomatedVerification(PiwikTrackerTestBase):
         #print r
 
 
-class TestEcommerceStuff(PiwikTrackerTestBase):
+class TestPiwikTrackerAPIEcommerce(TestPiwikTrackerBase):
     products = {
         'book': {
             'sku': '1',
