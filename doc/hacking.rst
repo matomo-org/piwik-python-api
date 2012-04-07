@@ -26,3 +26,21 @@ Using this code in ``piwiktracking/fake_settings.py`` should work::
             PIWIK_TOKEN_AUTH = '<Piwik auth token>'
 
 That file is also ignored by git for your convenience.
+
+Test classes
+------------
+
+.. autoclass:: piwiktracking.tests.TestPiwikTrackerBase
+   :members:
+
+.. autoclass:: piwiktracking.tests.TestPiwikTracker
+   :members:
+
+.. autoclass:: piwiktracking.tests.TestPiwikTrackerNoverify
+   :members:
+
+.. autoclass:: piwiktracking.tests.TestPiwikTrackerEcommerceBase
+   :members:
+
+.. autoclass:: piwiktracking.tests.TestPiwikTrackerEcommerceNoverify
+   :members:

@@ -97,7 +97,7 @@ class TestPiwikTrackerBase(unittest.TestCase):
             randint(1, 254),
         )
 
-class TestPiwikTrackerAPI(TestPiwikTrackerBase):
+class TestPiwikTracker(TestPiwikTrackerBase):
     def test_default_action_title_is_correct(self):
         action_title = self.get_title('test default action title')
         r = self.pt.do_track_page_view(action_title)
@@ -248,7 +248,7 @@ class TestPiwikTrackerAPI(TestPiwikTrackerBase):
             "Visitor ID not found in response"
         )
 
-class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerBase):
+class TestPiwikTrackerNoverify(TestPiwikTrackerBase):
     """
     Here are test we don't verify programmatically yet. I guess we'd have to
     access the Piwik API to fetch data to verify the tracking requests were
@@ -345,7 +345,10 @@ class TestPiwikTrackerAPINoAutomatedVerification(TestPiwikTrackerBase):
         #print r
 
 
-class TestPiwikTrackerAPIEcommerce(TestPiwikTrackerBase):
+class TestPiwikTrackerEcommerceBase(TestPiwikTrackerBase):
+    """
+    Base class for the ecommerce tests
+    """
     products = {
         'book': {
             'sku': '1',
@@ -370,7 +373,11 @@ class TestPiwikTrackerAPIEcommerce(TestPiwikTrackerBase):
         },
     }
 
-    def browse_and_put_into_cart(self):
+class TestPiwikTrackerEcommerceNoverify(TestPiwikTrackerEcommerceBase):
+    """
+    Ecommerce unit tests
+    """
+    def test_browse_cart_update_order(self):
         # Set different IP for each test run
         # TODO also randomize referers etc...
         self.pte.set_ip(self.random_ip())
@@ -411,21 +418,16 @@ class TestPiwikTrackerAPIEcommerce(TestPiwikTrackerBase):
             )
             grand_total += product['price'] * quantity
 
-        # Update the cart
-        self.pte._set_script("/cart/checkout/")
-        #r = self.pte.do_track_ecommerce_cart_update(grand_total)
         # Order the products
+        #r = self.pte.do_track_ecommerce_cart_update(grand_total)
+        self.pte._set_script("/cart/checkout/")
+        #print repr(grand_total)
         r = self.pte.do_track_ecommerce_order(
             randint(0, 99999), # TODO random failure
             grand_total,
         )
         #print r
         return grand_total
-
-    def test_set_ecommerce_view(self):
-        grand_total = self.browse_and_put_into_cart()
-        grand_total = self.browse_and_put_into_cart()
-        grand_total = self.browse_and_put_into_cart()
 
 
 if __name__ == '__main__':
