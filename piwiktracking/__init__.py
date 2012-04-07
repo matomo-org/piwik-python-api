@@ -494,7 +494,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
             Same as...
         """
         if type(grand_total) != type(float()):
-            raise Exception("You must specify a grant_total for the ecommerce "
+            raise Exception("You must specify a grand_total for the ecommerce "
                             "transaction")
         url = self.get_request(self.id_site)
         args = {
