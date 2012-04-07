@@ -41,7 +41,7 @@ class PiwikTracker(object):
     def set_request_parameters(self):
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
         self.referer = self.request.META.get('HTTP_REFERER', '')
-        self.ip = self.request.META.get('REMOTE_ADDR')
+        #self.ip = self.request.META.get('REMOTE_ADDR')
         self.accept_language = self.request.META.get('HTTP_ACCEPT_LANGUAGE',
                                                      '')
     def set_local_time(self, datetime):

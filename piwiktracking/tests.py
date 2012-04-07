@@ -164,17 +164,17 @@ class TestPiwikTrackerAPI(TestPiwikTrackerBase):
             'We are not authenticated!',
         )
 
-    def test_ip_changed_after_auth(self):
+    def test_ip_not_changed_after_auth(self):
         """
-        This is a little unexpected. Piwik accepts the incorrect IP from the
-        request simply because the auth token is passed.
+        I think this was a bug in my earlier code. The IP should not be set/
+        overridden just because we authenticated.
         """
         ip = self.request.META['REMOTE_ADDR']
         title = self.get_title('test ip (auth) %s' % ip)
         self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH)
 
         r = self.pt.do_track_page_view(title)
-        self.assertRegexpMatches(
+        self.assertNotRegexpMatches(
             r,
             "(Visit is known|New Visit) \(IP = %s\)" % ip,
             "IP is different from the request IP, expected %s" % ip
