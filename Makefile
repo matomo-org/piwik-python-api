@@ -21,7 +21,7 @@ clean:
 
 .PHONY: test
 test:
-	python piwikapi/tests.py
+	python piwikapi/tests/
 
 .PHONY: html
 html:
