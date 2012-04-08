@@ -17,7 +17,7 @@ this::
 You must create a ``settings`` module somewhere in your Python path that
 contains a ``Settings`` class like this:
 
-.. autoclass:: piwikapi.tests.Settings
+.. autoclass:: piwikapi.tests.settings_sample.Settings
     :members:
 
 If you create that file in the source tree it is also ignored by git for your
@@ -32,21 +32,21 @@ to be done manually through the Piwik interface. It should be possible to
 improve this though, by querying the Piwik data API, which hasn't been
 implemented in Python yet.
 
-.. autoclass:: piwikapi.tests.TestPiwikTrackerBase
+.. autoclass:: piwikapi.tests.tracking.TrackerBaseTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.TestPiwikTracker
+.. autoclass:: piwikapi.tests.tracking.TrackerTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.TestPiwikTrackerNoverify
+.. autoclass:: piwikapi.tests.combined.TrackerNoverifyTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.TestPiwikTrackerEcommerceBase
+.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceBaseTestCase
    :members:
 
-.. autoclass:: piwikapi.tests.TestPiwikTrackerEcommerceNoverify
+.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceNoverifyTestCase
    :members:
    :undoc-members:

@@ -59,7 +59,7 @@ class PiwikTracker(object):
 
     def set_api_url(self, api_url):
         """
-        Set which Piwik API URL to use.
+        Set which Piwik API URL to use
         """
         self.api_url = api_url
 

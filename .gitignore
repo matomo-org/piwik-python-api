@@ -5,7 +5,7 @@ dist
 *.egg-info
 *.sqlite
 apis
-piwikapi/settings.py
+piwikapi/tests/settings.py
 doc/_build
 doc/_static
 doc/_templates

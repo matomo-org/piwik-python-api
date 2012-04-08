@@ -9,11 +9,12 @@ Welcome to python-piwikapi's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    install
-   tracking_api_usage
-   tracking_api_reference
+   tracking_api/index
+   analytics_api/index
+   metadata_api/index
    hacking
    changelog
 

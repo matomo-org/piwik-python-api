@@ -1,19 +1,19 @@
-Tracking API Usage
-==================
+Usage
+=====
 
 If you're not using Django you will have to write some custom wrapper code,
 see below. Feel free to send pull request.
 
 .. _usage-without-django:
 
-Usage without Django
---------------------
+Without Django
+--------------
 
 As this code was written for usage with Django it expects a Django
 HttpRequest object in some places. If you're not using Django you'll want to
 pass an object that looks like this:
 
-.. autoclass:: piwikapi.tests.FakeRequest
+.. autoclass:: piwikapi.tests.request.FakeRequest
     :members:
 
 You can also have a look at the official Django documentation for the
@@ -23,6 +23,7 @@ though you'll only need a very small subset of this.
 Once you have created a compatible request object you can do this::
 
     from piwikapi.tracking import PiwikTracker
+    import FakeRequest # This is your own class
 
     headerdict = {
         '<see unit test source or PHP documentation>',
@@ -38,8 +39,8 @@ will probably refactor the code in the future and break compatibility.
 
 .. _usage-with-django:
 
-Usage with Django
------------------
+With Django
+-----------
 
 In your view code do something like this, assuming you use class based views::
 
