@@ -1,5 +1,5 @@
-Usage
-=====
+Tracking API Usage
+==================
 
 If you're not using Django you will have to write some custom wrapper code,
 see below. Feel free to send pull request.
@@ -13,16 +13,16 @@ As this code was written for usage with Django it expects a Django
 HttpRequest object in some places. If you're not using Django you'll want to
 pass an object that looks like this:
 
-.. autoclass:: piwiktracking.tests.FakeRequest
+.. autoclass:: piwikapi.tests.FakeRequest
     :members:
 
 You can also have a look at the official Django documentation for the
 HttpRequest :ref:`attributes and methods<django:httprequest-attributes>`,
-though you'll only need a small subset of this.
+though you'll only need a very small subset of this.
 
 Once you have created a compatible request object you can do this::
 
-    from piwiktracking import PiwikTracker
+    from piwikapi.tracking import PiwikTracker
 
     headerdict = {
         '<see unit test source or PHP documentation>',
@@ -43,7 +43,7 @@ Usage with Django
 
 In your view code do something like this, assuming you use class based views::
 
-    from piwiktracking import PiwikTracker
+    from piwikapi.tracking import PiwikTracker
 
     pt = PiwikTracker(1, self.request) # 1 is the Piwik site id
     pt.set_api_url('http://example.com/piwik.php')

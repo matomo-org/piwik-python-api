@@ -16,12 +16,12 @@ upload:
 
 .PHONY: clean
 clean:
-	rm -rf dist build *.egg-info python-piwiktracking-*
+	rm -rf dist build *.egg-info python-piwikapi-*
 	make -C doc clean
 
 .PHONY: test
 test:
-	python piwiktracking/tests.py
+	python piwikapi/tests.py
 
 .PHONY: html
 html:

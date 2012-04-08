@@ -22,4 +22,4 @@ Not supported yet:
 The module was originally written for Django and expects a Django HttpRequest.
 However, you don't need to use Django, you can use a mockup object instead.
 
-Full Documentation: http://piwiktracking.readthedocs.org/en/latest/index.html
+Full Documentation: http://piwikapi.readthedocs.org/en/latest/index.html

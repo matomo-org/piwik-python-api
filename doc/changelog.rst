@@ -23,7 +23,7 @@ Incompatible with 0.1.
 0.1 (2012-04-03)
 ----------------
 
-First, premature release
+First, premature release as django-piwik-tracker
 
 - Written in a few hours for a client's project that had just gone live
 - Very basic implementation

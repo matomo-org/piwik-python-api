@@ -14,33 +14,39 @@ this::
 
     $GLOBALS['PIWIK_TRACKER_DEBUG'] = true;
 
-You probably want to create a fake settings module that will be used
-instead of the one from ``django.conf``. There's already a fake request
-class that's used instead of Django Request objects for the unit tests.
+You must create a ``settings`` module somewhere in your Python path that
+contains a ``Settings`` class like this:
 
-Using this code in ``piwiktracking/fake_settings.py`` should work::
+.. autoclass:: piwikapi.tests.Settings
+    :members:
 
-    class FakeSettings:
-            PIWIK_API_URL = 'http://example.com/piwik.php'
-            PIWIK_SITE_ID = '<Piwik site id>'
-            PIWIK_TOKEN_AUTH = '<Piwik auth token>'
-
-That file is also ignored by git for your convenience.
+If you create that file in the source tree it is also ignored by git for your
+convenience.
 
 Test classes
 ------------
 
-.. autoclass:: piwiktracking.tests.TestPiwikTrackerBase
+The unit tests verify that data sent through the API was received by Piwik.
+Classes marked with ``Noverify`` do *not* verify this (yet). Verification has
+to be done manually through the Piwik interface. It should be possible to
+improve this though, by querying the Piwik data API, which hasn't been
+implemented in Python yet.
+
+.. autoclass:: piwikapi.tests.TestPiwikTrackerBase
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.TestPiwikTracker
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.TestPiwikTrackerNoverify
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.TestPiwikTrackerEcommerceBase
    :members:
 
-.. autoclass:: piwiktracking.tests.TestPiwikTracker
+.. autoclass:: piwikapi.tests.TestPiwikTrackerEcommerceNoverify
    :members:
-
-.. autoclass:: piwiktracking.tests.TestPiwikTrackerNoverify
-   :members:
-
-.. autoclass:: piwiktracking.tests.TestPiwikTrackerEcommerceBase
-   :members:
-
-.. autoclass:: piwiktracking.tests.TestPiwikTrackerEcommerceNoverify
-   :members:
+   :undoc-members:
