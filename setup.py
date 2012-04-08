@@ -8,11 +8,11 @@ setup(
     version = "0.2",
     author = "Nicolas Kuttler",
     author_email = "pypi@nicolaskuttler.com",
-    description = "Piwik tracking API for Django",
+    description = "Python Piwik API",
     long_description = open("README.rst").read(),
     license = "BSD",
     url = "http://github.com/nkuttler/python-piwikapi",
-    packages = ['piwik_tracking'],
+    packages = ['piwikapi'],
     include_package_data = True,
     classifiers = [
         "Development Status :: 3 - Alpha",
@@ -21,10 +21,6 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Framework :: Django",
-    ],
-    install_requires = [
-        "Django >= 1.3",
     ],
     zip_safe = True,
 )

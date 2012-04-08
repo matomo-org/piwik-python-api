@@ -50,12 +50,12 @@ In your view code do something like this, assuming you use class based views::
     pt.set_api_url('http://example.com/piwik.php')
     pt.do_track_page_view('Page title')
 
-Basic Examples
+Basic examples
 --------------
 
 There are many examples in the unit test sources. (aka TODO)
 
-Ecommerce Examples
+Ecommerce examples
 ------------------
 
 There are examples in the unit test sources. (aka TODO)

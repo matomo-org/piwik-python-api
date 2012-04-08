@@ -14,7 +14,6 @@ Contents:
    install
    tracking_api/index
    analytics_api/index
-   metadata_api/index
    hacking
    changelog
 

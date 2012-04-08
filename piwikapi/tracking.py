@@ -9,7 +9,7 @@ import urlparse
 
 class PiwikTracker(object):
     """
-    The basic Piwik tracker class
+    The Piwik tracker class
     """
     VERSION = 1
     LENGTH_VISITOR_ID = 16
