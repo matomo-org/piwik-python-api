@@ -294,7 +294,7 @@ class PiwikTracker(object):
             url += self.debug_append_url
         return url
 
-    def get_url_track_page_view(self, document_title=False):
+    def get_url_track_page_view(self, document_title=''):
         """
         Returns the URL to piwik.php with all parameters set to track the
         pageview
@@ -710,6 +710,6 @@ class PiwikTrackerEcommerce(PiwikTracker):
         return url
 
 
-def piwik_get_url_track_page_view(id_site, request, document_title=False):
+def piwik_get_url_track_page_view(id_site, request, document_title=''):
     tracker = PiwikTracker(id_site, request)
     return tracker.do_track_page_view(document_title)
