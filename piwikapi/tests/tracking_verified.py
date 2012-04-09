@@ -1,12 +1,12 @@
 import json
 
 from tracking import TrackerBaseTestCase
-from analytics import AnalyticsLiveTestCase
+from analytics import AnalyticsLiveBaseTestCase
 
 from piwikapi.analytics import PiwikAnalytics
 
 
-class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
+class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
     def setUp(self):
         super(TrackerVerifyBaseTestCase, self).setUp()
         self.segment = self.get_random_string()
@@ -16,7 +16,8 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
             self.segment,
         )
 
-        super(AnalyticsLiveTestCase, self).setUp()
+        # Set up the analytics query
+        super(AnalyticsLiveBaseTestCase, self).setUp()
         self.a.set_method('Live.getLastVisitsDetails')
         # Assume no test takes more than one minute
         self.a.set_parameter('lastMinutes', 1)
