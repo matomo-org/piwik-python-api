@@ -18,9 +18,8 @@ class FakeRequest:
         """
         Configure request object according to the headers we get
 
-        Args:
-
-        headers -- see META
+        :param headers: see META
+        :rtype headers: dict
         """
         self.META = headers
         if self.META['HTTPS']:
@@ -29,5 +28,7 @@ class FakeRequest:
     def is_secure(self):
         """
         Returns a boolean, if the connection is secured
+
+        :rtype: bool
         """
         return self.secure

@@ -10,7 +10,11 @@ class PiwikAnalytics(object):
     p = {}
 
     def __init__(self):
-        "Initalize the object"
+        """
+        Initalize the object
+
+        :rtype: None
+        """
         self.set_parameter('module', 'API')
         self.api_url = None
 
@@ -18,9 +22,11 @@ class PiwikAnalytics(object):
         """
         Set a query parameter
 
-        Args:
-            key (str): The parameter to set
-            value (mixed): The value you want to set
+        :param key: The parameter to set
+        :type key: str
+        :param value: The value you want to set
+        :type value: TODO, str?
+        :rtype: None
         """
         self.p[key] = value
 
@@ -28,8 +34,9 @@ class PiwikAnalytics(object):
         """
         Get a query parameter
 
-        Args:
-            key (str): The parameter to return
+        :param key: The parameter to return
+        :type key: str
+        :rtype: TODO mixed?
         """
         if key in self.p:
             r = p[key]
@@ -37,35 +44,72 @@ class PiwikAnalytics(object):
             r = None
         return r
 
-    def set_method(self, value):
-        self.set_parameter('method', value)
+    def set_method(self, method):
+        """
+        :param method: Method
+        :type method: str
+        :rtype: None
+        """
+        self.set_parameter('method', method)
 
-    def set_id_site(self, value):
-        self.set_parameter('idSite', value)
+    def set_id_site(self, id_site):
+        """
+        :param id_site: Site ID
+        :type id_site: int
+        :rtype: None
+        """
+        self.set_parameter('idSite', id_site)
 
-    def set_date(self, value):
-        self.set_parameter('date', value)
+    def set_date(self, date):
+        """
+        :param date: Date string TODO format
+        :type date: str
+        :rtype: None
+        """
+        self.set_parameter('date', date)
 
-    def set_period(self, value):
-        self.set_parameter('period', value)
+    def set_period(self, period):
+        """
+        :param period: Period TODO optinos
+        :type period: str
+        :rtype: None
+        """
+        self.set_parameter('period', period)
 
-    def set_format(self, value):
-        self.set_parameter('format', value)
+    def set_format(self, format):
+        """
+        :param format: Format TODO
+        :type format: str
+        :rtype: None
+        """
+        self.set_parameter('format', format)
 
-    def set_filter_limit(self, value):
-        self.set_parameter('filter_limit', value)
+    def set_filter_limit(self, filter_limit):
+        """
+        :param filter_limit: Filter limit TODO
+        :type filter_limit: TODO ?
+        :rtype: None
+        """
+        self.set_parameter('filter_limit', filter_limit)
 
     def set_api_url(self, api_url):
         """
-        Set which Piwik analytics API URL to use
+        :param api_url: Piwik analytics API URL, the root of your Piwik install
+        :type api_url: str
+        :rtype: None
         """
         self.api_url = api_url
 
     def get_query_string(self):
-        qs = self.api_url
+        """
+        Return the query string
+
+        :rtype: str
+        """
         if self.api_url is None:
             raise Exception("API URL not set")
         if len(self.p):
+            qs = self.api_url
             qs += '?'
             qs += urllib.urlencode(self.p)
         else:
@@ -74,7 +118,9 @@ class PiwikAnalytics(object):
 
     def send_request(self):
         """
-        Make the analytics API request
+        Make the analytics API request, returns the request body
+
+        :rtype: str
         """
         request = urllib2.Request(self.get_query_string())
         response = urllib2.urlopen(request)

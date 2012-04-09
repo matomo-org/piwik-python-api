@@ -15,6 +15,13 @@ class PiwikTracker(object):
     LENGTH_VISITOR_ID = 16
 
     def __init__(self, id_site, request):
+        """
+        :param id_site: Site ID
+        :type id_site: int
+        :param request: Request
+        :type request: A Django-like request object
+        .rtype: None
+        """
         random.seed()
         self.request = request
         self.host = self.request.META.get('SERVER_NAME', '')
@@ -39,13 +46,24 @@ class PiwikTracker(object):
         self.visitor_custom_var = [False, False, False, False, False, False]
 
     def set_request_parameters(self):
+        """
+        Set some headers for the request
+
+        :rtype: None
+        """
         self.user_agent = self.request.META.get('HTTP_USER_AGENT', '')
         self.referer = self.request.META.get('HTTP_REFERER', '')
         #self.ip = self.request.META.get('REMOTE_ADDR')
         self.accept_language = self.request.META.get('HTTP_ACCEPT_LANGUAGE',
                                                      '')
     def set_local_time(self, datetime):
-        "unused"
+        """
+        Set the time
+
+        :param datetime: Time
+        :type datetime: datetime.datetime object
+        :rtype: None
+        """
         self.local_hour = datetime.hour
         self.local_minute = datetime.minute
         self.local_second = datetime.second
@@ -54,12 +72,20 @@ class PiwikTracker(object):
         """
         Set the auth token for the request. The token can be viewed in the
         user management section of your Piwik install.
+
+        :param token_auth: Auth token
+        :type token_auth: str
+        :rtype: None
         """
         self.token_auth = token_auth
 
     def set_api_url(self, api_url):
         """
         Set which Piwik API URL to use
+
+        :param api_url: API URL
+        :type api_url: str
+        :rtype: None
         """
         self.api_url = api_url
 
@@ -68,12 +94,18 @@ class PiwikTracker(object):
         Set the IP to be tracked. You probably want to use this as the
         request comes from your own server.
         Requires setting the auth token.
+
+        :param ip: IP
+        :type ip: str
+        :rtype: None
         """
         self.ip = ip
 
     def set_browser_has_cookies(self):
         """
         Call this is the browser supports cookies
+
+        :rtype: None
         """
         self.has_cookies = True
 
@@ -81,56 +113,108 @@ class PiwikTracker(object):
         """
         Set the browser language. Piwik uses this to guess the visitor's
         origin when GeoIP is not enabled
+
+        :param language: Accept-Language
+        :type language: str
+        :rtype: None
         """
         self.accept_language = language
 
     def set_user_agent(self, user_agent):
         """
         Set the user agent. By default the original request's UA is used.
+
+        :param user_agent: User agent
+        :type user_agent: str
+        :rtype: None
         """
         self.user_agent = user_agent
 
     def set_resolution(self, width, height):
         """
         Set the visitor's screen width and height
+
+        :param width: Screen width
+        :type width: int or str
+        :param height: Screen height
+        :type height: int or str
+        :rtype: None
         """
         self.width = width
         self.height = height
 
     def set_visitor_id(self, visitor_id):
+        """
+        :param visitor_id: Visitor I
+        :type visitor_id: str
+        :rtype: None
+        """
         if len(visitor_id) != self.LENGTH_VISITOR_ID:
             raise Exception("set_visitor_id() expects a %s character ID" %
                             self.LENGTH_VISITOR_ID)
         self.forced_visitor_id = visitor_id
 
     def set_debug_string_append(self, string):
+        """
+        :param string: str to append
+        :type string: str
+        :rtype: None
+        """
         self.debug_append_url = string
 
     def _set_request_cookie(self, cookie):
         """
         Set the request cookie, for testing purposes
+
+        :param cookie: Request cookie
+        :type cookie: str
+        :rtype: None
         """
         self.request_cookie = cookie
 
     def _set_referer(self, referer):
         """
         Set the referer manually, for testing purposes
+
+        :param referer: Referer
+        :type referer: str
+        :rtype: None
         """
         self.referer = referer
 
     def _set_host(self, host):
+        """
+        :param host: Hostname
+        :type host: str
+        :rtype: None
+        """
         self.host = host
         self.page_url = self.get_current_url()
 
     def _set_script(self, script):
+        """
+        :param script: Script name
+        :type script: str
+        :rtype: None
+        """
         self.script = script
         self.page_url = self.get_current_url()
 
     def _set_query_string(self, query_string):
+        """
+        :param query_string: Query string
+        :type query_string: str
+        :rtype: None
+        """
         self.query_string = query_string
         self.page_url = self.get_current_url()
 
     def get_current_scheme(self):
+        """
+        Return either http or https
+
+        :rtype: str
+        """
         # django-specific
         if self.request.is_secure():
             scheme = 'https'
@@ -139,17 +223,28 @@ class PiwikTracker(object):
         return scheme
 
     def get_current_host(self):
+        """
+        :rtype: str
+        """
         return self.host
 
     def get_current_script_name(self):
+        """
+        :rtype: str
+        """
         return self.script
 
     def get_current_query_string(self):
+        """
+        :rtype: str
+        """
         return self.query_string
 
     def get_current_url(self):
         """
         Returns the URL of the page the visitor is on.
+
+        :rtype: str
         """
         url = self.get_current_scheme() + '://'
         url += self.get_current_host()
@@ -165,6 +260,10 @@ class PiwikTracker(object):
     def get_request(self, id_site):
         """
         This oddly named method returns the query var string.
+
+        :param id_site: Site ID
+        :type id_site: int
+        :rtype: str
         """
         query_vars = {
             'idsite': id_site,
@@ -200,8 +299,9 @@ class PiwikTracker(object):
         Returns the URL to piwik.php with all parameters set to track the
         pageview
 
-        Args:
-            document_title (str): The title of the page the user is on
+        :param document_title: The title of the page the user is on
+        :type document_title: str
+        :rtype: str
         """
         url = self.get_request(self.id_site)
         if document_title:
@@ -209,12 +309,19 @@ class PiwikTracker(object):
         return url
 
     def get_cookie_matching_name(self, name):
+        """
+        Get a cookie's value by name
+
+        :param name: Cookie name
+        :type name: str
+        :rtype: str
+        """
         cookie_value = False
         if self.request.COOKIES:
             for name in self.request.COOKIES:
-                print 'cookie name', name
+                #print 'cookie name', name
+                #print 'cookie is', cookie_value
                 cookie_value = self.request.COOKIES[name]
-                print 'cookie is', cookie_value
         #print self.request.COOKIES
         return cookie_value
 
@@ -230,6 +337,8 @@ class PiwikTracker(object):
 
         This can be used if you wish to record more visits, actions or goals for
         this visitor ID later on.
+
+        :rtype: str
         """
         if self.forced_visitor_id:
             visitor_id = self.forced_visitor_id
@@ -238,19 +347,19 @@ class PiwikTracker(object):
             id_cookie = self.get_cookie_matching_name(id_cookie_name)
             visitor_id = self.visitor_id
             if id_cookie:
-                print 'id_cookie is', id_cookie
+                #print 'id_cookie is', id_cookie
                 visitor_id = id_cookie
-                """
-                $visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
-                if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
-                {
-                    return $visitorId;
-                """
+                #$visitorId = substr($idCookie, 0, strpos($idCookie, '.'));
+                #if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
+                #{
+                #    return $visitorId;
         return visitor_id
 
     def get_random_visitor_id(self):
         """
         Return a random visitor ID
+
+        :rtype: str
         """
         visitor_id = md5.new(str(random.getrandbits(9999))).hexdigest()
         return visitor_id[:self.LENGTH_VISITOR_ID]
@@ -259,25 +368,29 @@ class PiwikTracker(object):
         """
         By default, PiwikTracker will read third party cookies from the
         response and sets them in the next request.
+
+        :rtype: None
         """
         self.cookie_support = False
 
     def do_track_page_view(self, document_title):
         """
-        Track a page view
+        Track a page view, return the request body
 
-        Args:
-            document_title (str): The title of the page the user is on
+        :param document_title: The title of the page the user is on
+        :type document_title: str
+        :rtype: str
         """
         url = self.get_url_track_page_view(document_title)
         return self._send_request(url)
 
     def _send_request(self, url):
         """
-        Make the tracking API request
+        Make the tracking API request, return the request body
 
-        Args:
-            url (str): TODO
+        :param url: TODO
+        :type url: str
+        :rtype: str
         """
         parsed = urlparse.urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
@@ -287,7 +400,7 @@ class PiwikTracker(object):
         if not self.cookie_support:
             self.request_cookie = ''
         elif self.request_cookie != '':
-            print 'Adding cookie', self.request_cookie
+            #print 'Adding cookie', self.request_cookie
             request.add_header('Cookie', self.request_cookie)
 
         response = urllib2.urlopen(request)
@@ -307,16 +420,21 @@ class PiwikTracker(object):
         """
         Set custom variable, see http://piwik.org/docs/custom-variables/
 
-        Args:
-            id (int): Custom variable slot ID, 1-5
-            name (string): Variable name
-            value (string): Variable value
-            scope (string): Variable scope, either visit or page
+        :param id: Custom variable slot ID, 1-5
+        :type id: int
+        :param name: Variable name
+        :type name: str
+        :param value: Variable value
+        :type value: str
+        :param scope: Variable scope, either visit or page,
+            defaults to visit
+        :type scope: str or None
+        :rtype: None
         """
         #print type(id)
         #print type(int())
         if type(id) != type(int()):
-            raise Exception("Parameter id must be an integer")
+            raise Exception("Parameter id must be int")
         if scope == 'page':
             #print self.page_custom_var
             self.page_custom_var[id] = (name, value)
@@ -329,14 +447,14 @@ class PiwikTracker(object):
         """
         Returns the current custom variable stored in a first party cookie.
 
-        Args:
-            id (int): Custom variable slot ID, 1-5
-            scope (string): Variable scope, either visit or page
-
-        Returns... mixed stuff TODO
+        :param id: Custom variable slot ID, 1-5
+        :type id: int
+        :param scope: Variable scope, either visit or page
+        :type scope: str
+        :rtype: mixed stuff TODO
         """
         if type(id) != type(int()):
-            raise Exception("Parameter id must be an integer")
+            raise Exception("Parameter id must be int")
         if scope == 'page':
             r = self.page_custom_var[id]
         elif scope == 'visit':
@@ -350,8 +468,8 @@ class PiwikTracker(object):
                 else:
                     cookie_decoded = json.loads(cookie)
                     #$cookieDecoded = json_decode($cookie, $assoc = true);
-                    print 'decoded cookie json', cookie_decode
-                    print 'decoded cookie json', repr(cookie_decode)
+                    #print 'decoded cookie json', cookie_decode
+                    #print 'decoded cookie json', repr(cookie_decode)
                     if type(cookie_decoded) == type(list()):
                         r = False
                     elif id not in cookie_decoded:
@@ -392,12 +510,16 @@ class PiwikTrackerEcommerce(PiwikTracker):
 
         To enable ecommerce tracking see doc/install.rst
 
-        Args:
-            SKU (str): Product SKU being viewed
-            name (str): Name of the product
-            category (str|list): Name of the category for the current category
-                page or the product
-            price (float): Price of the product
+        :param SKU: Product SKU being viewed
+        :type SKU: str or None
+        :param name: Name of the product
+        :type name: str or None
+        :param category: Name of the category for the current
+            category page or the product
+        :type category: str, list or None
+        :param price: Price of the product
+        :type price: float or None
+        :rtype: None
         """
         if category:
             if type(category) == type(list()):
@@ -424,13 +546,18 @@ class PiwikTrackerEcommerce(PiwikTracker):
 
         Thie method can be called for all individual products in the cart/order.
 
-        Args:
-            sku (str): Product SKU, mandatory
-            name (str): Name of the product
-            category (str|list): Name of the category for the current category
-                page or the product
-            price (float): Price of the product
-            quantity (int): Product quantity, defaults to 1
+        :param sku: Product SKU
+        :type SKU: str or None
+        :param name: Name of the product
+        :type name: str or None
+        :param category: Name of the category for the current
+            category page or the product
+        :type category: str, list or None
+        :param price: Price of the product
+        :type price: float or None
+        :param quantity: Product quantity, defaults to 1
+        :type price: int or None
+        :rtype: None
         """
         self.ecommerce_items[sku] = (
             sku,
@@ -450,16 +577,22 @@ class PiwikTrackerEcommerce(PiwikTracker):
 
         All revenues will be individually summed and reported by Piwik.
 
-        Args:
-            order_id (str): Unique order ID (required). Used to avoid
-                re-recording an order on page reload.
-            grand_total (float): Grand total revenue of the transaction,
-                including taxes, shipping, etc.
-            sub_total (float): Sub total amount, typicalle the sum of item
-                prices for all items in this order, before tax and shipping
-            tax (float): Tax amount for this order
-            shipping (float): Shipping amount for this order
-            discount (float): Discount for this order
+        :param order_id: Unique order ID (required). Used to avoid
+            re-recording an order on page reload.
+        :type order_id: str
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :param sub_total: Sub total amount, typicalle the sum of
+            item prices for all items in this order, before tax and shipping
+        :type sub_total: float or None
+        :param tax: Tax amount for this order
+        :type tax: float or None
+        :param shipping: Shipping amount for this order
+        :type shipping: float or None
+        :param discount: Discount for this order
+        :type discount: float or None
+        :rtype: str
         """
         url = self.get_url_track_ecommerce_order(order_id, grand_total,
                                                  sub_total, tax, shipping,
@@ -474,7 +607,24 @@ class PiwikTrackerEcommerce(PiwikTracker):
 
         Calling this method will reinitialize the property ecommerce_items to
         an empty list. So items will have to be added again via
-        add_ecommerce_item()
+        add_ecommerce_item().
+
+        :param order_id: Unique order ID (required). Used to avoid
+            re-recording an order on page reload.
+        :type order_id: str
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :param sub_total: Sub total amount, typicalle the sum of
+            item prices for all items in this order, before tax and shipping
+        :type sub_total: float or None
+        :param tax: Tax amount for this order
+        :type tax: float or None
+        :param shipping: Shipping amount for this order
+        :type shipping: float or None
+        :param discount: Discount for this order
+        :type discount: float or None
+        :rtype: str
         """
         url = self.get_url_track_ecommerce(grand_total, sub_total, tax,
                                            shipping, discount)
@@ -490,8 +640,19 @@ class PiwikTrackerEcommerce(PiwikTracker):
         Calling this method reinitializes the property ecommerce_items, so
         items will have to be added again via add_ecommerce_item()
 
-        Args:
-            Same as...
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :param sub_total: Sub total amount, typicalle the sum of
+            item prices for all items in this order, before tax and shipping
+        :type sub_total: float or None
+        :param tax: Tax amount for this order
+        :type tax: float or None
+        :param shipping: Shipping amount for this order
+        :type shipping: float or None
+        :param discount: Discount for this order
+        :type discount: float or None
+        :rtype: str
         """
         if type(grand_total) != type(float()):
             raise Exception("You must specify a grand_total for the ecommerce "
@@ -526,13 +687,25 @@ class PiwikTrackerEcommerce(PiwikTracker):
         in the cart, including items which were in the previous cart. Items
         get deleted until they are re-submitted.
 
-        Args:
-            grand_total (float): Cart grand total
+        :type grand_total: float
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :rtype: str
         """
         url = self.get_url_track_ecommerce_cart_update(grand_total)
         return self._send_request(url)
 
     def get_url_track_ecommerce_cart_update(self, grand_total):
+        """
+        Returns the URL to track a cart update
+
+        :type grand_total: float
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :rtype: str
+        """
         url = self.get_url_track_ecommerce(grand_total)
         return url
 

@@ -15,6 +15,7 @@ pass an object that looks like this:
 
 .. autoclass:: piwikapi.tests.request.FakeRequest
     :members:
+    :special-members:
 
 You can also have a look at the official Django documentation for the
 HttpRequest :ref:`attributes and methods<django:httprequest-attributes>`,

@@ -40,7 +40,13 @@ class TrackerBaseTestCase(unittest.TestCase):
         self.pt.set_api_url(settings.PIWIK_TRACKING_API_URL)
 
     def get_title(self, title):
-        "Adds a timestamp to the action title"
+        """
+        Adds a timestamp to the action title"
+
+        :param title: Action
+        :type title: str
+        :rtype: str
+        """
         now = datetime.datetime.now()
         return "%s %d:%d:%d" % (title, now.hour, now.minute, now.second)
 
@@ -48,6 +54,8 @@ class TrackerBaseTestCase(unittest.TestCase):
         """
         Returns an IP out of the test networks, see RFC 5735. Seemed to make
         sense to use such addresses for unit tests.
+
+        :rtype: str
         """
         test_networks = (
             '192.0.2',
