@@ -55,7 +55,7 @@ class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
         """
         # Set different IP for each test run
         # TODO also randomize referers etc...
-        self.pte.set_ip(self.random_ip())
+        self.pte.set_ip(self.get_random_ip())
         self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
 
         grand_total = 0
