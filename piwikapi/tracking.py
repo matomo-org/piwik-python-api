@@ -43,8 +43,8 @@ class PiwikTracker(object):
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
         self.debug_append_url = False
-        self.page_custom_var = [False, False, False, False, False, False]
-        self.visitor_custom_var = [False, False, False, False, False, False]
+        self.page_custom_var = {}
+        self.visitor_custom_var = {}
 
     def set_request_parameters(self):
         """
@@ -286,9 +286,9 @@ class PiwikTracker(object):
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
         if self.page_custom_var:
-            query_vars['cvar'] = self.page_custom_var
+            query_vars['cvar'] = json.dumps(self.page_custom_var)
         if self.visitor_custom_var:
-            query_vars['_cvar'] = self.visitor_custom_var
+            query_vars['_cvar'] = json.dumps(self.visitor_custom_var)
 
         url = urllib.urlencode(query_vars)
         if self.debug_append_url:
@@ -447,7 +447,6 @@ class PiwikTracker(object):
         if type(id) != type(int()):
             raise Exception("Parameter id must be int")
         if scope == 'page':
-            #print self.page_custom_var
             self.page_custom_var[id] = (name, value)
         elif scope == 'visit':
             self.visitor_custom_var[id] = (name, value)
