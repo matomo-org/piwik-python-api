@@ -1,19 +1,11 @@
 import urllib
 from random import randint
 
-from piwikapi.tests.tracking import TrackerBaseTestCase
+from base import PiwikAPITestCase
 from piwikapi.tracking import PiwikTrackerEcommerce
 
-try:
-    from piwikapi.tests.settings import Settings
-    settings = Settings()
-except:
-    raise Exception("You haven't created the necessary Settings class in"
-                    "the settings module. This is necessary to run the"
-                    "unit tests, please check the documentation.")
 
-
-class TrackerEcommerceBaseTestCase(TrackerBaseTestCase):
+class TrackerEcommerceBaseTestCase(PiwikAPITestCase):
     """
     Base class for the ecommerce tests
 
@@ -45,9 +37,9 @@ class TrackerEcommerceBaseTestCase(TrackerBaseTestCase):
 
     def setUp(self):
         super(TrackerEcommerceBaseTestCase, self).setUp()
-        self.pte = PiwikTrackerEcommerce(settings.PIWIK_SITE_ID,
+        self.pte = PiwikTrackerEcommerce(self.settings.PIWIK_SITE_ID,
                                          self.request)
-        self.pte.set_api_url(settings.PIWIK_TRACKING_API_URL)
+        self.pte.set_api_url(self.settings.PIWIK_TRACKING_API_URL)
 
 
 class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
@@ -64,7 +56,7 @@ class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
         # Set different IP for each test run
         # TODO also randomize referers etc...
         self.pte.set_ip(self.random_ip())
-        self.pte.set_token_auth(settings.PIWIK_TOKEN_AUTH)
+        self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
 
         grand_total = 0
         for key, product in self.products.iteritems():

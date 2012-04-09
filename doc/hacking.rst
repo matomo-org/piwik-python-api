@@ -29,7 +29,7 @@ Test classes
 The unit tests verify that data sent through the API was received by Piwik.
 Classes marked with ``Noverify`` do *not* verify this (yet). Verification has
 to be done manually through the Piwik interface. It should be possible to
-improve this though, by querying the Piwik data API, which hasn't been
+improve this though, by querying the Piwik analytics API, which hasn't been
 implemented in Python yet.
 
 .. autoclass:: piwikapi.tests.tracking.TrackerBaseTestCase

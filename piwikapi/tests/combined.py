@@ -1,15 +1,7 @@
-from tracking import TrackerBaseTestCase
-
-try:
-    from piwikapi.tests.settings import Settings
-    settings = Settings()
-except:
-    raise Exception("You haven't created the necessary Settings class in"
-                    "the settings module. This is necessary to run the"
-                    "unit tests, please check the documentation.")
+from base import PiwikAPITestCase
 
 
-class TrackerNoverifyTestCase(TrackerBaseTestCase):
+class TrackerNoverifyTestCase(PiwikAPITestCase):
     """
     Here are test we don't verify programmatically yet. I guess we'd have to
     access the Piwik API to fetch data to verify the tracking requests were
@@ -24,7 +16,7 @@ class TrackerNoverifyTestCase(TrackerBaseTestCase):
         self.assertTrue(True) # FIXME
 
     def test_set_resolution(self):
-        self.pt.set_token_auth(settings.PIWIK_TOKEN_AUTH) # verify hack
+        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
         self.pt.set_resolution(5760, 1080)
         r = self.pt.do_track_page_view(self.get_title('set resolution test'))
         self.assertTrue(True) # FIXME
@@ -63,7 +55,7 @@ class TrackerNoverifyTestCase(TrackerBaseTestCase):
         )
 
         #c = Client()
-        url = self.pt.get_request(settings.PIWIK_SITE_ID)
+        url = self.pt.get_request(self.settings.PIWIK_SITE_ID)
         #print url
         value = 'quoo'
         self.pt.set_custom_variable(1, 'foo', value, 'visit')

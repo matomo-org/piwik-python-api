@@ -1,30 +1,16 @@
 import json
-import pprint
-import unittest
 from PIL import Image
 from StringIO import StringIO
 
+from base import PiwikAPITestCase
 from piwikapi.analytics import PiwikAnalytics
 
-try:
-    from piwikapi.tests.settings import Settings
-    settings = Settings()
-except:
-    raise Exception("You haven't created the necessary Settings class in"
-                    "the settings module. This is necessary to run the"
-                    "unit tests, please check the documentation.")
 
-
-class AnalyticsBaseTestCase(unittest.TestCase):
-    def debug(self, value):
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(value)
-
-
-class AnalyticsTestCase(AnalyticsBaseTestCase):
+class AnalyticsTestCase(PiwikAPITestCase):
     def setUp(self):
+        super(AnalyticsTestCase, self).setUp()
         self.a = PiwikAnalytics()
-        self.a.set_api_url(settings.PIWIK_ANALYTICS_API_URL)
+        self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)
         self.a.set_id_site(1)
         self.a.set_format('json')
         self.a.set_period('day')
@@ -55,10 +41,11 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
         #self.assertTrue(False)
 
 
-class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
+class AnalyticsLiveTestCase(PiwikAPITestCase):
     def setUp(self):
+        super(AnalyticsLiveTestCase, self).setUp()
         self.a = PiwikAnalytics()
-        self.a.set_api_url(settings.PIWIK_ANALYTICS_API_URL)
+        self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)
         self.a.set_id_site(1)
         self.a.set_format('json')
 
