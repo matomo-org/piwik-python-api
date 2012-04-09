@@ -7,11 +7,8 @@ This is a Python implementation of the PiwikTracker PHP class.
 Supported:
 
 - Normal tracking
-
-Partially supported:
-
-- Ecommerce
 - Custom variables
+- Ecommerce
 
 Not supported yet:
 
