@@ -9,7 +9,6 @@ Installing Piwik
 ----------------
 
 1. Install Piwik, see http://piwik.org/docs/installation-optimization/
-2. Create a new development site
 
 .. _enable_tracking:
 
@@ -22,6 +21,10 @@ tracking requests will originate from your server.
 If you want your user's IP to be logged (you probably do) create a new user
 and make that user an admin of the site you want to track.
 
+Keep in mind that the auth token will be submitted with each request, so you
+might want to consider using SSL or only accessing your Piwik server through a
+secure network.
+
 .. _enable_ecommerce_tracking:
 
 .. _enable_analytics:
@@ -29,7 +32,7 @@ and make that user an admin of the site you want to track.
 Enabling the analytics API
 --------------------------
 
-There's nothing to do here.
+The analytics API works out of the box, no configuration needed.
 
 Enabling ecommerce tracking
 ---------------------------
