@@ -15,6 +15,8 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
             'testsegment',
             self.segment,
         )
+        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
+        self.pt.set_ip(self.get_random_ip())
 
         # Set up the analytics query
         super(AnalyticsLiveBaseTestCase, self).setUp()
