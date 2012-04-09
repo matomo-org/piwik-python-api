@@ -27,7 +27,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
             "customVariableValue5==%s" % self.segment)
 
     def get_v(self, key):
-        data = json.loads(self.a.send_request())[0]
+        try:
+            data = json.loads(self.a.send_request())[0]
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
         try:
             return data[key]
         except KeyError:
@@ -35,7 +39,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
             raise
 
     def get_av(self, key):
-        data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+        try:
+            data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
         try:
             return data[key]
         except KeyError:
