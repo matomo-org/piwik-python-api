@@ -68,7 +68,7 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
 
     def test_set_visitor_feature_resolution(self):
         self.pt.set_resolution(5760, 1080)
-        #r = self.pt.do_track_page_view(self.get_title('verify resolution'))
+        r = self.pt.do_track_page_view(self.get_title('verify resolution'))
         self.assertEqual(
             '5760x1080',
             self.get_v('resolution'),
