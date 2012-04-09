@@ -100,6 +100,15 @@ class PiwikAnalytics(object):
         """
         self.api_url = api_url
 
+    def set_segment(self, segment):
+        """
+        :param segment: Which segment to request, see
+            http://piwik.org/docs/analytics-api/segmentation/
+        :type segment: str
+        :rtype: None
+        """
+        self.set_parameter('segment', segment)
+
     def get_query_string(self):
         """
         Return the query string

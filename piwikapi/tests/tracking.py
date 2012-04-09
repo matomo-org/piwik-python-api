@@ -95,8 +95,9 @@ class TrackerBaseTestCase(PiwikAPITestCase):
             'zh-TW',
             'it',
             'pt-BR',
+            'jp',
             'es-AR',
-            'ar-tn',
+            'ar-TN',
         )
         return self.get_random(langs)
 
@@ -142,9 +143,8 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             "Suffix not appended to query URL: %s" % query_url,
         )
 
-    def test_custom_variables(self):
+    def test_custom_variables_invalid(self):
         value = 'bar'
-
         try:
             saved = self.pt.set_custom_variable('a', 'foo', value, 'page')
             illegal_id = True
@@ -163,6 +163,16 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         self.assertFalse(
             illegal_scope,
             "No exception for trying to use an illegal scope"
+        )
+
+    def test_custom_variables(self):
+        value = 'quoo'
+        self.pt.set_custom_variable(1, 'foo', value, 'page')
+        saved = self.pt.get_custom_variable(1, 'page')
+        self.assertEqual(
+            value,
+            saved[1],
+            "Custom page variable was not saved, got %s" % saved[1],
         )
 
 

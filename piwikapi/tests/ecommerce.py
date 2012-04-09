@@ -58,7 +58,7 @@ class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
         self.pte.set_ip(self.get_random_ip())
         self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
 
-        grand_total = 0
+        grand_total = 0.0
         for key, product in self.products.iteritems():
             if randint(0, 2) == 0:
                 continue
@@ -101,5 +101,3 @@ class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
             randint(0, 99999), # TODO random failure
             grand_total,
         )
-        #print r
-        return grand_total

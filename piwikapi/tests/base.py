@@ -1,3 +1,5 @@
+import md5
+import os
 import pprint
 import unittest
 
@@ -22,3 +24,13 @@ class PiwikAPITestCase(unittest.TestCase):
     def debug(self, value):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(value)
+
+    def get_random_string(self, length=500):
+        """
+        Return a random string
+
+        :param length: Length
+        :type length: inte
+        :rtype: str
+        """
+        return md5.new(os.urandom(length)).hexdigest()
