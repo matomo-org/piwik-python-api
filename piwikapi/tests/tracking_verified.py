@@ -58,7 +58,7 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         r = self.pt.do_track_page_view(self.get_title('verify browser cookie'))
         #print r
         self.assertTrue(True) # FIXME
-        print '--', self.segment
+        #print '--', self.segment
         #self.verify_key_value('cookie', True)
 
     def test_set_resolution(self):
