@@ -1,6 +1,7 @@
 import datetime
 import json
 import md5
+import os
 import random
 import urllib
 import urllib2
@@ -355,13 +356,23 @@ class PiwikTracker(object):
                 #    return $visitorId;
         return visitor_id
 
+    def get_random_string(self, length=500):
+        """
+        Return a random string
+
+        :param length: Length
+        :type length: inte
+        :rtype: str
+        """
+        return md5.new(os.urandom(length)).hexdigest()
+
     def get_random_visitor_id(self):
         """
         Return a random visitor ID
 
         :rtype: str
         """
-        visitor_id = md5.new(str(random.getrandbits(9999))).hexdigest()
+        visitor_id = self.get_random_string()
         return visitor_id[:self.LENGTH_VISITOR_ID]
 
     def disable_cookie_support(self):
