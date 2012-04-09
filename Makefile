@@ -17,6 +17,7 @@ upload:
 .PHONY: clean
 clean:
 	rm -rf dist build *.egg-info python-piwikapi-*
+	find . -name *.pyc -print0 | xargs -0 rm -f
 	make -C doc clean
 
 .PHONY: test
