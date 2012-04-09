@@ -14,10 +14,12 @@ except:
                     "the settings module. This is necessary to run the"
                     "unit tests, please check the documentation.")
 
+
 class AnalyticsBaseTestCase(unittest.TestCase):
     def debug(self, value):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(value)
+
 
 class AnalyticsTestCase(AnalyticsBaseTestCase):
     def setUp(self):
@@ -33,7 +35,7 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
     def test_get_referer_sites(self):
         self.a.set_method('Referers.getWebsites')
         r = json.loads(self.a.send_request())
-        self.debug(r)
+        #self.debug(r)
 
     def test_get_imagegraph(self):
         "Just a basic test to see if we get an image"
@@ -52,6 +54,7 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
         )
         #self.assertTrue(False)
 
+
 class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
     def setUp(self):
         self.a = PiwikAnalytics()
@@ -63,4 +66,4 @@ class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
         self.a.set_method('Live.getCounters')
         self.a.set_parameter('lastMinutes', 1)
         r = json.loads(self.a.send_request())
-        self.debug(r)
+        #self.debug(r)
