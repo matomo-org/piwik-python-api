@@ -58,31 +58,46 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     processed properly. At the moment I only check this manually in my Piwik
     dev installation.
     """
-    def test_browser_has_cookies(self):
-        self.pt.set_browser_has_cookies()
-        cookie = "piwiktrackingtest=yes; hascookies=yes"
-        self.pt._set_request_cookie(cookie)
-        #print '~~~~~~~~~~~~~~~~~~~~~~'
-        #print self.pt.get_url_track_page_view('foo')
-        #print '~~~~~~~~~~~~~~~~~~~~~~'
-        #print self.pt.get_request('')
-        r = self.pt.do_track_page_view(self.get_title('verify browser cookie'))
-        #print r
-        self.assertTrue(True) # FIXME
-        #print '--', self.segment
-        #self.verify_key_value('cookie', True)
+    #def test_browser_has_cookies(self):
+    #    self.pt.set_browser_has_cookies()
+    #    cookie = "piwiktrackingtest=yes; hascookies=yes"
+    #    self.pt._set_request_cookie(cookie)
+    #    r = self.pt.do_track_page_view(self.get_title('verify browser cookie'))
+    #    self.assertTrue(True) # FIXME
+    #    #self.get_v('cookie', True)
 
-    def test_set_resolution(self):
-        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
+    def test_set_visitor_feature_resolution(self):
         self.pt.set_resolution(5760, 1080)
-        r = self.pt.do_track_page_view(self.get_title('verify resolution test'))
-        # FIXME this fails randomly because the resolution is too high for
-        # mobile devices (I guess)
+        #r = self.pt.do_track_page_view(self.get_title('verify resolution'))
         self.assertEqual(
             '5760x1080',
             self.get_v('resolution'),
-            "Unexpected value %s" % self.get_v('resolution'),
+            "Unexpected resolution value %s" % self.get_v('resolution'),
         )
+
+    def test_set_visitor_feature_single_plugin(self):
+        self.pt.set_plugins(
+            flash = True,
+        )
+        r = self.pt.do_track_page_view(self.get_title('verify flash'))
+        self.assertEqual(
+            'flash',
+            self.get_v('plugins'),
+            "Unexpected plugins value %s" % self.get_v('plugins'),
+        )
+
+    def test_set_visitor_feature_plugins(self):
+        self.pt.set_plugins(
+            flash = True,
+            java = True,
+        )
+        r = self.pt.do_track_page_view(self.get_title('verify flash + java'))
+        self.assertEqual(
+            'flash, java',
+            self.get_v('plugins'),
+            "Unexpected plugins value %s" % self.get_v('plugins'),
+        )
+
 
     # Browser language doesn't seem to be logged explicitly
     #def test_set_browser_language(self):
