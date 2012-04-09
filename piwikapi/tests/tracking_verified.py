@@ -1,12 +1,12 @@
 import json
 
 from tracking import TrackerBaseTestCase
-from analytics import AnalyticsLiveTestCase
+from analytics import AnalyticsLiveBaseTestCase
 
 from piwikapi.analytics import PiwikAnalytics
 
 
-class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
+class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
     def setUp(self):
         super(TrackerVerifyBaseTestCase, self).setUp()
         self.segment = self.get_random_string()
@@ -15,8 +15,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
             'testsegment',
             self.segment,
         )
+        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
+        self.pt.set_ip(self.get_random_ip())
 
-        super(AnalyticsLiveTestCase, self).setUp()
+        # Set up the analytics query
+        super(AnalyticsLiveBaseTestCase, self).setUp()
         self.a.set_method('Live.getLastVisitsDetails')
         # Assume no test takes more than one minute
         self.a.set_parameter('lastMinutes', 1)
@@ -24,7 +27,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
             "customVariableValue5==%s" % self.segment)
 
     def get_v(self, key):
-        data = json.loads(self.a.send_request())[0]
+        try:
+            data = json.loads(self.a.send_request())[0]
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
         try:
             return data[key]
         except KeyError:
@@ -32,7 +39,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveTestCase):
             raise
 
     def get_av(self, key):
-        data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+        try:
+            data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
         try:
             return data[key]
         except KeyError:
@@ -47,31 +58,46 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     processed properly. At the moment I only check this manually in my Piwik
     dev installation.
     """
-    def test_browser_has_cookies(self):
-        self.pt.set_browser_has_cookies()
-        cookie = "piwiktrackingtest=yes; hascookies=yes"
-        self.pt._set_request_cookie(cookie)
-        #print '~~~~~~~~~~~~~~~~~~~~~~'
-        #print self.pt.get_url_track_page_view('foo')
-        #print '~~~~~~~~~~~~~~~~~~~~~~'
-        #print self.pt.get_request('')
-        r = self.pt.do_track_page_view(self.get_title('verify browser cookie'))
-        #print r
-        self.assertTrue(True) # FIXME
-        #print '--', self.segment
-        #self.verify_key_value('cookie', True)
+    #def test_browser_has_cookies(self):
+    #    self.pt.set_browser_has_cookies()
+    #    cookie = "piwiktrackingtest=yes; hascookies=yes"
+    #    self.pt._set_request_cookie(cookie)
+    #    r = self.pt.do_track_page_view(self.get_title('verify browser cookie'))
+    #    self.assertTrue(True) # FIXME
+    #    #self.get_v('cookie', True)
 
-    def test_set_resolution(self):
-        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
+    def test_set_visitor_feature_resolution(self):
         self.pt.set_resolution(5760, 1080)
-        r = self.pt.do_track_page_view(self.get_title('verify resolution test'))
-        # FIXME this fails randomly because the resolution is too high for
-        # mobile devices (I guess)
+        r = self.pt.do_track_page_view(self.get_title('verify resolution'))
         self.assertEqual(
             '5760x1080',
             self.get_v('resolution'),
-            "Unexpected value %s" % self.get_v('resolution'),
+            "Unexpected resolution value %s" % self.get_v('resolution'),
         )
+
+    def test_set_visitor_feature_single_plugin(self):
+        self.pt.set_plugins(
+            flash = True,
+        )
+        r = self.pt.do_track_page_view(self.get_title('verify flash'))
+        self.assertEqual(
+            'flash',
+            self.get_v('plugins'),
+            "Unexpected plugins value %s" % self.get_v('plugins'),
+        )
+
+    def test_set_visitor_feature_plugins(self):
+        self.pt.set_plugins(
+            flash = True,
+            java = True,
+        )
+        r = self.pt.do_track_page_view(self.get_title('verify flash + java'))
+        self.assertEqual(
+            'flash, java',
+            self.get_v('plugins'),
+            "Unexpected plugins value %s" % self.get_v('plugins'),
+        )
+
 
     # Browser language doesn't seem to be logged explicitly
     #def test_set_browser_language(self):

@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import md5
 import os
 import random
@@ -12,8 +13,24 @@ class PiwikTracker(object):
     """
     The Piwik tracker class
     """
+    # Piwik API version
     VERSION = 1
+
+    #: Length of the visitor ID
     LENGTH_VISITOR_ID = 16
+
+    #: List of plugins Piwik knows
+    KNOWN_PLUGINS = {
+        'flash': 'fla',
+        'java': 'java',
+        'director': 'dir',
+        'quick_time': 'qt',
+        'real_player': 'realp',
+        'pdf': 'pdf',
+        'windows_media': 'wma',
+        'gears': 'gears',
+        'silverlight': 'ag',
+    }
 
     def __init__(self, id_site, request):
         """
@@ -45,6 +62,7 @@ class PiwikTracker(object):
         self.debug_append_url = False
         self.page_custom_var = {}
         self.visitor_custom_var = {}
+        self.plugins = {}
 
     def set_request_parameters(self):
         """
@@ -289,6 +307,9 @@ class PiwikTracker(object):
             query_vars['cvar'] = json.dumps(self.page_custom_var)
         if self.visitor_custom_var:
             query_vars['_cvar'] = json.dumps(self.visitor_custom_var)
+        if len(self.plugins):
+            for plugin, version in self.plugins.iteritems():
+                query_vars[plugin] = version
 
         url = urllib.urlencode(query_vars)
         if self.debug_append_url:
@@ -452,6 +473,21 @@ class PiwikTracker(object):
             self.visitor_custom_var[id] = (name, value)
         else:
             raise Exception("Invalid scope parameter value")
+
+    def set_plugins(self, **kwargs):
+        """
+        Set supported plugins
+
+        :param kwargs: A plugin: version dict, e.g. {'java': 6}, see also
+            KNOWN_PLUGINS
+        :type kwargs: dict of {str: int}
+        :rtype: None
+        """
+        for plugin, version in kwargs.iteritems():
+            if plugin not in self.KNOWN_PLUGINS.keys():
+                logging.warn("set_plugins(): Unknown plugin %s, but submitting"
+                             " it anyway" % plugin)
+            self.plugins[self.KNOWN_PLUGINS[plugin]] = int(version)
 
     def get_custom_variable(self, id, scope='visit'):
         """
