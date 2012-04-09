@@ -32,7 +32,7 @@ to be done manually through the Piwik interface. It should be possible to
 improve this though, by querying the Piwik analytics API, which hasn't been
 implemented in Python yet.
 
-.. autoclass:: piwikapi.tests.tracking.TrackerBaseTestCase
+.. autoclass:: piwikapi.tests.base.PiwikAPITestCase
    :members:
    :undoc-members:
 
