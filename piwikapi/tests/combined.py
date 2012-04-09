@@ -1,7 +1,7 @@
-from base import PiwikAPITestCase
+from tracking import TrackerBaseTestCase
 
 
-class TrackerNoverifyTestCase(PiwikAPITestCase):
+class TrackerNoverifyTestCase(TrackerBaseTestCase):
     """
     Here are test we don't verify programmatically yet. I guess we'd have to
     access the Piwik API to fetch data to verify the tracking requests were

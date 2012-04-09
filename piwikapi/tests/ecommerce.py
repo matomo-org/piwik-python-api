@@ -1,11 +1,11 @@
 import urllib
 from random import randint
 
-from base import PiwikAPITestCase
 from piwikapi.tracking import PiwikTrackerEcommerce
+from tracking import TrackerBaseTestCase
 
 
-class TrackerEcommerceBaseTestCase(PiwikAPITestCase):
+class TrackerEcommerceBaseTestCase(TrackerBaseTestCase):
     """
     Base class for the ecommerce tests
 
