@@ -7,25 +7,14 @@ to be done manually through the Piwik interface. It should be possible to
 improve this though, by querying the Piwik analytics API, which hasn't been
 implemented in Python yet.
 
-Base
-----
-
-.. autoclass:: piwikapi.tests.base.PiwikAPITestCase
-   :members:
-   :undoc-members:
-
 Analytics API tests
 -------------------
 
-.. autoclass:: piwikapi.tests.analytics.AnalyticsBaseTestCase
-   :members:
-   :undoc-members:
+These are just some very simple tests. The real testing happens in the
+tracking API tests, where the analytics API is used to verify the submitted
+data.
 
 .. autoclass:: piwikapi.tests.analytics.AnalyticsTestCase
-   :members:
-   :undoc-members:
-
-.. autoclass:: piwikapi.tests.analytics.AnalyticsLiveBaseTestCase
    :members:
    :undoc-members:
 
@@ -37,10 +26,6 @@ Analytics API tests
 Tracking API tests
 ------------------
 
-.. autoclass:: piwikapi.tests.tracking.TrackerBaseTestCase
-   :members:
-   :undoc-members:
-
 .. autoclass:: piwikapi.tests.tracking.TrackerClassTestCase
    :members:
    :undoc-members:
@@ -49,16 +34,9 @@ Tracking API tests
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.tracking_verified.TrackerVerifyBaseTestCase
-   :members:
-   :undoc-members:
-
 .. autoclass:: piwikapi.tests.tracking_verified.TrackerVerifyTestCase
    :members:
    :undoc-members:
-
-.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceBaseTestCase
-   :members:
 
 .. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceNoverifyTestCase
    :members:

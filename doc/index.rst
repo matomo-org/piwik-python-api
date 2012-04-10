@@ -17,6 +17,9 @@ Contents:
    hacking/index
    changelog
 
+About
+=====
+
 ``python-piwikapi`` is a Python implementation of the Piwik tracking and
 analytics API. You can use it to track visitors, ecommerce, generate reports
 and much more. See http://piwik.org/docs/analytics-api/ for an overview of
@@ -24,6 +27,39 @@ all features.
 
 The project is in alpha status and not ready for production yet. The
 tracking API class needs a rewrite and not all features are unit tested yet.
+
+Advantages over client-side logging
+-----------------------------------
+
+My first implementation of the Piwik tracking API was written for a client who
+needed to track redirects. So JavaScript logging obviously wouldn't work. Doing
+the tracking API requests from the server instead of the browser has the big
+advantage of making it much easier to intertwine business logic and tracking
+info. Ecommerce, actions and goals can be logged without generating JavaScript
+code.
+
+Another advantage can be that the browser has one less request to do, and that
+you don't depend on any client-side code at all. If you care much about
+performance it would probably be a good idea to feed your tracking requests
+into some task queue.
+
+Disadvantages
+-------------
+
+You obviously can't check all client-side features from the server, such as
+plugin support, screen resolution etc.
+
+Analytics API
+-------------
+
+The analytics API is used to request tracking reports etc. from a Piwik
+installation. At first it was created to write unit tests for the tracking API,
+but it can be used for many :ref:`useful things <analytics-api-index>`.
+
+There also is a
+`different Python implementation
+<https://github.com/francois2metz/Python-piwik>`_
+of the analytics API.
 
 Indices and tables
 ==================

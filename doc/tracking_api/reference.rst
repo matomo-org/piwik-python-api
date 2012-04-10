@@ -1,5 +1,5 @@
-Reference
-=========
+Tracking API Reference
+======================
 
 The PiwikTracker class
 ----------------------

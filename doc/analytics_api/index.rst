@@ -1,3 +1,5 @@
+.. _analytics-api-index:
+
 Analytics API
 =============
 

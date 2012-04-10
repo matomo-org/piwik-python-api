@@ -1,5 +1,5 @@
-Reference
-=========
+Analytics API Reference
+=======================
 
 The PiwikAnalytics class
 ------------------------

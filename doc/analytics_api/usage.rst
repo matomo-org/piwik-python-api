@@ -1,5 +1,5 @@
-Usage
-=====
+Analytics API Usage
+===================
 
 Basic queries
 -------------

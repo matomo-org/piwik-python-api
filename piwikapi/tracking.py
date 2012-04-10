@@ -8,6 +8,23 @@ import urllib
 import urllib2
 import urlparse
 
+"""
+TODO
+set_attribution_info
+set_force_visit_daytime
+set_url
+set_url_referer, remove _set_referer
+do_track_action
+do_track_goal
+get_attribution_info
+get_url_track_action
+get_url_track_goal
+
+TEST
+disable_cookie_support
+
+"""
+
 
 class PiwikTracker(object):
     """

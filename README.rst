@@ -17,6 +17,6 @@ Not supported yet:
 - probably more
 
 The module was originally written for Django and expects a Django HttpRequest.
-However, you don't need to use Django, you can use a mockup object instead.
+However, you don't need to use Django, you can create a mockup object instead.
 
 Full Documentation: http://piwikapi.readthedocs.org/en/latest/index.html

@@ -1,5 +1,5 @@
-Usage
-=====
+Tracking API Usage
+==================
 
 If you're not using Django you will have to write some custom wrapper code,
 see below. Feel free to send pull request.
