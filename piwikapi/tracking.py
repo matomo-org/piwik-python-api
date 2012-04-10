@@ -13,12 +13,10 @@ TODO
 set_attribution_info
 set_force_visit_daytime
 set_url
-set_url_referer, remove _set_referer
-do_track_action
-do_track_goal
+set_url_referer -> remove existing _set_referer
+do_track_action -> track download or click
 get_attribution_info
 get_url_track_action
-get_url_track_goal
 
 TEST
 disable_cookie_support
@@ -347,6 +345,23 @@ class PiwikTracker(object):
             url += '&%s' % urllib.urlencode({'action_name': document_title})
         return url
 
+    def get_url_track_goal(self, id_goal, revenue=False):
+        """
+        Return the goal tracking URL
+
+        :param id_goal: Goal ID
+        :type id_goal: int
+        :param revenue: Revenue for this conversion
+        :type revenue: int (TODO why int here and not float!?)
+        """
+        url = self.get_request(self.id_site)
+        params = {}
+        params['idgoal'] = id_goal
+        if revenue:
+            params['revenue'] = revenue
+        url += '&%s' % urllib.urlencode(params)
+        return url
+
     def get_cookie_matching_name(self, name):
         """
         Get a cookie's value by name
@@ -431,6 +446,18 @@ class PiwikTracker(object):
         :rtype: str
         """
         url = self.get_url_track_page_view(document_title)
+        return self._send_request(url)
+
+    def do_track_goal(self, id_goal, revenue=False):
+        """
+        Record a goal conversion
+
+        :param id_goal: Goal ID
+        :type id_goal: int
+        :param revenue: Revenue for this conversion
+        :type revenue: int (TODO why int here and not float!?)
+        """
+        url = self.get_url_track_goal(id_goal, revenue)
         return self._send_request(url)
 
     def _send_request(self, url):

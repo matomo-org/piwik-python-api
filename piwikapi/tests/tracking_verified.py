@@ -98,6 +98,26 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
             "Unexpected plugins value %s" % self.get_v('plugins'),
         )
 
+    def test_track_goal_conversion(self):
+        """
+        This unit test will only work if a goal with ID=1 exists
+        """
+        r = self.pt.do_track_goal(1, 23)
+        data = json.loads(self.a.send_request())[0]
+        self.assertEqual(
+            1,
+            self.get_v('goalConversions'),
+            "Unexpected goalConversions value %s" %
+                self.get_v('goalConversions'),
+        )
+        # The revenue is not in the live data, but it's recorded...
+        #self.assertEqual(
+        #    23,
+        #    self.get_av('revenue'),
+        #    "Unexpected revenue value %s" % self.get_av('revenue'),
+        #)
+
+
 
     # Browser language doesn't seem to be logged explicitly
     #def test_set_browser_language(self):
