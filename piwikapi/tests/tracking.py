@@ -28,6 +28,11 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         self.request = FakeRequest(headers)
         self.pt = PiwikTracker(self.settings.PIWIK_SITE_ID, self.request)
         self.pt.set_api_url(self.settings.PIWIK_TRACKING_API_URL)
+        self.pt.set_custom_variable(
+            1,
+            'testrun',
+            self.settings.PIWIK_TEST_RUN,
+        )
 
     def get_title(self, title):
         """

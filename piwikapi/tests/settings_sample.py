@@ -1,3 +1,6 @@
+import datetime
+
+
 class Settings:
     """
     This class contains settings for the unit tests
@@ -16,3 +19,6 @@ class Settings:
 
     #: The ID of the goal that will be used for unit tests
     PIWIK_GOAL_ID = 1
+
+    #: Custom visit variable for all test runs, for segmentation
+    PIWIK_TEST_RUN = datetime.datetime.now().isoformat(' ')
