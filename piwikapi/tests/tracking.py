@@ -175,6 +175,16 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             "Custom page variable was not saved, got %s" % saved[1],
         )
 
+    def test_set_user_agent(self):
+        ua = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.24)' \
+            'Gecko/20111103 Firefox/3.6.24'
+        self.pt.set_user_agent(ua)
+        self.assertEqual(
+            ua,
+            self.pt.user_agent,
+            "User Agent was not set to %s" % ua
+        )
+
 
 class TrackerTestCase(TrackerBaseTestCase):
     """
