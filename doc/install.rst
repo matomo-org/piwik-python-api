@@ -1,14 +1,20 @@
 Install
 =======
 
-You should get the source from github directly for the time being. There is a
-django-piwik-tracking pypi package you could install and that works, but you
-shouldn't use it :-)
+You should get the source from github directly for the time being.
 
 Installing Piwik
 ----------------
 
-1. Install Piwik, see http://piwik.org/docs/installation-optimization/
+To install Piwik please see http://piwik.org/docs/installation-optimization/.
+
+.. _enable_analytics:
+
+Enabling the analytics API
+--------------------------
+
+The analytics API works out of the box, no configuration needed.
+TODO site must have anonymous view access, security...
 
 .. _enable_tracking:
 
@@ -27,13 +33,6 @@ secure network.
 
 .. _enable_ecommerce_tracking:
 
-.. _enable_analytics:
-
-Enabling the analytics API
---------------------------
-
-The analytics API works out of the box, no configuration needed.
-
 Enabling ecommerce tracking
 ---------------------------
 
@@ -41,3 +40,20 @@ You need to enable ecommerc tracking inside Piwik, see
 http://piwik.org/docs/ecommerce-analytics/#toc-enable-ecommerce-for-the-website
 
 See also :ref:`enable_tracking`.
+
+.. _enable_goal_tracking:
+
+Goal tracking
+-------------
+
+It's not possible to create goals through the API, so you will have to
+configure your goals through the Piwik web interface.
+
+Secure your install
+-------------------
+
+First, see :ref:`enable_tracking` and :ref:`enable_analytics` for security
+notes specific to the two APIs.
+
+If you use the API exclusively you could consider password-protecting your Piwik
+install with a basic HTTP authentication.

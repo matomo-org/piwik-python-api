@@ -35,8 +35,9 @@ My first implementation of the Piwik tracking API was written for a client who
 needed to track redirects. So JavaScript logging obviously wouldn't work. Doing
 the tracking API requests from the server instead of the browser has the big
 advantage of making it much easier to intertwine business logic and tracking
-info. Ecommerce, actions and goals can be logged without generating JavaScript
-code.
+info. `Ecommerce <http://piwik.org/docs/ecommerce-analytics/>`,
+`actions and goals <http://piwik.org/docs/tracking-goals-web-analytics/>`
+can be logged without generating JavaScript code.
 
 Another advantage can be that the browser has one less request to do, and that
 you don't depend on any client-side code at all. If you care much about
@@ -48,6 +49,11 @@ Disadvantages
 
 You obviously can't check all client-side features from the server, such as
 plugin support, screen resolution etc.
+
+You also can't track click goals, unless you add some JavaScript to your site.
+
+TODO What happens if we have one client-side requests followed by only server
+side requests? Is the info tied to the user/visit?
 
 Analytics API
 -------------
