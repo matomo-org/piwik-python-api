@@ -6,6 +6,10 @@
 Welcome to python-piwikapi's documentation!
 ===========================================
 
+.. image:: pic/piwik_logo.jpg
+   :alt: Piwik
+   :align: right
+
 Contents:
 
 .. toctree::
@@ -20,24 +24,25 @@ Contents:
 About
 =====
 
-``python-piwikapi`` is a Python implementation of the Piwik tracking and
-analytics API. You can use it to track visitors, ecommerce, generate reports
-and much more. See http://piwik.org/docs/analytics-api/ for an overview of
-all features.
+``python-piwikapi`` is a Python implementation of the Piwik tracking and the
+analytics API. You can use it to track visitors, ecommerce, actions, goals,
+generate reports and much more. See the official documentation for the PHP and
+JavaScript implementations at http://piwik.org/docs/analytics-api/ and
+http://piwik.org/docs/tracking-api/ for an overview.
 
-The project is in alpha status and not ready for production yet. The
-tracking API class needs a rewrite and not all features are unit tested yet.
+The project is in beta status and the API interface might change in the future.
 
 Advantages over client-side logging
 -----------------------------------
 
 My first implementation of the Piwik tracking API was written for a client who
-needed to track redirects. So JavaScript logging obviously wouldn't work. Doing
-the tracking API requests from the server instead of the browser has the big
-advantage of making it much easier to intertwine business logic and tracking
-info. `Ecommerce <http://piwik.org/docs/ecommerce-analytics/>`,
-`actions and goals <http://piwik.org/docs/tracking-goals-web-analytics/>`
-can be logged without generating JavaScript code.
+needed to track redirects on a Django site. So JavaScript logging obviously
+wouldn't work. Doing the tracking API requests from the server instead of the
+browser has the big advantage of making it much easier to intertwine business
+logic and tracking info.
+`Ecommerce <http://piwik.org/docs/ecommerce-analytics/>`_,
+`actions and goals <http://piwik.org/docs/tracking-goals-web-analytics/>`_
+can be logged without any JavaScript.
 
 Another advantage can be that the browser has one less request to do, and that
 you don't depend on any client-side code at all. If you care much about
@@ -47,10 +52,9 @@ into some task queue.
 Disadvantages
 -------------
 
-You obviously can't check all client-side features from the server, such as
-plugin support, screen resolution etc.
-
-You also can't track click goals, unless you add some JavaScript to your site.
+You can't check all client-side features from the server, such as plugin
+support, screen resolution, click goals etc. This could be accomplished by
+using some JavaScript code though if necessary.
 
 TODO What happens if we have one client-side requests followed by only server
 side requests? Is the info tied to the user/visit?
@@ -59,13 +63,10 @@ Analytics API
 -------------
 
 The analytics API is used to request tracking reports etc. from a Piwik
-installation. At first it was created to write unit tests for the tracking API,
-but it can be used for many :ref:`useful things <analytics-api-index>`.
+installation.
 
-There also is a
-`different Python implementation
-<https://github.com/francois2metz/Python-piwik>`_
-of the analytics API.
+There is also a `different Python implementation
+<https://github.com/francois2metz/Python-piwik>`_ of the analytics API.
 
 Indices and tables
 ==================

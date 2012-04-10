@@ -13,19 +13,29 @@ If you want to work on the tracking code you should have a look at the original
 Running the unit tests
 ----------------------
 
-You definitely want to create a site specifically for running unit tests
-and development in general. In your Piwik install's ``/piwik.php`` set also
-this::
+To run the unit tests you need to:
 
-    $GLOBALS['PIWIK_TRACKER_DEBUG'] = true;
+- Create a new Piwik site
+- Create a goal
+- Create a settings module
+- Enable tracker debugging
 
+You want to create a **new site** specifically for running the unit tests as to
+not pollute a real site with test data.
 
-Some unit tests parse the output of the tracker script. You must create a
-``settings`` module somewhere in your Python path that contains a ``Settings``
-class like this:
+You have to create **one goal** for the unit tests to pass. This has to be done
+in the web interface, it can't be automated.
+
+You must create a ``settings`` **module** somewhere in your Python path that
+contains a ``Settings`` class like this:
 
 .. autoclass:: piwikapi.tests.settings_sample.Settings
     :members:
 
-If you create that file in the source tree it is also ignored by git for your
-convenience.
+If you create the settings file in the test source directory it is also
+ignored by ``git`` for your convenience.
+
+Some unit tests parse the output of the tracker script, so you have to **enable
+debugging** in your Piwik install's ``/piwik.php``::
+
+    $GLOBALS['PIWIK_TRACKER_DEBUG'] = true;

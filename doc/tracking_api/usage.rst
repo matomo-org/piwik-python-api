@@ -35,8 +35,7 @@ Once you have created a compatible request object you can do this::
     pt.set_api_url('http://example.com/piwik.php')
     pt.do_track_page_view('Page title')
 
-Yes, this code is a little odd but that's how the PHP class was built. I
-will probably refactor the code in the future and break compatibility.
+I think this code is a little odd, but that's how the PHP class was built.
 
 .. _usage-with-django:
 
