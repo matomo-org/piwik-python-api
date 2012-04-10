@@ -13,7 +13,6 @@ TODO
 set_attribution_info
 set_force_visit_daytime
 set_url
-set_url_referer -> remove existing _set_referer
 do_track_action -> track download or click
 get_attribution_info
 get_url_track_action
@@ -196,6 +195,16 @@ class PiwikTracker(object):
         """
         self.debug_append_url = string
 
+    def set_url_referer(self, referer):
+        """
+        Set the referer URL
+
+        :param referer: Referer
+        :type referer: str
+        :rtype: None
+        """
+        self.referer = referer
+
     def _set_request_cookie(self, cookie):
         """
         Set the request cookie, for testing purposes
@@ -205,16 +214,6 @@ class PiwikTracker(object):
         :rtype: None
         """
         self.request_cookie = cookie
-
-    def _set_referer(self, referer):
-        """
-        Set the referer manually, for testing purposes
-
-        :param referer: Referer
-        :type referer: str
-        :rtype: None
-        """
-        self.referer = referer
 
     def _set_host(self, host):
         """
