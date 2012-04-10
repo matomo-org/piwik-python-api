@@ -102,9 +102,10 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         """
         This unit test will only work if a goal with ID=1 exists
         """
-        r = self.pt.do_track_goal(1, 23)
+        goal = self.settings.PIWIK_GOAL_ID
+        r = self.pt.do_track_goal(goal, 23)
         self.assertEqual(
-            1,
+            goal,
             self.get_v('goalConversions'),
             "Unexpected goalConversions value %s" %
                 self.get_v('goalConversions'),

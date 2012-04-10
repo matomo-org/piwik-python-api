@@ -13,3 +13,6 @@ class Settings:
 
     #: The auth token of an admin user for above site
     PIWIK_TOKEN_AUTH = '<Your Piwik auth token>'
+
+    #: The ID of the goal that will be used for unit tests
+    PIWIK_GOAL_ID = 1
