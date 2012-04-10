@@ -169,19 +169,35 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     #        "Unexpected value %s" % self.get_v('language'),
     #    )
 
-    # UA string not logged
-    #def test_set_user_agent(self):
-    #    ua = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.24)' \
-    #        'Gecko/20111103 Firefox/3.6.24'
-    #    self.pt.set_user_agent(ua)
-    #    self.assertEqual(
-    #        ua,
-    #        self.pt.user_agent,
-    #        "User Agent was not set to %s" % ua
-    #    )
-    #    r = self.pt.do_track_page_view(self.get_title('verify user agent'))
-    #    self.assertTrue(True) # FIXME
-    #    #print self.segment
+    def test_set_user_agent(self):
+        """
+        Piwik doesn't save the UA string but processes it.
+        """
+        ua = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.24)' \
+            'Gecko/20111103 Firefox/3.6.24'
+        self.pt.set_user_agent(ua)
+        #self.assertEqual(
+        #    ua,
+        #    self.pt.user_agent,
+        #    "User Agent was not set to %s" % ua
+        #)
+        r = self.pt.do_track_page_view(self.get_title('verify user agent'))
+        self.assertEqual(
+            'Windows 7',
+            self.get_v('operatingSystem'),
+            "Unexpected operatingSystem value %s" %
+                self.get_v('operatingSystem'),
+        )
+        self.assertEqual(
+            'Firefox 3.6',
+            self.get_v('browserName'),
+            "Unexpected browserName value %s" % self.get_v('browserName'),
+        )
+        self.assertEqual(
+            'gecko',
+            self.get_v('browserFamily'),
+            "Unexpected browserFamily value %s" % self.get_v('browserFamily'),
+        )
 
     #def test_custom_variables(self):
     #    action_title = self.get_title('verify custom var')
