@@ -103,7 +103,6 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         This unit test will only work if a goal with ID=1 exists
         """
         r = self.pt.do_track_goal(1, 23)
-        data = json.loads(self.a.send_request())[0]
         self.assertEqual(
             1,
             self.get_v('goalConversions'),
@@ -117,7 +116,40 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         #    "Unexpected revenue value %s" % self.get_av('revenue'),
         #)
 
+    def test_action_link(self):
+        """
+        Test out action
+        """
+        url = 'http://out.example.com/out/15'
+        r = self.pt.do_track_action(url, 'link')
+        data = json.loads(self.a.send_request())[0]
+        self.assertEqual(
+            url,
+            self.get_av('url'),
+            "Unexpected url value %s" % self.get_av('url'),
+        )
+        self.assertEqual(
+            'outlink',
+            self.get_av('type'),
+            "Unexpected type value %s" % self.get_av('type'),
+        )
 
+    def test_action_click(self):
+        """
+        Test download action
+        """
+        url = 'http://download.example.com/download/15'
+        r = self.pt.do_track_action(url, 'download')
+        self.assertEqual(
+            url,
+            self.get_av('url'),
+            "Unexpected url value %s" % self.get_av('url'),
+        )
+        self.assertEqual(
+            'download',
+            self.get_av('type'),
+            "Unexpected type value %s" % self.get_av('type'),
+        )
 
     # Browser language doesn't seem to be logged explicitly
     #def test_set_browser_language(self):

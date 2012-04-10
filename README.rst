@@ -9,10 +9,11 @@ Supported:
 - Normal tracking
 - Custom variables
 - Ecommerce
+- Goals
+- Actions
 
 Not supported yet:
 
-- Goals
 - Cookies
 - probably more
 
