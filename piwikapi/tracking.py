@@ -361,6 +361,17 @@ class PiwikTracker(object):
         url += '&%s' % urllib.urlencode(params)
         return url
 
+    def get_url_track_action(self, action_url, action_type):
+        """
+        :param action_url: URL of the download or outlink
+        :type action_url: str
+        :param action_type: Type of the action, either 'download' or 'link'
+        :type action_type: str
+        """
+        url = self.get_request(self.id_site)
+        url += "&%s" % urllib.urlencode({action_type: action_url})
+        return url
+
     def get_cookie_matching_name(self, name):
         """
         Get a cookie's value by name
@@ -457,6 +468,20 @@ class PiwikTracker(object):
         :type revenue: int (TODO why int here and not float!?)
         """
         url = self.get_url_track_goal(id_goal, revenue)
+        return self._send_request(url)
+
+    def do_track_action(self, action_url, action_type):
+        """
+        Track a download or outlink
+
+        :param action_url: URL of the download or outlink
+        :type action_url: str
+        :param action_type: Type of the action, either 'download' or 'link'
+        :type action_type: str
+        """
+        if action_type not in ('download', 'link'):
+            raise Exception("Illegal action %s" % action_type)
+        url = self.get_url_track_action(action_url, action_type)
         return self._send_request(url)
 
     def _send_request(self, url):
