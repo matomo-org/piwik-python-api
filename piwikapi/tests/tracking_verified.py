@@ -27,8 +27,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
             "customVariableValue5==%s" % self.segment)
 
     def get_v(self, key):
+        """
+        Get a variable from the last visit
+        """
         try:
-            data = json.loads(self.a.send_request())[0]
+            data = json.loads(self.a.send_request())[-1]
         except IndexError:
             print "Request apparently not logged!"
             raise
@@ -39,8 +42,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
             raise
 
     def get_av(self, key):
+        """
+        Get an action variable from the last visit
+        """
         try:
-            data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]
         except IndexError:
             print "Request apparently not logged!"
             raise
