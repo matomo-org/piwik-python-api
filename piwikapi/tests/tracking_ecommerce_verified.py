@@ -94,7 +94,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             "Product name %s, not %s" % (self.get_cv(4), product['name'])
         )
 
-    def test_add_ecommerce_item(self):
+    def test_add_ecommerce_item_do_track_ecommerce_cart_update(self):
         """
         TODO can't test this directly
         """
