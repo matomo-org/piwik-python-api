@@ -3,7 +3,8 @@ import urllib
 from random import randint
 
 from piwikapi.tracking import PiwikTrackerEcommerce
-from tracking_verified import TrackerVerifyBaseTestCase
+
+from tracking import TrackerVerifyBaseTestCase
 
 
 class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
