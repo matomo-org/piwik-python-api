@@ -5,7 +5,7 @@ from piwikapi.tracking import PiwikTrackerEcommerce
 from tracking import TrackerBaseTestCase
 
 
-class TrackerEcommerceBaseTestCase(TrackerBaseTestCase):
+class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
     """
     Base class for the ecommerce tests
 
@@ -46,6 +46,11 @@ class TrackerEcommerceNoverifyTestCase(TrackerEcommerceBaseTestCase):
     """
     Ecommerce unit tests
     """
+    def setUp(self):
+        """
+        Ecommerce tracking data doesn't always show up in the Live API
+        """
+
     def test_browse_cart_update_order(self):
         """
         This is a test shopping run. The visitor will browse from category to
