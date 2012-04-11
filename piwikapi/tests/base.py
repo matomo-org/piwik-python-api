@@ -25,7 +25,7 @@ class PiwikAPITestCase(unittest.TestCase):
     Provides a fake request, PiwikTracker and PiwikTrackerEcommerce instances.
     """
     def setUp(self):
-        self.settings = Settings()
+        self.settings = settings.Settings()
 
     def debug(self, value):
         pp = pprint.PrettyPrinter(indent=4)
