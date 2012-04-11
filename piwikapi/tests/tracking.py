@@ -36,7 +36,7 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         self.pt.set_custom_variable(
             1,
             'testrun',
-            self.settings.PIWIK_TEST_RUN,
+            datetime.datetime.now().isoformat(' '),
         )
 
     def get_title(self, title):
