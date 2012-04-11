@@ -56,8 +56,8 @@ You can't check all client-side features from the server, such as plugin
 support, screen resolution, click goals etc. This could be accomplished by
 using some JavaScript code though if necessary.
 
-TODO What happens if we have one client-side requests followed by only server
-side requests? Is the info tied to the user/visit?
+TODO What happens if we have one client-side request followed only by
+server-side requests? Is the info tied to the user/visit?
 
 Analytics API
 -------------
