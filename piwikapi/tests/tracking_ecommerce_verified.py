@@ -1,3 +1,4 @@
+import json
 import urllib
 from random import randint
 
@@ -17,7 +18,7 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
             'name': 'Book',
             'category': ('test category', 'books', ),
             'price': 9.99,
-            'quantity': 5,
+            'quantity': 3,
         },
         'car': {
             'sku': '2',
@@ -31,9 +32,24 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
             'name': 'Ball',
             'category': ('test category', 'balls', ),
             'price': 7.39,
-            'quantity': 10,
+            'quantity': 7,
         },
     }
+
+    def get_cv(self, number):
+        """
+        Get a custom variable from the last visit
+        """
+        try:
+            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]['customVariables']
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
+        try:
+            return data[str(number)]['customVariableValue%s' % number]
+        except KeyError:
+            self.debug(data)
+            raise
 
 
 class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
@@ -53,11 +69,6 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         )
         self.pte._set_host("ecommerce.example.com")
         self.pte._set_query_string('')
-
-        self.a.set_method('Live.getLastVisitsDetails')
-        self.a.set_parameter('lastMinutes', 1)
-        self.a.set_segment("customVariableName5==testsegment;"
-            "customVariableValue5==%s" % self.segment)
 
     def test_ecommerce_view(self):
         # View a product
@@ -83,33 +94,50 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             "Product name %s, not %s" % (self.get_cv(4), product['name'])
         )
 
-    #def test_add_ecommerce_item(self):
-    #    """
-    #    TODO can't test this directly
-    #    """
-    #    grand_total = 0
-    #    for key, product in self.products.iteritems():
-    #        # Put product in the cart
-    #        quantity = randint(1, product['quantity'])
-    #        self.pte.add_ecommerce_item(
-    #            product['sku'],
-    #            product['name'],
-    #            product['category'],
-    #            product['price'],
-    #            quantity,
-    #        )
-    #        grand_total += product['price'] * quantity
+    def test_add_ecommerce_item(self):
+        """
+        TODO can't test this directly
+        """
+        grand_total = 0
+        for key, product in self.products.iteritems():
+            # Put product in the cart
+            self.pte.add_ecommerce_item(
+                product['sku'],
+                product['name'],
+                product['category'],
+                product['price'],
+                product['quantity'],
+            )
+            grand_total += product['price'] * product['quantity']
 
-    #    title = self.get_title('Add ecommerce items')
-    #    r = self.pte.do_track_page_view(title)
-    #    import json
-    #    data = json.loads(self.a.send_request())
-    #    self.debug(data)
-    #    self.assertEqual(
-    #        title,
-    #        self.get_av('pageTitle'),
-    #        'Title: "%s", not "%s"' % (self.get_av('pageTitle'), title)
-    #    )
+        title = self.get_title('Add ecommerce items')
+        r = self.pte.do_track_ecommerce_cart_update(grand_total)
+        items = self.get_av('itemDetails')
+        matches = 0
+        for product in self.products.values():
+            for item in items:
+                if item['itemSKU'] == product['sku']:
+                    matches += 1
+                    self.assertEqual(
+                        product['name'],
+                        item['itemName'],
+                        "Incorrect product name",
+                    )
+                    self.assertEqual(
+                        str(product['quantity']),
+                        item['quantity'],
+                        "Incorrect product quantity",
+                    )
+                    self.assertEqual(
+                        "%.2f" % product['price'],
+                        item['price'],
+                        "Incorrect product price",
+                    )
+        self.assertEqual(
+            matches,
+            len(self.products),
+            "Not all products found",
+        )
 
     def test_track_ecommerce_order(self):
         """
@@ -119,16 +147,15 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         quantity_total = 0
         for key, product in self.products.iteritems():
             # Put product in the cart
-            quantity = randint(1, product['quantity'])
             self.pte.add_ecommerce_item(
                 product['sku'],
                 product['name'],
                 product['category'],
                 product['price'],
-                quantity,
+                product['quantity'],
             )
-            grand_total += product['price'] * quantity
-            quantity_total += quantity
+            grand_total += product['price'] * product['quantity']
+            quantity_total += product['quantity']
         # Order the products
         script = "/cart/checkout/"
         self.pte._set_script(script)

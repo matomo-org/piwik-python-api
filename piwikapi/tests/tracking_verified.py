@@ -56,21 +56,6 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
             self.debug(data)
             raise
 
-    def get_cv(self, number):
-        """
-        Get an custom variable from the last visit
-        """
-        try:
-            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]['customVariables']
-        except IndexError:
-            print "Request apparently not logged!"
-            raise
-        try:
-            return data[str(number)]['customVariableValue%s' % number]
-        except KeyError:
-            self.debug(data)
-            raise
-
 
 class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     """
