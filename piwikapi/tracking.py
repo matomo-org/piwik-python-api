@@ -15,20 +15,6 @@ import urllib
 import urllib2
 import urlparse
 
-"""
-TODO
-set_attribution_info
-set_force_visit_daytime
-set_url
-do_track_action -> track download or click
-get_attribution_info
-get_url_track_action
-
-TEST
-disable_cookie_support
-
-"""
-
 
 class PiwikTracker(object):
     """
@@ -72,6 +58,7 @@ class PiwikTracker(object):
         self.ip = False
         self.token_auth = False
         self.__set_request_parameters()
+        self.forced_datetime = False
         self.set_local_time(self._get_timestamp())
         self.page_url = self.__get_current_url()
         self.cookie_support = True
@@ -84,6 +71,7 @@ class PiwikTracker(object):
         self.page_custom_var = {}
         self.visitor_custom_var = {}
         self.plugins = {}
+        self.attribution_info = {}
 
     def __set_request_parameters(self):
         """
@@ -133,6 +121,7 @@ class PiwikTracker(object):
         """
         Set the IP to be tracked. You probably want to use this as the
         request comes from your own server.
+
         Requires setting the auth token.
 
         :param ip: IP
@@ -211,6 +200,50 @@ class PiwikTracker(object):
         :rtype: None
         """
         self.referer = referer
+
+    def set_url(self, url):
+        """
+        Set url being tracked
+
+        :param url: URL
+        :type url: str
+        """
+        self.page_url = url
+
+    def set_attribution_info(json_encoded):
+        """
+        Set the attribution info for the visit, so that subsequent goal
+        conversions are properly attributed to the right referer, timestamp,
+        campaign name and keyword.
+
+        See function getAttributionInfo() in
+        http://dev.piwik.org/trac/browser/trunk/js/piwik.js
+
+        :param json_encoded: JSON encoded list containing attribution info
+        :type json_encoded: string
+        :rtype: none
+        """
+        decoded = json.loads(json_encoded)
+        if type(decoded) != type(list):
+            raise Exception("set_attribution_info() is expecting a JSON "
+                            "encoded string, %s given" % json_encoded);
+        self.attribution_info = decoded
+
+    def set_force_visit_date_time(self, datetime):
+        """
+        Override the server date and time for the tracking request.
+
+        By default Piwik tracks requests for the "current" datetime, but
+        this method allows you to track visits in the past. Time are in
+        UTC.
+
+        Requires setting the auth token.
+
+        :param datetime: datetime
+        :type datetime: datetime.datetime object
+        :rtype: None
+        """
+        self.forced_datetime = datetime
 
     def __set_request_cookie(self, cookie):
         """
@@ -299,7 +332,19 @@ class PiwikTracker(object):
         return url
 
     def _get_timestamp(self):
-        return datetime.datetime.now()
+        """
+        Returns the timestamp for the request
+
+        Defaults to current datetime but can be set through
+        set_force_visit_date_time().
+
+        :rtype: datetime.datetime object
+        """
+        if self.forced_datetime:
+            r = self.forced_datetime
+        else:
+            r = datetime.datetime.now()
+        return r
 
     def _get_request(self, id_site):
         """
@@ -335,6 +380,15 @@ class PiwikTracker(object):
         if len(self.plugins):
             for plugin, version in self.plugins.iteritems():
                 query_vars[plugin] = version
+        if len(self.attribution_info):
+            for i, var in {
+                0: '_rcn',
+                1: '_rck',
+                2: '_refts',
+                3: '_ref',
+            }.iteritems():
+                if i in attribution_info:
+                    query_Vars[var] = urllib.urlencode(self.attribution_info[i])
 
         url = urllib.urlencode(query_vars)
         if self.debug_append_url:
@@ -434,6 +488,22 @@ class PiwikTracker(object):
                 #    return $visitorId;
         return visitor_id
 
+    def get_attribution_info(self):
+        """
+        **NOT SUPPORTED**
+
+        Return the currently assigned attribution info stored in a first party
+        cookie.
+
+        This method only works if the user is initiating the current request
+        and his cookies can be read by this API.
+
+        :rtype: string, JSON encoded string containing the referer info for
+            goal conversion attribution
+        """
+        attribution_cookie_name = 'ref.%d.' % seld.id_site
+        return self.get_cookie_matching_name(attribution_cookie_name)
+
     def __get_random_string(self, length=500):
         """
         Return a random string
@@ -455,7 +525,7 @@ class PiwikTracker(object):
 
     def disable_cookie_support(self):
         """
-        **NOT TESTED**
+        **NOT SUPPORTED**
 
         By default, PiwikTracker will read third party cookies from the
         response and sets them in the next request.
