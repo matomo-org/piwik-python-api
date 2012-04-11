@@ -22,6 +22,13 @@ class PiwikAPITestCase(unittest.TestCase):
         self.settings = Settings()
 
     def debug(self, value):
+        """
+        Just a debug helper
+
+        :param value: The value to pretty print
+        :type value: anything you like
+        :rtype: None
+        """
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(value)
 
