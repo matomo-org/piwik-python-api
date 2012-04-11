@@ -19,7 +19,8 @@ class FakeRequest:
         Configure request object according to the headers we get
 
         :param headers: see META
-        :rtype headers: dict
+        :type headers: dict
+        :rtype: None
         """
         self.META = headers
         if self.META['HTTPS']:
