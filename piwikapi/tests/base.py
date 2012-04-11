@@ -4,12 +4,18 @@ import pprint
 import unittest
 
 try:
-    from settings import Settings
-    settings = Settings()
-except:
-    raise Exception("You haven't created the necessary Settings class in"
-                    "the settings module. This is necessary to run the"
-                    "unit tests, please check the documentation.")
+    import settings
+except ImportError:
+    print "-- You haven't created the necessary settings module, please check " \
+        "the documentation."
+    raise
+
+try:
+    mysettings = settings.Settings()
+except NameError:
+    print "-- You haven't created the necessary Settings class, please check " \
+        "the documentation."
+    raise
 
 
 class PiwikAPITestCase(unittest.TestCase):
@@ -19,7 +25,7 @@ class PiwikAPITestCase(unittest.TestCase):
     Provides a fake request, PiwikTracker and PiwikTrackerEcommerce instances.
     """
     def setUp(self):
-        self.settings = Settings()
+        self.settings = settings.Settings()
 
     def debug(self, value):
         """

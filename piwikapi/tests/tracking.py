@@ -12,6 +12,11 @@ from request import FakeRequest
 
 
 class TrackerBaseTestCase(PiwikAPITestCase):
+    """
+    This sets up a more or less random visitor
+
+    In every test run all tests get the same testrun custom variable.
+    """
     def setUp(self):
         super(TrackerBaseTestCase, self).setUp()
         headers = {
@@ -31,7 +36,7 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         self.pt.set_custom_variable(
             1,
             'testrun',
-            self.settings.PIWIK_TEST_RUN,
+            datetime.datetime.now().isoformat(' '),
         )
 
     def get_title(self, title):
@@ -69,6 +74,9 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         """
         Returns a random user agent string
 
+        Only return Desktop UAs as Piwik doesn't like big resolutions on
+        devices it thinks are mobile.
+
         :rtype: string
         """
         uas = (
@@ -93,19 +101,32 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         return self.get_random(uas)
 
     def get_random_language(self):
+        """
+        Return a random language code
+        """
         langs = (
-            'de',
-            'fr',
-            'en-US',
-            'zh-TW',
-            'it',
-            'pt-BR',
-            'jp',
-            'es-AR',
+            'ar-EG',
             'ar-TN',
+            'de',
+            'en',
+            'en-GB',
+            'en-US',
+            'es',
+            'es-AR',
+            'fr',
+            'in',
+            'it',
+            'jp',
+            'ms',
+            'pl',
+            'pt',
+            'pt-BR',
+            'ru',
+            'tn',
+            'zh-TW',
+            'zh-CN',
         )
         return self.get_random(langs)
-
 
 
 class TrackerClassTestCase(TrackerBaseTestCase):

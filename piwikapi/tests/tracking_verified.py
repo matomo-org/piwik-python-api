@@ -1,12 +1,12 @@
 import json
 
 from tracking import TrackerBaseTestCase
-from analytics import AnalyticsLiveBaseTestCase
+from analytics import AnalyticsBaseTestCase
 
 from piwikapi.analytics import PiwikAnalytics
 
 
-class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
+class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
     def setUp(self):
         super(TrackerVerifyBaseTestCase, self).setUp()
         self.segment = self.get_random_string()
@@ -19,7 +19,7 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
         self.pt.set_ip(self.get_random_ip())
 
         # Set up the analytics query
-        super(AnalyticsLiveBaseTestCase, self).setUp()
+        super(AnalyticsBaseTestCase, self).setUp()
         self.a.set_method('Live.getLastVisitsDetails')
         # Assume no test takes more than one minute
         self.a.set_parameter('lastMinutes', 1)
@@ -27,8 +27,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
             "customVariableValue5==%s" % self.segment)
 
     def get_v(self, key):
+        """
+        Get a variable from the last visit
+        """
         try:
-            data = json.loads(self.a.send_request())[0]
+            data = json.loads(self.a.send_request())[-1]
         except IndexError:
             print "Request apparently not logged!"
             raise
@@ -39,8 +42,11 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsLiveBaseTestCase):
             raise
 
     def get_av(self, key):
+        """
+        Get an action variable from the last visit
+        """
         try:
-            data = json.loads(self.a.send_request())[0]['actionDetails'][0]
+            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]
         except IndexError:
             print "Request apparently not logged!"
             raise
@@ -97,25 +103,6 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
             self.get_v('plugins'),
             "Unexpected plugins value %s" % self.get_v('plugins'),
         )
-
-    def test_track_goal_conversion(self):
-        """
-        This unit test will only work if a goal with ID=1 exists
-        """
-        goal = self.settings.PIWIK_GOAL_ID
-        r = self.pt.do_track_goal(goal, 23)
-        self.assertEqual(
-            goal,
-            self.get_v('goalConversions'),
-            "Unexpected goalConversions value %s" %
-                self.get_v('goalConversions'),
-        )
-        # The revenue is not in the live data, but it's recorded...
-        #self.assertEqual(
-        #    23,
-        #    self.get_av('revenue'),
-        #    "Unexpected revenue value %s" % self.get_av('revenue'),
-        #)
 
     def test_action_link(self):
         """
@@ -218,3 +205,32 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     #    #)
 
     #    #print r
+
+
+class TrackerGoalVerifyTestCase(TrackerVerifyBaseTestCase):
+    """
+    Goal tracking tests
+    """
+    def setUp(self):
+        self.a.set_method('Goals.addGoal')
+        self.a.set_parameter('name', 'testgoal')
+
+    def test_track_goal_conversion(self):
+        """
+        This unit test will only work if a goal with ID=1 exists
+        """
+        goal = self.settings.PIWIK_GOAL_ID
+        r = self.pt.do_track_goal(goal, 23)
+        self.assertEqual(
+            goal,
+            self.get_v('goalConversions'),
+            "Unexpected goalConversions value %s" %
+                self.get_v('goalConversions'),
+        )
+        self.a.set_method('')
+        # The revenue is not in the live data, but it's recorded...
+        #self.assertEqual(
+        #    23,
+        #    self.get_av('revenue'),
+        #    "Unexpected revenue value %s" % self.get_av('revenue'),
+        #)

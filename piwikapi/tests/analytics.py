@@ -11,22 +11,26 @@ class AnalyticsBaseTestCase(PiwikAPITestCase):
         super(AnalyticsBaseTestCase, self).setUp()
         self.a = PiwikAnalytics()
         self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)
-        self.a.set_id_site(1)
+        self.a.set_id_site(self.settings.PIWIK_SITE_ID)
         self.a.set_format('json')
         self.a.set_period('day')
         self.a.set_date('today')
-        #a.set_filter_limit(10)
-        #print '4', a.get_query_string()
 
 
 class AnalyticsTestCase(AnalyticsBaseTestCase):
+    """
+    Generic analytics API tests
+    """
     def test_get_referer_sites(self):
         self.a.set_method('Referers.getWebsites')
         r = json.loads(self.a.send_request())
         #self.debug(r)
+        # TODO
 
     def test_get_imagegraph(self):
-        "Just a basic test to see if we get an image"
+        """
+        Just a basic test to see if we can get an image
+        """
         self.a.set_method('ImageGraph.get')
         self.a.set_parameter('apiModule', 'UserCountry')
         self.a.set_parameter('apiAction', 'getCountry')
@@ -40,19 +44,12 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
             got_image,
             "Couldn't get an ImageGraph"
         )
-        #self.assertTrue(False)
 
 
-class AnalyticsLiveBaseTestCase(AnalyticsBaseTestCase):
-    def setUp(self):
-        super(AnalyticsLiveBaseTestCase, self).setUp()
-        self.a = PiwikAnalytics()
-        self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)
-        self.a.set_id_site(1)
-        self.a.set_format('json')
-
-
-class AnalyticsLiveTestCase(AnalyticsLiveBaseTestCase):
+class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
+    """
+    Useless for now
+    """
     def test_live_counters(self):
         self.a.set_method('Live.getCounters')
         self.a.set_parameter('lastMinutes', 1)
