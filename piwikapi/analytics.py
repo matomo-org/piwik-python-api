@@ -1,3 +1,10 @@
+"""
+Copyright (c) 2012, Nicolas Kuttler.
+All rights reserved.
+
+License: BSD, see LICENSE for details
+"""
+
 import urllib
 import urllib2
 
