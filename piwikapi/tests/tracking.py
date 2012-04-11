@@ -162,7 +162,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
     def test_set_debug_string_append(self):
         suffix = 'suffix'
         self.pt.set_debug_string_append(suffix)
-        query_url = self.pt.get_request('foo')
+        query_url = self.pt._get_request('foo')
         self.assertRegexpMatches(
             query_url,
             "%s$" % suffix,

@@ -71,9 +71,9 @@ class PiwikTracker(object):
         self.request_cookie = ''
         self.ip = False
         self.token_auth = False
-        self.set_request_parameters()
-        self.set_local_time(self.get_timestamp())
-        self.page_url = self.get_current_url()
+        self.__set_request_parameters()
+        self.set_local_time(self._get_timestamp())
+        self.page_url = self.__get_current_url()
         self.cookie_support = True
         self.has_cookies = False
         self.width = False
@@ -85,7 +85,7 @@ class PiwikTracker(object):
         self.visitor_custom_var = {}
         self.plugins = {}
 
-    def set_request_parameters(self):
+    def __set_request_parameters(self):
         """
         Set some headers for the request
 
@@ -212,7 +212,7 @@ class PiwikTracker(object):
         """
         self.referer = referer
 
-    def _set_request_cookie(self, cookie):
+    def __set_request_cookie(self, cookie):
         """
         Set the request cookie, for testing purposes
 
@@ -222,14 +222,16 @@ class PiwikTracker(object):
         """
         self.request_cookie = cookie
 
-    def _set_host(self, host):
+    def __set_host(self, host):
         """
         :param host: Hostname
         :type host: str
         :rtype: None
         """
         self.host = host
-        self.page_url = self.get_current_url()
+        self.page_url = self.__get_current_url()
+
+    set_host_test = __set_host
 
     def _set_script(self, script):
         """
@@ -238,18 +240,20 @@ class PiwikTracker(object):
         :rtype: None
         """
         self.script = script
-        self.page_url = self.get_current_url()
+        self.page_url = self.__get_current_url()
 
-    def _set_query_string(self, query_string):
+    def __set_query_string(self, query_string):
         """
         :param query_string: Query string
         :type query_string: str
         :rtype: None
         """
         self.query_string = query_string
-        self.page_url = self.get_current_url()
+        self.page_url = self.__get_current_url()
 
-    def get_current_scheme(self):
+    set_query_string_test = __set_query_string
+
+    def __get_current_scheme(self):
         """
         Return either http or https
 
@@ -262,42 +266,42 @@ class PiwikTracker(object):
             scheme = 'http'
         return scheme
 
-    def get_current_host(self):
+    def __get_current_host(self):
         """
         :rtype: str
         """
         return self.host
 
-    def get_current_script_name(self):
+    def __get_current_script_name(self):
         """
         :rtype: str
         """
         return self.script
 
-    def get_current_query_string(self):
+    def __get_current_query_string(self):
         """
         :rtype: str
         """
         return self.query_string
 
-    def get_current_url(self):
+    def __get_current_url(self):
         """
         Returns the URL of the page the visitor is on.
 
         :rtype: str
         """
-        url = self.get_current_scheme() + '://'
-        url += self.get_current_host()
-        url += self.get_current_script_name()
-        if self.get_current_query_string():
+        url = self.__get_current_scheme() + '://'
+        url += self.__get_current_host()
+        url += self.__get_current_script_name()
+        if self.__get_current_query_string():
             url += '?'
-            url += self.get_current_query_string()
+            url += self.__get_current_query_string()
         return url
 
-    def get_timestamp(self):
+    def _get_timestamp(self):
         return datetime.datetime.now()
 
-    def get_request(self, id_site):
+    def _get_request(self, id_site):
         """
         This oddly named method returns the query var string.
 
@@ -346,7 +350,7 @@ class PiwikTracker(object):
         :type document_title: str
         :rtype: str
         """
-        url = self.get_request(self.id_site)
+        url = self._get_request(self.id_site)
         if document_title:
             url += '&%s' % urllib.urlencode({'action_name': document_title})
         return url
@@ -360,7 +364,7 @@ class PiwikTracker(object):
         :param revenue: Revenue for this conversion
         :type revenue: int (TODO why int here and not float!?)
         """
-        url = self.get_request(self.id_site)
+        url = self._get_request(self.id_site)
         params = {}
         params['idgoal'] = id_goal
         if revenue:
@@ -375,12 +379,14 @@ class PiwikTracker(object):
         :param action_type: Type of the action, either 'download' or 'link'
         :type action_type: str
         """
-        url = self.get_request(self.id_site)
+        url = self._get_request(self.id_site)
         url += "&%s" % urllib.urlencode({action_type: action_url})
         return url
 
-    def get_cookie_matching_name(self, name):
+    def __get_cookie_matching_name(self, name):
         """
+        **NOT SUPPORTED**
+
         Get a cookie's value by name
 
         :param name: Cookie name
@@ -398,6 +404,8 @@ class PiwikTracker(object):
 
     def get_visitor_id(self):
         """
+        **Partial, no cookie support**
+
         If the user initiating the request has the Piwik first party cookie,
         this function will try and return the ID parsed from this first party
         cookie.
@@ -415,7 +423,7 @@ class PiwikTracker(object):
             visitor_id = self.forced_visitor_id
         else:
             id_cookie_name =  'id.%s.' % self.id_site
-            id_cookie = self.get_cookie_matching_name(id_cookie_name)
+            id_cookie = self.__get_cookie_matching_name(id_cookie_name)
             visitor_id = self.visitor_id
             if id_cookie:
                 #print 'id_cookie is', id_cookie
@@ -426,7 +434,7 @@ class PiwikTracker(object):
                 #    return $visitorId;
         return visitor_id
 
-    def get_random_string(self, length=500):
+    def __get_random_string(self, length=500):
         """
         Return a random string
 
@@ -442,11 +450,13 @@ class PiwikTracker(object):
 
         :rtype: str
         """
-        visitor_id = self.get_random_string()
+        visitor_id = self.__get_random_string()
         return visitor_id[:self.LENGTH_VISITOR_ID]
 
     def disable_cookie_support(self):
         """
+        **NOT TESTED**
+
         By default, PiwikTracker will read third party cookies from the
         response and sets them in the next request.
 
@@ -583,7 +593,7 @@ class PiwikTracker(object):
                 r = self.visitor_custom_var[id]
             else:
                 custom_variables_cookie = 'cvar.%d.' % self.id_site
-                cookie = self.get_cookie_matching_name(custom_variables_cookie)
+                cookie = self.__get_cookie_matching_name(custom_variables_cookie)
                 if not cookie:
                     r = False
                 else:
@@ -747,13 +757,13 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :type discount: float or None
         :rtype: str
         """
-        url = self.get_url_track_ecommerce(grand_total, sub_total, tax,
+        url = self.__get_url_track_ecommerce(grand_total, sub_total, tax,
                                            shipping, discount)
         url += '&%s' % urllib.urlencode({'ec_id': order_id})
-        self.ecommerce_last_order_timestamp = self.get_timestamp()
+        self.ecommerce_last_order_timestamp = self._get_timestamp()
         return url
 
-    def get_url_track_ecommerce(self, grand_total, sub_total=False, tax=False,
+    def __get_url_track_ecommerce(self, grand_total, sub_total=False, tax=False,
                                 shipping=False, discount=False):
         """
         Returns the URL used to track ecommerce orders
@@ -778,7 +788,8 @@ class PiwikTrackerEcommerce(PiwikTracker):
         if type(grand_total) != type(float()):
             raise Exception("You must specify a grand_total for the ecommerce "
                             "transaction")
-        url = self.get_request(self.id_site)
+        # FIXME
+        url = self._get_request(self.id_site)
         args = {
             'idgoal': 0,
         }
@@ -814,10 +825,11 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :type grand_total: float
         :rtype: str
         """
-        url = self.get_url_track_ecommerce_cart_update(grand_total)
+        # FIXME
+        url = self.__get_url_track_ecommerce_cart_update(grand_total)
         return self._send_request(url)
 
-    def get_url_track_ecommerce_cart_update(self, grand_total):
+    def __get_url_track_ecommerce_cart_update(self, grand_total):
         """
         Returns the URL to track a cart update
 
@@ -827,7 +839,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :type grand_total: float
         :rtype: str
         """
-        url = self.get_url_track_ecommerce(grand_total)
+        url = self.__get_url_track_ecommerce(grand_total)
         return url
 
 

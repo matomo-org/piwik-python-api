@@ -22,7 +22,7 @@ clean:
 
 .PHONY: test
 test:
-	python piwikapi/tests/
+	python piwikapi/tests/ --failfast
 
 .PHONY: html
 html:

@@ -67,8 +67,8 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             'testsegment',
             self.segment,
         )
-        self.pte._set_host("ecommerce.example.com")
-        self.pte._set_query_string('')
+        self.pte.set_host_test("ecommerce.example.com")
+        self.pte.set_query_string_test('')
 
     def test_ecommerce_view(self):
         # View a product
@@ -159,11 +159,11 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         # Order the products
         script = "/cart/checkout/"
         self.pte._set_script(script)
+        grand_total_string = "%.2f" % grand_total
         r = self.pte.do_track_ecommerce_order(
             randint(0, 99999), # TODO random failure
             grand_total,
         )
-        grand_total_string = "%.2f" % grand_total
         revenue = self.get_av('revenue')
         self.assertEqual(
             grand_total_string,
