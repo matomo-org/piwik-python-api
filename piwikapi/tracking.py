@@ -212,6 +212,8 @@ class PiwikTracker(object):
 
     def set_attribution_info(json_encoded):
         """
+        **NOT SUPPORTED**
+
         Set the attribution info for the visit, so that subsequent goal
         conversions are properly attributed to the right referer, timestamp,
         campaign name and keyword.
