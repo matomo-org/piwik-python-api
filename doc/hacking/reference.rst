@@ -26,18 +26,34 @@ data.
 Tracking API tests
 ------------------
 
+.. autoclass:: piwikapi.tests.tracking.TrackerBaseTestCase
+   :members:
+   :undoc-members:
+
 .. autoclass:: piwikapi.tests.tracking.TrackerClassTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.tracking.TrackerTestCase
+.. autoclass:: piwikapi.tests.tracking.TrackerVerifyDebugTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.tracking_verified.TrackerVerifyTestCase
+.. autoclass:: piwikapi.tests.tracking.TrackerVerifyBaseTestCase
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceNoverifyTestCase
+.. autoclass:: piwikapi.tests.tracking.TrackerVerifyTestCase
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.tracking.TrackerGoalVerifyTestCase
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceBaseTestCase
+   :members:
+   :undoc-members:
+
+.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceVerifyTestCase
    :members:
    :undoc-members:

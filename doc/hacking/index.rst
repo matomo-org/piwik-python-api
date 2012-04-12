@@ -10,9 +10,6 @@ If you want to work on the tracking code you should have a look at the original
 ``PiwikTracking.php`` in the Piwik source tree. There's also a
 ``PiwikTracking.java`` implementation in the release.
 
-Running the unit tests
-----------------------
-
 To run the unit tests you need to:
 
 - Create a new Piwik site
