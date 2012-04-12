@@ -17,21 +17,21 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
         'book': {
             'sku': '1',
             'name': 'Book',
-            'category': ('test category', 'books', ),
+            'category': ('book category', 'books', ),
             'price': 9.99,
             'quantity': 3,
         },
         'car': {
             'sku': '2',
             'name': 'Car',
-            'category': ('test category', 'cars', ),
+            'category': ('car category', 'cars', ),
             'price': 5.25,
             'quantity': 3,
         },
         'ball': {
             'sku': '3',
             'name': 'Ball',
-            'category': ('test category', 'balls', ),
+            'category': ('ball category', 'balls', ),
             'price': 7.39,
             'quantity': 7,
         },
@@ -89,6 +89,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             self.get_av('pageTitle'),
             'Title: "%s", not "%s"' % (self.get_av('pageTitle'), title)
         )
+        # TODO verify all data was submitted
         self.assertEqual(
             product['name'],
             self.get_cv(4),
@@ -97,7 +98,8 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
 
     def test_add_ecommerce_item_do_track_ecommerce_cart_update(self):
         """
-        TODO can't test this directly
+        Test add_ecommerce_item() together with
+        do_track_ecommerce_cart_update()
         """
         grand_total = 0
         for key, product in self.products.iteritems():
@@ -115,6 +117,9 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         r = self.pte.do_track_ecommerce_cart_update(grand_total)
         items = self.get_av('itemDetails')
         matches = 0
+        # The items aren't always stored in the same order as the test code
+        # submits them. We could fix this by using time.sleep() but looing
+        # through the data is faster.
         for product in self.products.values():
             for item in items:
                 if item['itemSKU'] == product['sku']:
@@ -137,7 +142,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         self.assertEqual(
             matches,
             len(self.products),
-            "Not all products found",
+            "Not all products accounted for",
         )
 
     def test_track_ecommerce_order(self):

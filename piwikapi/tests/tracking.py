@@ -353,7 +353,15 @@ class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
 
 
 class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
+    """
+    The base class for tests that use the analytics API to verify
+    """
     def setUp(self):
+        """
+        To be able to verify against the analytics API each test gets a random
+        custom variable. Segmentation is then used to query the submitted
+        data.
+        """
         super(TrackerVerifyBaseTestCase, self).setUp()
         self.segment = self.get_unique_string()
         self.pt.set_custom_variable(
