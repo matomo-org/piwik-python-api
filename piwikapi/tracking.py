@@ -229,9 +229,13 @@ class PiwikTracker(object):
         :rtype: none
         """
         decoded = json.loads(json_encoded)
-        if type(decoded) != type(list):
+        if type(decoded) != type(list()):
             raise Exception("set_attribution_info() is expecting a JSON "
                             "encoded string, %s given" % json_encoded);
+        if len(decoded) != 4:
+            raise Exception("set_attribution_info() is expecting a JSON "
+                            "encoded string, that contains a list with "
+                            "four items, %s given" % json_encoded);
         self.attribution_info = decoded
 
     def set_force_visit_date_time(self, datetime):
@@ -394,15 +398,14 @@ class PiwikTracker(object):
                 2: '_refts',
                 3: '_ref',
             }.iteritems():
-                if i in attribution_info:
-                    query_Vars[var] = urllib.urlencode(self.attribution_info[i])
+                query_vars[var] = urllib.quote(self.attribution_info[i])
 
         url = urllib.urlencode(query_vars)
         if self.debug_append_url:
             url += self.debug_append_url
         return url
 
-    def get_url_track_page_view(self, document_title=''):
+    def __get_url_track_page_view(self, document_title=''):
         """
         Returns the URL to piwik.php with all parameters set to track the
         pageview
@@ -416,24 +419,7 @@ class PiwikTracker(object):
             url += '&%s' % urllib.urlencode({'action_name': document_title})
         return url
 
-    def get_url_track_goal(self, id_goal, revenue=False):
-        """
-        Return the goal tracking URL
-
-        :param id_goal: Goal ID
-        :type id_goal: int
-        :param revenue: Revenue for this conversion
-        :type revenue: int (TODO why int here and not float!?)
-        """
-        url = self._get_request(self.id_site)
-        params = {}
-        params['idgoal'] = id_goal
-        if revenue:
-            params['revenue'] = revenue
-        url += '&%s' % urllib.urlencode(params)
-        return url
-
-    def get_url_track_action(self, action_url, action_type):
+    def __get_url_track_action(self, action_url, action_type):
         """
         :param action_url: URL of the download or outlink
         :type action_url: str
@@ -511,8 +497,8 @@ class PiwikTracker(object):
         :rtype: string, JSON encoded string containing the referer info for
             goal conversion attribution
         """
-        attribution_cookie_name = 'ref.%d.' % seld.id_site
-        return self.get_cookie_matching_name(attribution_cookie_name)
+        attribution_cookie_name = 'ref.%d.' % self.id_site
+        return self.__get_cookie_matching_name(attribution_cookie_name)
 
     def __get_random_string(self, length=500):
         """
@@ -552,19 +538,7 @@ class PiwikTracker(object):
         :type document_title: str
         :rtype: str
         """
-        url = self.get_url_track_page_view(document_title)
-        return self._send_request(url)
-
-    def do_track_goal(self, id_goal, revenue=False):
-        """
-        Record a goal conversion
-
-        :param id_goal: Goal ID
-        :type id_goal: int
-        :param revenue: Revenue for this conversion
-        :type revenue: int (TODO why int here and not float!?)
-        """
-        url = self.get_url_track_goal(id_goal, revenue)
+        url = self.__get_url_track_page_view(document_title)
         return self._send_request(url)
 
     def do_track_action(self, action_url, action_type):
@@ -578,7 +552,7 @@ class PiwikTracker(object):
         """
         if action_type not in ('download', 'link'):
             raise Exception("Illegal action %s" % action_type)
-        url = self.get_url_track_action(action_url, action_type)
+        url = self.__get_url_track_action(action_url, action_type)
         return self._send_request(url)
 
     def _send_request(self, url):
@@ -703,114 +677,10 @@ class PiwikTrackerEcommerce(PiwikTracker):
     """
     def __init__(self, id_site, request):
         self.ecommerce_items = {}
+        #self.ecommerce = {}
         super(PiwikTrackerEcommerce, self).__init__(id_site, request)
 
-    def set_ecommerce_view(self, sku=False, name=False, category=False,
-                           price=False):
-        """
-        Set the page view as an item/product page view, or an ecommerce
-        category page view.
-
-        This method will set three custom variables of 'page' scope with the
-        SKU, name and category for this page view.
-
-        On a category page you may set the category argument only.
-
-        Tracking product/category page views will allow Piwik to report on
-        product and category conversion rates.
-
-        To enable ecommerce tracking see doc/install.rst
-
-        :param SKU: Product SKU being viewed
-        :type SKU: str or None
-        :param name: Name of the product
-        :type name: str or None
-        :param category: Name of the category for the current
-            category page or the product
-        :type category: str, list or None
-        :param price: Price of the product
-        :type price: float or None
-        :rtype: None
-        """
-        if category:
-            if type(category) == type(list()):
-                category = json.dumps(category)
-        else:
-            category = ''
-        self.page_custom_var[5] = ('_pkc', category)
-        if price:
-            self.page_custom_var[2] = ('_pkp', price)
-        # On a category page do not record "Product name not defined"
-        if sku and name:
-            if sku:
-                self.page_custom_var[3] = ('_pks', sku)
-            if name:
-                self.page_custom_var[4] = ('_pkn', name)
-
-    def add_ecommerce_item(self, sku, name=False, category=False, price=False,
-                           quantity=1):
-        """
-        Add an item to the ecommerce order.
-
-        This should be called before do_track_ecommerce_order() or before
-        do_track_ecommerce_cart_update().
-
-        Thie method can be called for all individual products in the cart/order.
-
-        :param sku: Product SKU
-        :type SKU: str or None
-        :param name: Name of the product
-        :type name: str or None
-        :param category: Name of the category for the current
-            category page or the product
-        :type category: str, list or None
-        :param price: Price of the product
-        :type price: float or None
-        :param quantity: Product quantity, defaults to 1
-        :type price: int or None
-        :rtype: None
-        """
-        self.ecommerce_items[sku] = (
-            sku,
-            name,
-            category,
-            price,
-            quantity,
-        )
-
-    def do_track_ecommerce_order(self, order_id, grand_total, sub_total=False,
-                                  tax=False, shipping=False, discount=False):
-        """
-        Track an ecommerce order
-
-        If the order contains items you must call add_ecommerce_item() first for
-        each item.
-
-        All revenues will be individually summed and reported by Piwik.
-
-        :param order_id: Unique order ID (required). Used to avoid
-            re-recording an order on page reload.
-        :type order_id: str
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :param sub_total: Sub total amount, typicalle the sum of
-            item prices for all items in this order, before tax and shipping
-        :type sub_total: float or None
-        :param tax: Tax amount for this order
-        :type tax: float or None
-        :param shipping: Shipping amount for this order
-        :type shipping: float or None
-        :param discount: Discount for this order
-        :type discount: float or None
-        :rtype: str
-        """
-        url = self.get_url_track_ecommerce_order(order_id, grand_total,
-                                                 sub_total, tax, shipping,
-                                                 discount)
-        return self._send_request(url)
-
-    def get_url_track_ecommerce_order(self, order_id, grand_total,
+    def __get_url_track_ecommerce_order(self, order_id, grand_total,
                                       sub_total=False, tax=False,
                                       shipping=False, discount=False):
         """
@@ -841,6 +711,23 @@ class PiwikTrackerEcommerce(PiwikTracker):
                                            shipping, discount)
         url += '&%s' % urllib.urlencode({'ec_id': order_id})
         self.ecommerce_last_order_timestamp = self._get_timestamp()
+        return url
+
+    def __get_url_track_goal(self, id_goal, revenue=False):
+        """
+        Return the goal tracking URL
+
+        :param id_goal: Goal ID
+        :type id_goal: int
+        :param revenue: Revenue for this conversion
+        :type revenue: int (TODO why int here and not float!?)
+        """
+        url = self._get_request(self.id_site)
+        params = {}
+        params['idgoal'] = id_goal
+        if revenue:
+            params['revenue'] = revenue
+        url += '&%s' % urllib.urlencode(params)
         return url
 
     def __get_url_track_ecommerce(self, grand_total, sub_total=False, tax=False,
@@ -891,6 +778,50 @@ class PiwikTrackerEcommerce(PiwikTracker):
         url += '&%s' % urllib.urlencode(args)
         return url
 
+    def __get_url_track_ecommerce_cart_update(self, grand_total):
+        """
+        Returns the URL to track a cart update
+
+        :type grand_total: float
+        :param grand_total: Grand total revenue of the transaction,
+            including taxes, shipping, etc.
+        :type grand_total: float
+        :rtype: str
+        """
+        url = self.__get_url_track_ecommerce(grand_total)
+        return url
+
+    def add_ecommerce_item(self, sku, name=False, category=False, price=False,
+                           quantity=1):
+        """
+        Add an item to the ecommerce order.
+
+        This should be called before do_track_ecommerce_order() or before
+        do_track_ecommerce_cart_update().
+
+        Thie method can be called for all individual products in the cart/order.
+
+        :param sku: Product SKU
+        :type SKU: str or None
+        :param name: Name of the product
+        :type name: str or None
+        :param category: Name of the category for the current
+            category page or the product
+        :type category: str, list or None
+        :param price: Price of the product
+        :type price: float or None
+        :param quantity: Product quantity, defaults to 1
+        :type price: int or None
+        :rtype: None
+        """
+        self.ecommerce_items[sku] = (
+            sku,
+            name,
+            category,
+            price,
+            quantity,
+        )
+
     def do_track_ecommerce_cart_update(self, grand_total):
         """
         Track a cart update (add/remove/update item)
@@ -909,18 +840,91 @@ class PiwikTrackerEcommerce(PiwikTracker):
         url = self.__get_url_track_ecommerce_cart_update(grand_total)
         return self._send_request(url)
 
-    def __get_url_track_ecommerce_cart_update(self, grand_total):
+    def do_track_ecommerce_order(self, order_id, grand_total, sub_total=False,
+                                  tax=False, shipping=False, discount=False):
         """
-        Returns the URL to track a cart update
+        Track an ecommerce order
 
-        :type grand_total: float
+        If the order contains items you must call add_ecommerce_item() first for
+        each item.
+
+        All revenues will be individually summed and reported by Piwik.
+
+        :param order_id: Unique order ID (required). Used to avoid
+            re-recording an order on page reload.
+        :type order_id: str
         :param grand_total: Grand total revenue of the transaction,
             including taxes, shipping, etc.
         :type grand_total: float
+        :param sub_total: Sub total amount, typicalle the sum of
+            item prices for all items in this order, before tax and shipping
+        :type sub_total: float or None
+        :param tax: Tax amount for this order
+        :type tax: float or None
+        :param shipping: Shipping amount for this order
+        :type shipping: float or None
+        :param discount: Discount for this order
+        :type discount: float or None
         :rtype: str
         """
-        url = self.__get_url_track_ecommerce(grand_total)
-        return url
+        url = self.__get_url_track_ecommerce_order(order_id, grand_total,
+                                                 sub_total, tax, shipping,
+                                                 discount)
+        return self._send_request(url)
+
+    def do_track_goal(self, id_goal, revenue=False):
+        """
+        Record a goal conversion
+
+        :param id_goal: Goal ID
+        :type id_goal: int
+        :param revenue: Revenue for this conversion
+        :type revenue: int (TODO why int here and not float!?)
+        """
+        url = self.__get_url_track_goal(id_goal, revenue)
+        return self._send_request(url)
+
+    def set_ecommerce_view(self, sku=False, name=False, category=False,
+                           price=False):
+        """
+        Set the page view as an item/product page view, or an ecommerce
+        category page view.
+
+        This method will set three custom variables of 'page' scope with the
+        SKU, name and category for this page view.
+
+        On a category page you may set the category argument only.
+
+        Tracking product/category page views will allow Piwik to report on
+        product and category conversion rates.
+
+        To enable ecommerce tracking see doc/install.rst
+
+        :param SKU: Product SKU being viewed
+        :type SKU: str or None
+        :param name: Name of the product
+        :type name: str or None
+        :param category: Name of the category for the current
+            category page or the product
+        :type category: str, list or None
+        :param price: Price of the product
+        :type price: float or None
+        :rtype: None
+        """
+        if category:
+            if type(category) == type(list()):
+                category = json.dumps(category)
+        else:
+            category = ''
+        self.page_custom_var[5] = ('_pkc', category)
+        if price:
+            self.page_custom_var[2] = ('_pkp', price)
+        # On a category page do not record "Product name not defined"
+        if sku and name:
+            if sku:
+                self.page_custom_var[3] = ('_pks', sku)
+            if name:
+                self.page_custom_var[4] = ('_pkn', name)
 
 
 def piwik_get_url_track_page_view(id_site, request, document_title=''):
