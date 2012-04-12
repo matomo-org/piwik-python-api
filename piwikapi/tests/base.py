@@ -1,6 +1,7 @@
 import md5
 import os
 import pprint
+import time
 import unittest
 
 try:
@@ -38,7 +39,7 @@ class PiwikAPITestCase(unittest.TestCase):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(value)
 
-    def get_random_string(self, length=500):
+    def get_random_string(self):
         """
         Return a random string
 
@@ -46,4 +47,9 @@ class PiwikAPITestCase(unittest.TestCase):
         :type length: inte
         :rtype: str
         """
-        return md5.new(os.urandom(length)).hexdigest()
+        return md5.new(os.urandom(500)).hexdigest()
+
+    def get_unique_string(self, length=20):
+        epoch = str(time.time())
+        epoch += self.get_random_string()
+        return epoch[:length]

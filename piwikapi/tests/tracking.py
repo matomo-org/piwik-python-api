@@ -39,7 +39,7 @@ class TrackerBaseTestCase(PiwikAPITestCase):
         self.pt.set_custom_variable(
             1,
             'testrun',
-            datetime.datetime.now().isoformat(' '),
+            self.get_unique_string(),
         )
 
     def get_title(self, title):
@@ -355,7 +355,7 @@ class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
 class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
     def setUp(self):
         super(TrackerVerifyBaseTestCase, self).setUp()
-        self.segment = self.get_random_string()
+        self.segment = self.get_unique_string()
         self.pt.set_custom_variable(
             5,
             'testsegment',
