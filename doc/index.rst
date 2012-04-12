@@ -16,9 +16,12 @@ Contents:
    :maxdepth: 3
 
    install
-   tracking_api/index
-   analytics_api/index
-   hacking/index
+   tracking_usage
+   tracking_reference
+   analytics_usage
+   analytics_reference
+   hacking
+   hacking_reference
    changelog
 
 About
@@ -31,6 +34,7 @@ JavaScript implementations at http://piwik.org/docs/analytics-api/ and
 http://piwik.org/docs/tracking-api/ for an overview.
 
 The project is in beta status and the API interface might change in the future.
+Get the source from https://github.com/nkuttler/python-piwikapi.
 
 Advantages over client-side logging
 -----------------------------------

@@ -55,7 +55,17 @@ Basic examples
 
 There are many examples in the unit test sources. (aka TODO)
 
-Ecommerce examples
-------------------
+Actions
+-------
+
+There are many examples in the unit test sources. (aka TODO)
+
+Goals
+-----
+
+There are many examples in the unit test sources. (aka TODO)
+
+Ecommerce
+---------
 
 There are examples in the unit test sources. (aka TODO)

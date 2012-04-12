@@ -15,6 +15,7 @@ Supported:
 Not supported yet:
 
 - Cookies
+- Attribution info
 - probably more
 
 The module was originally written for Django and expects a Django HttpRequest.

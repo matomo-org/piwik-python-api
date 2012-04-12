@@ -32,13 +32,8 @@ http://piwik.org/docs/ecommerce-analytics/#toc-enable-ecommerce-for-the-website
 
 See also :ref:`enable_tracking`.
 
-.. _enable_goal_tracking:
-
-Goal tracking
--------------
-
-It's not possible to create goals through the API, so you will have to
-configure your goals through the Piwik web interface before you can track them.
+If you want to track goals you'll have to create them first. Either through the
+web interface or the API.
 
 .. _enable_analytics:
 
