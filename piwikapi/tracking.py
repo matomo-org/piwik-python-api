@@ -257,8 +257,10 @@ class PiwikTracker(object):
         """
         self.request_cookie = cookie
 
-    def __set_host(self, host):
+    def _set_host(self, host):
         """
+        Used for unit tests
+
         :param host: Hostname
         :type host: str
         :rtype: None
@@ -266,19 +268,10 @@ class PiwikTracker(object):
         self.host = host
         self.page_url = self.__get_current_url()
 
-    set_host_test = __set_host
+    def _set_query_string(self, query_string):
+        """
+        Used for unit tests
 
-    def _set_script(self, script):
-        """
-        :param script: Script name
-        :type script: str
-        :rtype: None
-        """
-        self.script = script
-        self.page_url = self.__get_current_url()
-
-    def __set_query_string(self, query_string):
-        """
         :param query_string: Query string
         :type query_string: str
         :rtype: None
@@ -286,7 +279,16 @@ class PiwikTracker(object):
         self.query_string = query_string
         self.page_url = self.__get_current_url()
 
-    set_query_string_test = __set_query_string
+    def _set_script(self, script):
+        """
+        Used for unit tests
+
+        :param script: Script name
+        :type script: str
+        :rtype: None
+        """
+        self.script = script
+        self.page_url = self.__get_current_url()
 
     def __get_current_scheme(self):
         """

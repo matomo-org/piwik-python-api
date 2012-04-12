@@ -68,8 +68,8 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             'testsegment',
             self.segment,
         )
-        self.pte.set_host_test("ecommerce.example.com")
-        self.pte.set_query_string_test('')
+        self.pte._set_host("ecommerce.example.com")
+        self.pte._set_query_string('')
 
     def test_ecommerce_view(self):
         # View a product
