@@ -540,15 +540,39 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
             "Unexpected browserFamily value %s" % self.get_v('browserFamily'),
         )
 
-    #def test_custom_variables(self):
-    #    action_title = self.get_title('verify custom var')
-    #    r = self.pt.do_track_page_view(action_title)
-    #    self.assertTrue(True) # FIXME
-    #    #print self.segment
+    #def test_get_custom_variable_from_cookie(self):
+    #    r = self.pt.do_track_page_view(self.get_title('foo 1'))
+    #    data = json.loads(self.a.send_request())
+    #    self.debug(data)
+    #    self.pt.set_url_referer('/ownpage/')
+    #    r = self.pt.do_track_page_view(self.get_title('foo 2'))
+    #    data = json.loads(self.a.send_request())
+    #    self.debug(data)
+    #    #saved = self.pt.get_custom_variable(1, 'visit')
 
-    #    ##c = Client()
-    #    #url = self.pt.get_request(self.settings.PIWIK_SITE_ID)
-    #    ##print url
+    def test_set_attribution_info(self):
+        """
+        Referer attribution information:
+        [
+            campaign name,
+            campaign keyword,
+            timestamp,
+            raw URL,
+        ]
+        """
+        r = self.pt.do_track_page_view('foobar')
+        info = [
+            'Campaign Name Two',
+            'CampaignKeyword',
+            '',
+            'http://capaigntwo.example.com',
+        ]
+        info_json = json.dumps(info)
+        self.pt.set_attribution_info(info_json)
+        title = 'foobar'
+        r = self.pt.do_track_page_view(title)
+        data = json.loads(self.a.send_request())
+
     #    #value = 'quoo'
     #    #self.pt.set_custom_variable(1, 'foo', value, 'visit')
     #    #saved = self.pt.get_custom_variable(1, 'visit')
