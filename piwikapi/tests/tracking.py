@@ -172,7 +172,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             "Suffix not appended to query URL: %s" % query_url,
         )
 
-    def test_custom_variables_invalid(self):
+    def test_incorrect_custom_variables_invalid(self):
         value = 'bar'
         try:
             saved = self.pt.set_custom_variable('a', 'foo', value, 'page')
@@ -194,7 +194,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             "No exception for trying to use an illegal scope"
         )
 
-    def test_custom_variables(self):
+    def test_set_custom_variables(self):
         value = 'quoo'
         self.pt.set_custom_variable(1, 'foo', value, 'page')
         saved = self.pt.get_custom_variable(1, 'page')

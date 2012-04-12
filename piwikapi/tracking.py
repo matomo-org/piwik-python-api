@@ -3,6 +3,8 @@ Copyright (c) 2012, Nicolas Kuttler.
 All rights reserved.
 
 License: BSD, see LICENSE for details
+
+Source and development at https://github.com/nkuttler/python-piwikapi
 """
 
 import datetime
@@ -203,22 +205,23 @@ class PiwikTracker(object):
 
     def set_url(self, url):
         """
-        Set url being tracked
+        Set URL being tracked
 
         :param url: URL
         :type url: str
         """
         self.page_url = url
 
-    def set_attribution_info(json_encoded):
+    def set_attribution_info(self, json_encoded):
         """
-        **NOT SUPPORTED**
+        **NOT TESTED**
 
         Set the attribution info for the visit, so that subsequent goal
         conversions are properly attributed to the right referer, timestamp,
         campaign name and keyword.
 
-        See function getAttributionInfo() in
+        This must be a JSON encoded string that you would normally fetch from
+        the Javascript API, see function getAttributionInfo() in
         http://dev.piwik.org/trac/browser/trunk/js/piwik.js
 
         :param json_encoded: JSON encoded list containing attribution info
@@ -462,7 +465,7 @@ class PiwikTracker(object):
 
     def get_visitor_id(self):
         """
-        **Partial, no cookie support**
+        **PARTIAL, no cookie support**
 
         If the user initiating the request has the Piwik first party cookie,
         this function will try and return the ID parsed from this first party
@@ -495,6 +498,9 @@ class PiwikTracker(object):
     def get_attribution_info(self):
         """
         **NOT SUPPORTED**
+
+        To support this we'd need to parse the cookies in the request obejct.
+        Not sure if this makes sense...
 
         Return the currently assigned attribution info stored in a first party
         cookie.
@@ -529,7 +535,7 @@ class PiwikTracker(object):
 
     def disable_cookie_support(self):
         """
-        **NOT SUPPORTED**
+        **NOT TESTED**
 
         By default, PiwikTracker will read third party cookies from the
         response and sets them in the next request.
@@ -622,8 +628,6 @@ class PiwikTracker(object):
         :type scope: str or None
         :rtype: None
         """
-        #print type(id)
-        #print type(int())
         if type(id) != type(int()):
             raise Exception("Parameter id must be int")
         if scope == 'page':
@@ -650,6 +654,8 @@ class PiwikTracker(object):
 
     def get_custom_variable(self, id, scope='visit'):
         """
+        **PARTIAL, no cookie support**
+
         Returns the current custom variable stored in a first party cookie.
 
         :param id: Custom variable slot ID, 1-5
@@ -666,6 +672,7 @@ class PiwikTracker(object):
             if self.visitor_custom_var[id]:
                 r = self.visitor_custom_var[id]
             else:
+                # TODO test this code...
                 custom_variables_cookie = 'cvar.%d.' % self.id_site
                 cookie = self.__get_cookie_matching_name(custom_variables_cookie)
                 if not cookie:
@@ -696,7 +703,6 @@ class PiwikTrackerEcommerce(PiwikTracker):
     """
     def __init__(self, id_site, request):
         self.ecommerce_items = {}
-        self.ecommerce = {}
         super(PiwikTrackerEcommerce, self).__init__(id_site, request)
 
     def set_ecommerce_view(self, sku=False, name=False, category=False,
