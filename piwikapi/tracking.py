@@ -50,7 +50,7 @@ class PiwikTracker(object):
         :type id_site: int
         :param request: Request
         :type request: A Django-like request object
-        .rtype: None
+        :rtype: None
         """
         random.seed()
         self.request = request
@@ -217,7 +217,7 @@ class PiwikTracker(object):
 
     def set_attribution_info(self, json_encoded):
         """
-        **NOT TESTED**
+        **NOT SUPPORTED**
 
         Set the attribution info for the visit, so that subsequent goal
         conversions are properly attributed to the right referer, timestamp,
@@ -597,8 +597,6 @@ class PiwikTracker(object):
 
     def set_custom_variable(self, id, name, value, scope='visit'):
         """
-        Set custom variable, see http://piwik.org/docs/custom-variables/
-
         :param id: Custom variable slot ID, 1-5
         :type id: int
         :param name: Variable name
@@ -681,8 +679,6 @@ class PiwikTracker(object):
 class PiwikTrackerEcommerce(PiwikTracker):
     """
     The Piwik tracker class for ecommerce
-
-    See http://piwik.org/docs/ecommerce-analytics/
     """
     def __init__(self, id_site, request):
         self.ecommerce_items = {}

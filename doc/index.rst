@@ -36,22 +36,28 @@ object. However, you don't need to use Django, you can create a
 :ref:`mockup object<usage-without-django>` instead.
 
 As ``python-piwikapi`` only implements a Python interface to the Piwik APIs
-you'll want to check their official documentation as well:
+you'll want to check their official documentation as well.
+
+Tracking API:
 
 - http://piwik.org/docs/tracking-api/
 - http://piwik.org/docs/tracking-api/reference/
+
+Analtics API:
+
 - http://piwik.org/docs/analytics-api/
 - http://piwik.org/docs/analytics-api/reference/
 - http://piwik.org/docs/analytics-api/segmentation/
 - http://piwik.org/docs/analytics-api/metadata/
 
+Misc:
+
+- http://piwik.org/docs/custom-variables/
+- http://piwik.org/docs/ecommerce-analytics/
+- http://piwik.org/docs/tracking-goals-web-analytics/
+
 The project is in beta status and the API interface might change in the future.
 The full source is available at https://github.com/nkuttler/python-piwikapi.
-
-..
-    There's also a class for the Piwik analytics API, but it's very rudimentary at
-    the moment. It was written for unit testing, to verify that the data sent
-    through the tracking API was logged by Piwik.
 
 Advantages over client-side tracking
 ------------------------------------
@@ -77,6 +83,13 @@ You can't check all client-side features from the server, such as plugin
 support, screen resolution, click goals etc. This could be accomplished by
 using some JavaScript code though if necessary.
 
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
 ..
     TODO What happens if we have one client-side request followed only by
     server-side requests? Is the info tied to the user/visit?
@@ -90,9 +103,7 @@ using some JavaScript code though if necessary.
     There is also a `different Python implementation
     <https://github.com/francois2metz/Python-piwik>`_ of the analytics API.
 
-Indices and tables
-==================
+    There's also a class for the Piwik analytics API, but it's very rudimentary at
+    the moment. It was written for unit testing, to verify that the data sent
+    through the tracking API was logged by Piwik.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
