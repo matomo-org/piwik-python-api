@@ -550,28 +550,28 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     #    self.debug(data)
     #    #saved = self.pt.get_custom_variable(1, 'visit')
 
-    def test_set_attribution_info(self):
-        """
-        Referer attribution information:
-        [
-            campaign name,
-            campaign keyword,
-            timestamp,
-            raw URL,
-        ]
-        """
-        r = self.pt.do_track_page_view('foobar')
-        info = [
-            'Campaign Name Two',
-            'CampaignKeyword',
-            '',
-            'http://capaigntwo.example.com',
-        ]
-        info_json = json.dumps(info)
-        self.pt.set_attribution_info(info_json)
-        title = 'foobar'
-        r = self.pt.do_track_page_view(title)
-        data = json.loads(self.a.send_request())
+    #def test_set_attribution_info(self):
+    #    """
+    #    Referer attribution information:
+    #    [
+    #        campaign name,
+    #        campaign keyword,
+    #        timestamp,
+    #        raw URL,
+    #    ]
+    #    """
+    #    r = self.pt.do_track_page_view('foobar')
+    #    info = [
+    #        'Campaign Name Two',
+    #        'CampaignKeyword',
+    #        '',
+    #        'http://capaigntwo.example.com',
+    #    ]
+    #    info_json = json.dumps(info)
+    #    self.pt.set_attribution_info(info_json)
+    #    title = 'foobar'
+    #    r = self.pt.do_track_page_view(title)
+    #    data = json.loads(self.a.send_request())
 
     #    #value = 'quoo'
     #    #self.pt.set_custom_variable(1, 'foo', value, 'visit')
