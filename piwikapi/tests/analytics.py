@@ -8,6 +8,9 @@ from piwikapi.analytics import PiwikAnalytics
 
 class AnalyticsBaseTestCase(PiwikAPITestCase):
     def setUp(self):
+        """
+        Set up a PiwikAnalytics instance
+        """
         super(AnalyticsBaseTestCase, self).setUp()
         self.a = PiwikAnalytics()
         self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)

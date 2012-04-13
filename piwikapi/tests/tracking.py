@@ -21,6 +21,9 @@ class TrackerBaseTestCase(PiwikAPITestCase):
     In every test run all tests get the same testrun custom variable.
     """
     def setUp(self):
+        """
+        Set up a PiwikTracker instance
+        """
         super(TrackerBaseTestCase, self).setUp()
         headers = {
             'HTTP_USER_AGENT': self.get_random_ua(),
@@ -217,10 +220,10 @@ class TrackerClassTestCase(TrackerBaseTestCase):
 
 class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
     """
-    Basic tracker tests
-
     These tests make sure that the tracking info we send is recognized by
-    Piwik.
+    checking the debug output of Piwik.
+
+    TODO: Use the analytics API to verify the tests.
     """
     def test_default_action_title_is_correct(self):
         action_title = self.get_title('test default action title')

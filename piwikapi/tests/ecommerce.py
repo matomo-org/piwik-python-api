@@ -55,6 +55,9 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
 
 class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
     def setUp(self):
+        """
+        Set up a PiwikTrackerEcommerce instance
+        """
         super(TrackerEcommerceVerifyTestCase, self).setUp()
         # Set different IP for each test run
         # TODO also randomize referers etc...
