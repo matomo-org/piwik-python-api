@@ -41,6 +41,9 @@ class PiwikTracker(object):
         'silverlight': 'ag',
     }
 
+    UNSUPPORTED_WARNING = "%s: The code that's just running is untested and " \
+        "probably doesn't work as expected anyway."
+
     def __init__(self, id_site, request):
         """
         :param id_site: Site ID
@@ -228,6 +231,7 @@ class PiwikTracker(object):
         :type json_encoded: string
         :rtype: none
         """
+        logging.warn(self.UNSUPPORTED_WARNING % 'set_attribution_info()')
         decoded = json.loads(json_encoded)
         if type(decoded) != type(list()):
             raise Exception("set_attribution_info() is expecting a JSON "
@@ -440,6 +444,7 @@ class PiwikTracker(object):
         :type name: str
         :rtype: str
         """
+        logging.warn(self.UNSUPPORTED_WARNING % '__get_cookie_matching_name()')
         cookie_value = False
         if self.request.COOKIES:
             for name in self.request.COOKIES:
@@ -469,6 +474,7 @@ class PiwikTracker(object):
         if self.forced_visitor_id:
             visitor_id = self.forced_visitor_id
         else:
+            logging.warn(self.UNSUPPORTED_WARNING % 'get_visitor_id()')
             id_cookie_name =  'id.%s.' % self.id_site
             id_cookie = self.__get_cookie_matching_name(id_cookie_name)
             visitor_id = self.visitor_id
@@ -497,6 +503,7 @@ class PiwikTracker(object):
         :rtype: string, JSON encoded string containing the referer info for
             goal conversion attribution
         """
+        logging.warn(self.UNSUPPORTED_WARNING % 'get_attribution_info()')
         attribution_cookie_name = 'ref.%d.' % self.id_site
         return self.__get_cookie_matching_name(attribution_cookie_name)
 
@@ -528,6 +535,7 @@ class PiwikTracker(object):
 
         :rtype: None
         """
+        logging.warn(self.UNSUPPORTED_WARNING % 'disable_cookie_support()')
         self.cookie_support = False
 
     def do_track_page_view(self, document_title):
@@ -646,6 +654,7 @@ class PiwikTracker(object):
             if self.visitor_custom_var[id]:
                 r = self.visitor_custom_var[id]
             else:
+                logging.warn(self.UNSUPPORTED_WARNING % 'get_custom_variable()')
                 # TODO test this code...
                 custom_variables_cookie = 'cvar.%d.' % self.id_site
                 cookie = self.__get_cookie_matching_name(custom_variables_cookie)
@@ -677,7 +686,6 @@ class PiwikTrackerEcommerce(PiwikTracker):
     """
     def __init__(self, id_site, request):
         self.ecommerce_items = {}
-        #self.ecommerce = {}
         super(PiwikTrackerEcommerce, self).__init__(id_site, request)
 
     def __get_url_track_ecommerce_order(self, order_id, grand_total,
