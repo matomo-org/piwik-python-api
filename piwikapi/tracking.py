@@ -17,6 +17,8 @@ import urllib
 import urllib2
 import urlparse
 
+from exceptions import InvalidParameter
+
 
 class PiwikTracker(object):
     """
@@ -185,8 +187,8 @@ class PiwikTracker(object):
         :rtype: None
         """
         if len(visitor_id) != self.LENGTH_VISITOR_ID:
-            raise Exception("set_visitor_id() expects a %s character ID" %
-                            self.LENGTH_VISITOR_ID)
+            raise InvalidParameter("set_visitor_id() expects a visitor ID of "
+                                   "length %s" % self.LENGTH_VISITOR_ID)
         self.forced_visitor_id = visitor_id
 
     def set_debug_string_append(self, string):
@@ -235,12 +237,13 @@ class PiwikTracker(object):
         logging.warn(self.UNSUPPORTED_WARNING % 'set_attribution_info()')
         decoded = json.loads(json_encoded)
         if type(decoded) != type(list()):
-            raise Exception("set_attribution_info() is expecting a JSON "
-                            "encoded string, %s given" % json_encoded)
+            raise InvalidParameter("set_attribution_info() is expecting a "
+                                   "JSON encoded string, %s given" %
+                                   json_encoded)
         if len(decoded) != 4:
-            raise Exception("set_attribution_info() is expecting a JSON "
-                            "encoded string, that contains a list with "
-                            "four items, %s given" % json_encoded)
+            raise InvalidParameter("set_attribution_info() is expecting a "
+                                   "JSON encoded string, that contains a list "
+                                   "with four items, %s given" % json_encoded)
         self.attribution_info = decoded
 
     def set_force_visit_date_time(self, datetime):
@@ -561,7 +564,7 @@ class PiwikTracker(object):
         :type action_type: str
         """
         if action_type not in ('download', 'link'):
-            raise Exception("Illegal action %s" % action_type)
+            raise InvalidParameter("Illegal action parameter %s" % action_type)
         url = self.__get_url_track_action(action_url, action_type)
         return self._send_request(url)
 
@@ -611,13 +614,14 @@ class PiwikTracker(object):
         :rtype: None
         """
         if type(id) != type(int()):
-            raise Exception("Parameter id must be int")
+            raise InvalidParameter("Parameter id must be int, not %s" %
+                                   type(id))
         if scope == 'page':
             self.page_custom_var[id] = (name, value)
         elif scope == 'visit':
             self.visitor_custom_var[id] = (name, value)
         else:
-            raise Exception("Invalid scope parameter value")
+            raise InvalidParameter("Invalid scope parameter value %s" % scope)
 
     def set_plugins(self, **kwargs):
         """
@@ -647,7 +651,8 @@ class PiwikTracker(object):
         :rtype: mixed stuff TODO
         """
         if type(id) != type(int()):
-            raise Exception("Parameter id must be int")
+            raise InvalidParameter("Parameter id must be int, not %s" %
+                                   type(id))
         if scope == 'page':
             r = self.page_custom_var[id]
         elif scope == 'visit':
@@ -675,7 +680,7 @@ class PiwikTracker(object):
                     else:
                         r = cookie_decoded[id]
         else:
-            raise Exception("Invalid scope parameter value")
+            raise InvalidParameter("Invalid scope parameter value %s" % scope)
         return r
 
 
@@ -759,16 +764,12 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :type discount: float or None
         :rtype: str
         """
-        if type(grand_total) != type(float()):
-            raise Exception("You must specify a grand_total for the ecommerce "
-                            "transaction")
-        # FIXME
+        # FIXME fix what?
         url = self._get_request(self.id_site)
         args = {
             'idgoal': 0,
         }
-        if grand_total:
-            args['revenue'] = grand_total
+        args['revenue'] = grand_total
         if sub_total:
             args['ec_st'] = sub_total
         if tax:

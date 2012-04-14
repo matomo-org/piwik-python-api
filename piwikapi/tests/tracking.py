@@ -6,6 +6,7 @@ import re
 import unittest
 
 from piwikapi.analytics import PiwikAnalytics
+from piwikapi.exceptions import InvalidParameter
 from piwikapi.tracking import PiwikTracker
 from piwikapi.tracking import PiwikTrackerEcommerce
 
@@ -180,21 +181,21 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         value = 'bar'
         try:
             saved = self.pt.set_custom_variable('a', 'foo', value, 'page')
-            illegal_id = True
+            invalid_id = True
         except Exception:
-            illegal_id = False
+            invalid_id = False
         self.assertFalse(
-            illegal_id,
+            invalid_id,
             "No exception for trying to use an illegal ID"
         )
 
         try:
             saved = self.pt.set_custom_variable(1, 'foo', value, 'foo')
-            illegal_scope = True
+            invalid_scope = True
         except Exception:
-            illegal_scope = False
+            invalid_scope = False
         self.assertFalse(
-            illegal_scope,
+            invalid_scope,
             "No exception for trying to use an illegal scope"
         )
 
@@ -217,6 +218,64 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             self.pt.user_agent,
             "User Agent was not set to %s" % ua
         )
+
+    def test_set_visitor_id_exception(self):
+        try:
+            vid = self.get_random_string()
+            vid = vid[:self.pt.LENGTH_VISITOR_ID + 1]
+            self.pt.set_visitor_id(vid)
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
+
+    def test_do_track_action_exception(self):
+        """
+        Should probably also test that valid parameters pass
+        """
+        try:
+            action = 'foo'
+            self.pt.do_track_action('/', action)
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
+
+    def test_set_custom_variable_exception(self):
+        try:
+            id = 'foo'
+            self.pt.set_custom_variable(id, 'foo', 'bar')
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
+
+    def test_set_custom_variable_scope_exception(self):
+        try:
+            scope = 'foo'
+            self.pt.set_custom_variable(1, 'foo', 'bar', scope)
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
+
+    def test_get_custom_variable_exception(self):
+        try:
+            id = 'foo'
+            self.pt.get_custom_variable(id)
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
+
+    def test_get_custom_variable_scope_exception(self):
+        try:
+            scope = 'foo'
+            self.pt.get_custom_variable(1, scope)
+            invalid_value = True
+        except InvalidParameter:
+            invalid_value = False
+        self.assertFalse(invalid_value)
 
 
 class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
