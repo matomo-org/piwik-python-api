@@ -6,17 +6,17 @@ Please check the official Piwik API documentation as well:
 - http://piwik.org/docs/tracking-api/
 - http://piwik.org/docs/tracking-api/reference/
 
-.. _the-piwiktracker-class:
+.. _piwiktracker-reference:
 
-The PiwikTracker class
+PiwikTracker reference
 ----------------------
 
 .. autoclass:: piwikapi.tracking.PiwikTracker
    :members:
 
-.. _the-piwiktracker-ecommerce-class:
+.. _piwiktracker-ecommerce-reference:
 
-The PiwikTrackerEcommerce class
+PiwikTrackerEcommerce reference
 -------------------------------
 
 .. autoclass:: piwikapi.tracking.PiwikTrackerEcommerce

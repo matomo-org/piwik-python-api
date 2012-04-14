@@ -78,7 +78,9 @@ to set the auth token of an admin for that site::
 
 That's all, happy tracking!
 
-Please refer to the :ref:`PiwikTracker reference<the-piwiktracker-class>` for
+Please refer to the :ref:`PiwikTracker reference<piwiktracker-reference>`
+and :ref:`PiwikTrackerEcommerce reference<piwiktracker-ecommerce-reference>`
+for
 more information.
 
 ..
