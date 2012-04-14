@@ -24,7 +24,7 @@ class FakeRequest:
         """
         self.META = headers
         if self.META['HTTPS']:
-            self.secure = True # TODO test this..
+            self.secure = True  # TODO test this..
 
     def is_secure(self):
         """

@@ -92,7 +92,8 @@ class TrackerBaseTestCase(PiwikAPITestCase):
                 'Firefox/10.0.3 Iceweasel/10.0.3',
             'Opera/9.80 (Windows NT 6.1; WOW64; U; de) Presto/2.10.229 '
                 'Version/11.62',
-            'Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko/20100101 Firefox/11.0',
+            'Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko/20100101 '
+                'Firefox/11.0',
             #'Mozilla/5.0 (iPad; U; CPU iPhone OS 5_1 like Mac OS X; de_DE) '
             #    'AppleWebKit (KHTML, like Gecko) Mobile [FBAN/FBForIPhone;'
             #    'FBAV/4.1.1;FBBV/4110.0;FBDV/iPad2,1;FBMD/iPad;FBSN/iPhone '
@@ -341,7 +342,7 @@ class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
         self.assertNotRegexpMatches(
             r,
             'config_id = %s' % id,
-            "Random visitor ID found in response..." # TODO random failure
+            "Random visitor ID found in response..."  # TODO random failure
         )
 
         id = self.pt.get_random_visitor_id()
@@ -372,7 +373,7 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
             'testsegment',
             self.segment,
         )
-        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH) # verify hack
+        self.pt.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)  # verify hack
         self.pt.set_ip(self.get_random_ip())
 
         # Set up the analytics query
@@ -440,7 +441,7 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
 
     def test_set_visitor_feature_single_plugin(self):
         self.pt.set_plugins(
-            flash = True,
+            flash=True,
         )
         r = self.pt.do_track_page_view(self.get_title('verify flash'))
         self.assertEqual(
@@ -451,8 +452,8 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
 
     def test_set_visitor_feature_plugins(self):
         self.pt.set_plugins(
-            flash = True,
-            java = True,
+            flash=True,
+            java=True,
         )
         r = self.pt.do_track_page_view(self.get_title('verify flash + java'))
         self.assertEqual(

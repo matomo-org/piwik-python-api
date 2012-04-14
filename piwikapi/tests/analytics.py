@@ -57,14 +57,14 @@ class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
         self.a.set_method('Live.getCounters')
         self.a.set_parameter('lastMinutes', 1)
         r = json.loads(self.a.send_request())
-        self.assertTrue(True) # TODO
+        self.assertTrue(True)  # TODO
         #self.debug(r)
 
     def _test_live_last_visits(self):
         self.a.set_method('Live.getLastVisitsDetails')
         self.a.set_parameter('lastMinutes', 1)
         visits = json.loads(self.a.send_request())
-        self.assertTrue(True) # TODO
+        self.assertTrue(True)  # TODO
         #for visit in visits:
         #    print 'referrer url', visit['referrerUrl']
         #for x in r:

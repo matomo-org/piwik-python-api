@@ -89,6 +89,7 @@ class PiwikTracker(object):
         #self.ip = self.request.META.get('REMOTE_ADDR')
         self.accept_language = self.request.META.get('HTTP_ACCEPT_LANGUAGE',
                                                      '')
+
     def set_local_time(self, datetime):
         """
         Set the time
@@ -235,11 +236,11 @@ class PiwikTracker(object):
         decoded = json.loads(json_encoded)
         if type(decoded) != type(list()):
             raise Exception("set_attribution_info() is expecting a JSON "
-                            "encoded string, %s given" % json_encoded);
+                            "encoded string, %s given" % json_encoded)
         if len(decoded) != 4:
             raise Exception("set_attribution_info() is expecting a JSON "
                             "encoded string, that contains a list with "
-                            "four items, %s given" % json_encoded);
+                            "four items, %s given" % json_encoded)
         self.attribution_info = decoded
 
     def set_force_visit_date_time(self, datetime):
@@ -462,12 +463,13 @@ class PiwikTracker(object):
         this function will try and return the ID parsed from this first party
         cookie.
 
-        If you call this function from a server, where the call is triggered by a
-        cron or script not initiated by the actual visitor being tracked, then it
-        will return the random Visitor ID that was assigned to this visit object.
+        If you call this function from a server, where the call is triggered by
+        a cron or script not initiated by the actual visitor being tracked,
+        then it will return the random Visitor ID that was assigned to this
+        visit object.
 
-        This can be used if you wish to record more visits, actions or goals for
-        this visitor ID later on.
+        This can be used if you wish to record more visits, actions or goals
+        for this visitor ID later on.
 
         :rtype: str
         """
@@ -475,7 +477,7 @@ class PiwikTracker(object):
             visitor_id = self.forced_visitor_id
         else:
             logging.warn(self.UNSUPPORTED_WARNING % 'get_visitor_id()')
-            id_cookie_name =  'id.%s.' % self.id_site
+            id_cookie_name = 'id.%s.' % self.id_site
             id_cookie = self.__get_cookie_matching_name(id_cookie_name)
             visitor_id = self.visitor_id
             if id_cookie:
@@ -589,7 +591,7 @@ class PiwikTracker(object):
         #for header, value in response.getheaders():
         #    # TODO handle cookies
         #    # set cookie to la
-		#	# in case several cookies returned, we keep only the latest one
+        #	# in case several cookies returned, we keep only the latest one
         #    # (ie. XDEBUG puts its cookie first in the list)
         #    #print header, value
         #    self.request_cookie = ''
@@ -652,10 +654,11 @@ class PiwikTracker(object):
             if self.visitor_custom_var[id]:
                 r = self.visitor_custom_var[id]
             else:
-                logging.warn(self.UNSUPPORTED_WARNING % 'get_custom_variable()')
+                logging.warn(self.UNSUPPORTED_WARNING %
+                             'get_custom_variable()')
                 # TODO test this code...
-                custom_variables_cookie = 'cvar.%d.' % self.id_site
-                cookie = self.__get_cookie_matching_name(custom_variables_cookie)
+                custom_vars_cookie = 'cvar.%d.' % self.id_site
+                cookie = self.__get_cookie_matching_name(custom_vars_cookie)
                 if not cookie:
                     r = False
                 else:
@@ -734,8 +737,8 @@ class PiwikTrackerEcommerce(PiwikTracker):
         url += '&%s' % urllib.urlencode(params)
         return url
 
-    def __get_url_track_ecommerce(self, grand_total, sub_total=False, tax=False,
-                                shipping=False, discount=False):
+    def __get_url_track_ecommerce(self, grand_total, sub_total=False,
+                                  tax=False, shipping=False, discount=False):
         """
         Returns the URL used to track ecommerce orders
 
@@ -803,7 +806,8 @@ class PiwikTrackerEcommerce(PiwikTracker):
         This should be called before do_track_ecommerce_order() or before
         do_track_ecommerce_cart_update().
 
-        Thie method can be called for all individual products in the cart/order.
+        This method can be called for all individual products in the
+        cart/order.
 
         :param sku: Product SKU
         :type SKU: str or None
@@ -849,8 +853,8 @@ class PiwikTrackerEcommerce(PiwikTracker):
         """
         Track an ecommerce order
 
-        If the order contains items you must call add_ecommerce_item() first for
-        each item.
+        If the order contains items you must call add_ecommerce_item() first
+        for each item.
 
         All revenues will be individually summed and reported by Piwik.
 

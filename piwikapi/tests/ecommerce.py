@@ -170,7 +170,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         self.pte._set_script(script)
         grand_total_string = "%.2f" % grand_total
         r = self.pte.do_track_ecommerce_order(
-            randint(0, 99999), # TODO random failure
+            randint(0, 99999),  # TODO random failure
             grand_total,
         )
         revenue = self.get_av('revenue')

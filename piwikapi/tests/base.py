@@ -7,15 +7,15 @@ import unittest
 try:
     import settings
 except ImportError:
-    print "-- You haven't created the necessary settings module, please check " \
-        "the documentation."
+    print "-- You haven't created the necessary settings module, please " \
+        "check the documentation."
     raise
 
 try:
     mysettings = settings.Settings()
 except NameError:
-    print "-- You haven't created the necessary Settings class, please check " \
-        "the documentation."
+    print "-- You haven't created the necessary Settings class, please " \
+        "check the documentation."
     raise
 
 
