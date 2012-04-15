@@ -894,8 +894,8 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :rtype: str
         """
         url = self.__get_url_track_ecommerce_order(order_id, grand_total,
-                                                 sub_total, tax, shipping,
-                                                 discount)
+                                                   sub_total, tax, shipping,
+                                                   discount)
         return self._send_request(url)
 
     def do_track_goal(self, id_goal, revenue=False):
