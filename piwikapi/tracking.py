@@ -185,6 +185,7 @@ class PiwikTracker(object):
         """
         :param visitor_id: Visitor I
         :type visitor_id: str
+        :raises: InvalidParameter if the visitor_id has an incorrect length
         :rtype: None
         """
         if len(visitor_id) != self.LENGTH_VISITOR_ID:
@@ -233,6 +234,7 @@ class PiwikTracker(object):
 
         :param json_encoded: JSON encoded list containing attribution info
         :type json_encoded: string
+        :raises: InvalidParameter if the json_encoded data is incorrect
         :rtype: none
         """
         logging.warn(self.UNSUPPORTED_WARNING % 'set_attribution_info()')
@@ -562,6 +564,7 @@ class PiwikTracker(object):
         :param action_url: URL of the download or outlink
         :type action_url: str
         :param action_type: Type of the action, either 'download' or 'link'
+        :raises: InvalidParameter if action type is unknown
         :type action_type: str
         """
         if action_type not in ('download', 'link'):
@@ -575,6 +578,7 @@ class PiwikTracker(object):
 
         :param url: TODO
         :type url: str
+        :raises: ConfigurationError if the API URL was not set
         :rtype: str
         """
         if self.api_url == '':

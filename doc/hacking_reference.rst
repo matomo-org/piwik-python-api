@@ -46,7 +46,7 @@ Tracking API tests
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.tracking.TrackerGoalVerifyTestCase
+.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceGoalVerifyTestCase
    :members:
    :undoc-members:
 

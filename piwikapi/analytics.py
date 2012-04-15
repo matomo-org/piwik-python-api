@@ -124,6 +124,7 @@ class PiwikAnalytics(object):
         """
         Return the query string
 
+        :raises: ConfigurationError if the API URL was not set
         :rtype: str
         """
         if self.api_url is None:
