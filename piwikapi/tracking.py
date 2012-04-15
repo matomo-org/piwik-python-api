@@ -564,8 +564,9 @@ class PiwikTracker(object):
         :param action_url: URL of the download or outlink
         :type action_url: str
         :param action_type: Type of the action, either 'download' or 'link'
-        :raises: InvalidParameter if action type is unknown
         :type action_type: str
+        :raises: InvalidParameter if action type is unknown
+        :rtype: str
         """
         if action_type not in ('download', 'link'):
             raise InvalidParameter("Illegal action parameter %s" % action_type)
@@ -640,7 +641,7 @@ class PiwikTracker(object):
 
         >>> piwiktrackerinstance.set_plugins(flash=True)
 
-        See KNOWN_PLUGINS for valid values.
+        See KNOWN_PLUGINS keys for valid values.
 
         :param kwargs: A plugin: version dict, e.g. {'java': 6}, see also
             KNOWN_PLUGINS
@@ -903,6 +904,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         :type id_goal: int
         :param revenue: Revenue for this conversion
         :type revenue: int (TODO why int here and not float!?)
+        :rtype: str
         """
         url = self.__get_url_track_goal(id_goal, revenue)
         return self._send_request(url)
