@@ -1,5 +1,6 @@
 import unittest
 
+from analytics import AnalyticsClassTestCase
 from analytics import AnalyticsTestCase
 from analytics import AnalyticsLiveTestCase
 from ecommerce import TrackerEcommerceVerifyTestCase

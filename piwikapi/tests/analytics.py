@@ -2,8 +2,10 @@ import json
 from PIL import Image
 from StringIO import StringIO
 
-from base import PiwikAPITestCase
+from piwikapi.exceptions import ConfigurationError
 from piwikapi.analytics import PiwikAnalytics
+
+from base import PiwikAPITestCase
 
 
 class AnalyticsBaseTestCase(PiwikAPITestCase):
@@ -18,6 +20,20 @@ class AnalyticsBaseTestCase(PiwikAPITestCase):
         self.a.set_format('json')
         self.a.set_period('day')
         self.a.set_date('today')
+
+
+class AnalyticsClassTestCase(PiwikAPITestCase):
+    """
+    PiwikAnalytics tests without Piwik interaction
+    """
+    def test_missing_api_url(self):
+        try:
+            a = PiwikAnalytics()
+            r = json.loads(a.send_request())
+            invalid_config = True
+        except ConfigurationError:
+            invalid_config = False
+        self.assertFalse(invalid_config)
 
 
 class AnalyticsTestCase(AnalyticsBaseTestCase):

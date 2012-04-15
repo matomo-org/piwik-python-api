@@ -10,6 +10,7 @@ Source and development at https://github.com/nkuttler/python-piwikapi
 import urllib
 import urllib2
 
+from exceptions import ConfigurationError
 
 class PiwikAnalytics(object):
     """
@@ -125,7 +126,7 @@ class PiwikAnalytics(object):
         :rtype: str
         """
         if self.api_url is None:
-            raise Exception("API URL not set")
+            raise ConfigurationError("API URL not set")
         if len(self.p):
             qs = self.api_url
             qs += '?'
