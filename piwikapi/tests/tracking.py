@@ -150,7 +150,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         try:
             self.pt.set_visitor_id(incorrect_id)
             incorrect_id_allowed = True
-        except Exception:
+        except InvalidParameter:
             incorrect_id_allowed = False
         self.assertFalse(
             incorrect_id_allowed,
@@ -161,7 +161,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         try:
             self.pt.set_visitor_id(correct_id)
             correct_id_allowed = True
-        except Exception:
+        except InvalidParameter:
             correct_id_allowed = False
         self.assertTrue(
             correct_id_allowed,
@@ -183,7 +183,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         try:
             saved = self.pt.set_custom_variable('a', 'foo', value, 'page')
             invalid_id = True
-        except Exception:
+        except InvalidParameter:
             invalid_id = False
         self.assertFalse(
             invalid_id,
@@ -193,7 +193,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         try:
             saved = self.pt.set_custom_variable(1, 'foo', value, 'foo')
             invalid_scope = True
-        except Exception:
+        except InvalidParameter:
             invalid_scope = False
         self.assertFalse(
             invalid_scope,
