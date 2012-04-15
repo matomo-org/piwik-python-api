@@ -42,10 +42,12 @@ Tracking API:
 
 - http://piwik.org/docs/tracking-api/
 - http://piwik.org/docs/tracking-api/reference/
+- http://piwik.org/docs/tracking-goals-web-analytics/
 
 Analtics API:
 
 - http://piwik.org/docs/analytics-api/
+- http://piwik.org/docs/ecommerce-analytics/
 - http://piwik.org/docs/analytics-api/reference/
 - http://piwik.org/docs/analytics-api/segmentation/
 - http://piwik.org/docs/analytics-api/metadata/
@@ -53,8 +55,6 @@ Analtics API:
 Misc:
 
 - http://piwik.org/docs/custom-variables/
-- http://piwik.org/docs/ecommerce-analytics/
-- http://piwik.org/docs/tracking-goals-web-analytics/
 
 The project is in beta status and the API interface might change in the future.
 The full source is available at https://github.com/nkuttler/python-piwikapi.
