@@ -293,7 +293,7 @@ class TrackerClassTestCase(TrackerBaseTestCase):
                 unknown=True,
             )
             invalid_plugin = True
-        except:
+        except ConfigurationError:
             invalid_plugin = False
         self.assertFalse(invalid_plugin)
 
