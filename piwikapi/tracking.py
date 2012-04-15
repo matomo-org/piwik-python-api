@@ -605,6 +605,10 @@ class PiwikTracker(object):
 
     def set_custom_variable(self, id, name, value, scope='visit'):
         """
+        Set a custom variable
+
+        See http://piwik.org/docs/custom-variables/
+
         :param id: Custom variable slot ID, 1-5
         :type id: int
         :param name: Variable name
@@ -630,6 +634,10 @@ class PiwikTracker(object):
         """
         Set supported plugins
 
+        >>> piwiktrackerinstance.set_plugins(flash=True)
+
+        See KNOWN_PLUGINS for valid values.
+
         :param kwargs: A plugin: version dict, e.g. {'java': 6}, see also
             KNOWN_PLUGINS
         :type kwargs: dict of {str: int}
@@ -637,8 +645,7 @@ class PiwikTracker(object):
         """
         for plugin, version in kwargs.iteritems():
             if plugin not in self.KNOWN_PLUGINS.keys():
-                logging.warn("set_plugins(): Unknown plugin %s, but submitting"
-                             " it anyway" % plugin)
+                raise ConfigurationError("Unknown plugin %s" % plugin)
             self.plugins[self.KNOWN_PLUGINS[plugin]] = int(version)
 
     def get_custom_variable(self, id, scope='visit'):

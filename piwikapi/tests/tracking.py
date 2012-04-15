@@ -287,6 +287,16 @@ class TrackerClassTestCase(TrackerBaseTestCase):
             invalid_config = False
         self.assertFalse(invalid_config)
 
+    def test_unknown_set_plugins(self):
+        try:
+            self.pt.set_plugins(
+                unknown=True,
+            )
+            invalid_plugin = True
+        except:
+            invalid_plugin = False
+        self.assertFalse(invalid_plugin)
+
 
 class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
     """
