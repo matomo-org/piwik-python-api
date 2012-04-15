@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2 (2012-04-??)
+0.2 (2012-04-15)
 ----------------
 
 First release as piwikapi on pypi.
