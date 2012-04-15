@@ -468,15 +468,20 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
         Get a variable from the last visit
         """
         try:
-            data = json.loads(self.a.send_request())[-1]
+            data = json.loads(self.a.send_request())
+            data = data[-1]
         except IndexError:
             print "Request apparently not logged!"
             raise
-        try:
-            return data[key]
         except KeyError:
             self.debug(data)
             raise
+        try:
+            r = data[key]
+        except KeyError:
+            self.debug(data)
+            raise
+        return r
 
     def get_av(self, key):
         """
@@ -666,32 +671,3 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     #    #)
 
     #    #print r
-
-
-class TrackerGoalVerifyTestCase(TrackerVerifyBaseTestCase):
-    """
-    Goal tracking tests
-    """
-    def setUp(self):
-        self.a.set_method('Goals.addGoal')
-        self.a.set_parameter('name', 'testgoal')
-
-    def test_track_goal_conversion(self):
-        """
-        This unit test will only work if a goal with ID=1 exists
-        """
-        goal = self.settings.PIWIK_GOAL_ID
-        r = self.pt.do_track_goal(goal, 23)
-        self.assertEqual(
-            goal,
-            self.get_v('goalConversions'),
-            "Unexpected goalConversions value %s" %
-                self.get_v('goalConversions'),
-        )
-        self.a.set_method('')
-        # The revenue is not in the live data, but it's recorded...
-        #self.assertEqual(
-        #    23,
-        #    self.get_av('revenue'),
-        #    "Unexpected revenue value %s" % self.get_av('revenue'),
-        #)
