@@ -7,6 +7,7 @@ import unittest
 
 from piwikapi.analytics import PiwikAnalytics
 from piwikapi.exceptions import InvalidParameter
+from piwikapi.exceptions import ConfigurationError
 from piwikapi.tracking import PiwikTracker
 from piwikapi.tracking import PiwikTrackerEcommerce
 
@@ -276,6 +277,15 @@ class TrackerClassTestCase(TrackerBaseTestCase):
         except InvalidParameter:
             invalid_value = False
         self.assertFalse(invalid_value)
+
+    def test_missing_api_url(self):
+        try:
+            pt = PiwikTracker(self.settings.PIWIK_SITE_ID, self.request)
+            pt.do_track_page_view('fake title')
+            invalid_config = True
+        except ConfigurationError:
+            invalid_config = False
+        self.assertFalse(invalid_config)
 
 
 class TrackerVerifyDebugTestCase(TrackerBaseTestCase):

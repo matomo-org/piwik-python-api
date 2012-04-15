@@ -17,6 +17,7 @@ import urllib
 import urllib2
 import urlparse
 
+from exceptions import ConfigurationError
 from exceptions import InvalidParameter
 
 
@@ -576,6 +577,8 @@ class PiwikTracker(object):
         :type url: str
         :rtype: str
         """
+        if self.api_url == '':
+            raise ConfigurationError('API URL not set')
         parsed = urlparse.urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
         request = urllib2.Request(url)

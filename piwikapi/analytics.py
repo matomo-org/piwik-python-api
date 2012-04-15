@@ -12,6 +12,7 @@ import urllib2
 
 from exceptions import ConfigurationError
 
+
 class PiwikAnalytics(object):
     """
     The Piwik analytics API class
