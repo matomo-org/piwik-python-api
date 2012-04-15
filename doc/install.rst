@@ -47,8 +47,8 @@ TODO for public access sites must have anonymous view access, security...
 Secure your install
 -------------------
 
-First, see :ref:`enable_tracking` and :ref:`enable_analytics` for security
-notes specific to the two APIs.
+First you should check the official docs at
+http://piwik.org/security/how-to-secure-piwik/.
 
 If you use the Pyton API exclusively you could consider password-protecting your
-Piwik install with a basic HTTP authentication to add a security layer.
+Piwik install or binding the httpd to interfaces only etc.
