@@ -121,7 +121,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         items = self.get_av('itemDetails')
         matches = 0
         # The items aren't always stored in the same order as the test code
-        # submits them. We could fix this by using time.sleep() but looing
+        # submits them. We could fix this by using time.sleep() but looping
         # through the data is faster.
         for product in self.products.values():
             for item in items:
@@ -170,7 +170,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         self.pte._set_script(script)
         grand_total_string = "%.2f" % grand_total
         r = self.pte.do_track_ecommerce_order(
-            randint(0, 99999),  # TODO random failure
+            self.get_unique_string(),
             grand_total,
         )
         revenue = self.get_av('revenue')
