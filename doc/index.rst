@@ -56,8 +56,9 @@ Misc:
 
 - http://piwik.org/docs/custom-variables/
 
-The project is in beta status and the API interface might change in the future.
-The full source is available at https://github.com/nkuttler/python-piwikapi.
+The project is in alpha status and the API interface might change in the
+future. The full source is available at
+https://github.com/nkuttler/python-piwikapi.
 
 Advantages over client-side tracking
 ------------------------------------
