@@ -650,7 +650,9 @@ class PiwikTracker(object):
         """
         for plugin, version in kwargs.iteritems():
             if plugin not in self.KNOWN_PLUGINS.keys():
-                raise ConfigurationError("Unknown plugin %s" % plugin)
+                raise ConfigurationError("Unknown plugin %s, please use one "
+                                         "of %s" % (plugin,
+                                                    self.KNOWN_PLUGINS.keys()))
             self.plugins[self.KNOWN_PLUGINS[plugin]] = int(version)
 
     def get_custom_variable(self, id, scope='visit'):
