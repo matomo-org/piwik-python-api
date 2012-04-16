@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3 (2012-04-xx)
+----------------
+
+. Goals plugin
+? SitesManager plugin
+? ImageGraph plugin
+? UserCountry plugin
+? VisitsSummary plugin
+
 0.2 (2012-04-15)
 ----------------
 

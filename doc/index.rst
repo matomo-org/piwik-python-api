@@ -20,6 +20,7 @@ Contents:
    tracking_reference
    analytics_usage
    analytics_reference
+   plugins_reference
    hacking
    hacking_reference
    changelog

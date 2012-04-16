@@ -1,11 +1,8 @@
 Test classes reference
 ======================
 
-The unit tests verify that data sent through the API was received by Piwik.
-Classes marked with ``Noverify`` do *not* verify this (yet). Verification has
-to be done manually through the Piwik interface. It should be possible to
-improve this though, by querying the Piwik analytics API, which hasn't been
-implemented in Python yet.
+The unit tests verify that data sent through the API was received by Piwik,
+either by parsing the debug output or by querying the analytics API.
 
 Analytics API tests
 -------------------
@@ -46,14 +43,17 @@ Tracking API tests
    :members:
    :undoc-members:
 
-.. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceGoalVerifyTestCase
-   :members:
-   :undoc-members:
-
 .. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceBaseTestCase
    :members:
    :undoc-members:
 
 .. autoclass:: piwikapi.tests.ecommerce.TrackerEcommerceVerifyTestCase
+   :members:
+   :undoc-members:
+
+Plugin tests
+------------
+
+.. autoclass:: piwikapi.tests.goals.GoalsTestCase
    :members:
    :undoc-members:
