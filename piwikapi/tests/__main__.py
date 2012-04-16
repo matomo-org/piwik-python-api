@@ -3,8 +3,8 @@ import unittest
 from analytics import AnalyticsClassTestCase
 from analytics import AnalyticsTestCase
 from analytics import AnalyticsLiveTestCase
-from ecommerce import TrackerEcommerceGoalVerifyTestCase
 from ecommerce import TrackerEcommerceVerifyTestCase
+from goals import GoalsTestCase
 from tracking import TrackerClassTestCase
 from tracking import TrackerVerifyDebugTestCase
 from tracking import TrackerVerifyTestCase

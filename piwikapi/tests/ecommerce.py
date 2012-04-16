@@ -3,6 +3,7 @@ import urllib
 from random import randint
 
 from piwikapi.tracking import PiwikTrackerEcommerce
+from piwikapi.plugins.goals import PiwikGoals
 
 from tracking import TrackerVerifyBaseTestCase
 
@@ -37,21 +38,6 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
         },
     }
 
-    def get_cv(self, number):
-        """
-        Get a custom variable from the last visit
-        """
-        try:
-            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]['customVariables']
-        except IndexError:
-            print "Request apparently not logged!"
-            raise
-        try:
-            return data[str(number)]['customVariableValue%s' % number]
-        except KeyError:
-            self.debug(data)
-            raise
-
     def setUp(self):
         """
         Set up a PiwikTrackerEcommerce instance
@@ -71,6 +57,21 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
         )
         self.pte._set_host("ecommerce.example.com")
         self.pte._set_query_string('')
+
+    def get_cv(self, number):
+        """
+        Get a custom variable from the last visit
+        """
+        try:
+            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]['customVariables']
+        except IndexError:
+            print "Request apparently not logged!"
+            raise
+        try:
+            return data[str(number)]['customVariableValue%s' % number]
+        except KeyError:
+            self.debug(data)
+            raise
 
 
 class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
@@ -184,27 +185,4 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             str(quantity_total),
             items,
             "Quantity %s, not %s" % (items, quantity_total),
-        )
-
-
-class TrackerEcommerceGoalVerifyTestCase(TrackerEcommerceBaseTestCase):
-    """
-    Goal tracking tests
-    """
-    #def setUp(self):
-    #    super(TrackerGoalVerifyTestCase, self).setUp()
-    #    self.a.set_method('Goals.addGoal')
-    #    self.a.set_parameter('name', 'testgoal')
-
-    def test_track_goal_conversion(self):
-        """
-        TODO This unit test will only work if a goal with ID=1 exists
-        """
-        goal = self.settings.PIWIK_GOAL_ID
-        r = self.pte.do_track_goal(goal, 23)
-        self.assertEqual(
-            goal,
-            self.get_v('goalConversions'),
-            "Unexpected goalConversions value %s" %
-                self.get_v('goalConversions'),
         )
