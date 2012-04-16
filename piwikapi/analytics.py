@@ -17,15 +17,13 @@ class PiwikAnalytics(object):
     """
     The Piwik analytics API class
     """
-    #: Stores the parameters for the API query
-    p = {}
-
     def __init__(self):
         """
         Initalize the object
 
         :rtype: None
         """
+        self.p = {}
         self.set_parameter('module', 'API')
         self.api_url = None
 
