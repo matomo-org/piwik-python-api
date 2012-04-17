@@ -6,28 +6,35 @@ from ecommerce import TrackerEcommerceBaseTestCase
 
 class GoalsTestCase(TrackerEcommerceBaseTestCase):
     def setUp(self):
+        """
+        Create a goal unless one was defined in the settings
+        """
         super(GoalsTestCase, self).setUp()
 
-        # Create a test goal
         self.pg = PiwikGoals(self.settings.PIWIK_ANALYTICS_API_URL)
         self.pg.set_format('json')
-        r = self.pg.add_goal(
-            self.settings.PIWIK_SITE_ID,
-            'Auto Goal %s' % self.get_unique_string(),
-            'manually',
-            'nononono-nevermatchanyting-pattern-this-sucks',
-            'contains',
-            self.settings.PIWIK_TOKEN_AUTH,
-        )
-        data = json.loads(r)
-        self.goal_id = int(data['value'])
+        if self.settings.PIWIK_GOAL_ID is None:
+            # Create a test goal
+            r = self.pg.add_goal(
+                self.settings.PIWIK_SITE_ID,
+                'Auto Goal %s' % self.get_unique_string(),
+                'manually',
+                'nononono-nevermatchanyting-pattern-this-sucks',
+                'contains',
+                self.settings.PIWIK_TOKEN_AUTH,
+            )
+            data = json.loads(r)
+            self.goal_id = int(data['value'])
+        else:
+            self.goal_id = self.settings.PIWIK_GOAL_ID
 
     def tearDown(self):
-        # Delete the test goal
-        r = self.pg.delete_goal(
-            self.settings.PIWIK_SITE_ID,
-            self.goal_id,
-        )
+        if self.settings.PIWIK_GOAL_ID is None:
+            # Delete the test goal
+            r = self.pg.delete_goal(
+                self.settings.PIWIK_SITE_ID,
+                self.goal_id,
+            )
 
     def test_track_goal_conversion(self):
         r = self.pte.do_track_goal(self.goal_id)

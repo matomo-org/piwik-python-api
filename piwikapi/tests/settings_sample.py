@@ -15,4 +15,6 @@ class Settings:
     PIWIK_TOKEN_AUTH = '<Your Piwik auth token>'
 
     #: The ID of the goal that will be used for unit tests
-    PIWIK_GOAL_ID = 1
+    #: If set to None a goal will be created automatically for each goal
+    #: test and deleted after the test has completed successfully.
+    PIWIK_GOAL_ID = None
