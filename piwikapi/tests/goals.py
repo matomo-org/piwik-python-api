@@ -37,6 +37,9 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
             )
 
     def test_track_goal_conversion(self):
+        """
+        Make sure goal conversions are logged
+        """
         r = self.pte.do_track_goal(self.goal_id)
         self.assertEqual(
             1,
@@ -54,7 +57,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
 
     def test_create_goal(self):
         """
-        This is superfluous as we create a goal on the fly anyway...
+        This is superfluous when we create a goal on the fly
         """
         r = self.pg.add_goal(
             self.settings.PIWIK_SITE_ID,

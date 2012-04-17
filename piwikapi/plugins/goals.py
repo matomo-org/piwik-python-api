@@ -1,3 +1,12 @@
+"""
+Copyright (c) 2012, Nicolas Kuttler.
+All rights reserved.
+
+License: BSD, see LICENSE for details
+
+Source and development at https://github.com/nkuttler/python-piwikapi
+"""
+
 from piwikapi.analytics import PiwikAnalytics
 
 
