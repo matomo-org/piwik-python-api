@@ -45,7 +45,7 @@ Tracking API:
 - http://piwik.org/docs/tracking-api/reference/
 - http://piwik.org/docs/tracking-goals-web-analytics/
 
-Analtics API:
+Analytics API:
 
 - http://piwik.org/docs/analytics-api/
 - http://piwik.org/docs/ecommerce-analytics/
