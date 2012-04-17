@@ -103,7 +103,8 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
     def test_add_ecommerce_item_do_track_ecommerce_cart_update(self):
         """
         Test add_ecommerce_item() together with
-        do_track_ecommerce_cart_update()
+        do_track_ecommerce_cart_update(). Also make sure that an abandoned
+        cart was logged.
         """
         grand_total = 0
         for key, product in self.products.iteritems():
@@ -147,6 +148,19 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             matches,
             len(self.products),
             "Not all products accounted for",
+        )
+        # Also check abandoned status
+        cart_status = self.get_av('type')
+        self.assertEqual(
+            cart_status,
+            'ecommerceAbandonedCart',
+            "Unexpected cart status %s" % cart_status,
+        )
+        visit_status = self.get_v('visitEcommerceStatus')
+        self.assertEqual(
+            visit_status,
+            'abandonedCart',
+            "Unexpected visit status %s" % visit_status,
         )
 
     def test_track_ecommerce_order(self):
