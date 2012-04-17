@@ -15,8 +15,6 @@ class PiwikGoals(PiwikAnalytics):
         """
         Initialize a PiwikAnalytics object
 
-        Not sure why we inherit from PiwikAnalytics at the moment...
-
         :param api_url: Piwik API url, root of the install
         :type api_url: str
         :rtype: None

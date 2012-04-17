@@ -8,16 +8,16 @@ Please check the official Piwik API documentation as well:
 
 .. _piwiktracker-reference:
 
-PiwikTracker reference
-----------------------
+PiwikTracker
+------------
 
 .. autoclass:: piwikapi.tracking.PiwikTracker
    :members:
 
 .. _piwiktracker-ecommerce-reference:
 
-PiwikTrackerEcommerce reference
--------------------------------
+PiwikTrackerEcommerce
+---------------------
 
 .. autoclass:: piwikapi.tracking.PiwikTrackerEcommerce
    :members:

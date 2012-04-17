@@ -3,8 +3,8 @@ Plugins Reference
 
 These classes provide some wrappers around plugin methods.
 
-The PiwikGoals class
---------------------
+PiwikGoals
+----------
 
 .. autoclass:: piwikapi.plugins.goals.PiwikGoals
     :members:

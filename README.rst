@@ -14,8 +14,8 @@ Supported:
 
 Not supported yet:
 
-- Cookies
-- Attribution info
+- Custom variables through cookies
+- Attribution info through cookies
 - probably more
 
 Full Documentation: http://piwikapi.readthedocs.org/en/latest/index.html

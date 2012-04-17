@@ -501,10 +501,7 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
 
 class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
     """
-    Here are test we don't verify programmatically yet. I guess we'd have to
-    access the Piwik API to fetch data to verify the tracking requests were
-    processed properly. At the moment I only check this manually in my Piwik
-    dev installation.
+    Here are test we don't verify programmatically yet.
     """
     #def test_browser_has_cookies(self):
     #    self.pt.set_browser_has_cookies()

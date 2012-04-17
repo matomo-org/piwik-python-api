@@ -11,8 +11,8 @@ Please check the official Piwik API documentation as well:
 
 .. _the-piwikanalytics-class:
 
-The PiwikAnalytics class
-------------------------
+PiwikAnalytics
+--------------
 
 .. autoclass:: piwikapi.analytics.PiwikAnalytics
     :members:
