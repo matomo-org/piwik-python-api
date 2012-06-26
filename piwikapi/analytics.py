@@ -39,6 +39,16 @@ class PiwikAnalytics(object):
         """
         self.p[key] = value
 
+    def remove_parameter(self, key):
+        """
+        Removes a query parameter
+
+        :param key: The parameter to remove 
+        """
+        if key in self.p:
+            del self.p[key]
+
+
     def get_parameter(self, key):
         """
         Get a query parameter
@@ -48,7 +58,7 @@ class PiwikAnalytics(object):
         :rtype: TODO mixed?
         """
         if key in self.p:
-            r = p[key]
+            r = self.p[key]
         else:
             r = None
         return r
