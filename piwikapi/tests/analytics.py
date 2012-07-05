@@ -64,6 +64,12 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
             "Couldn't get an ImageGraph"
         )
 
+    def test_remove_parameter(self):
+        self.a.set_parameter('testing','TEST')
+        self.assertEquals(self.a.get_parameter('testing'), "TEST")
+        self.a.remove_parameter('testing')
+        self.assertFalse(self.a.get_parameter('testing'))
+
 
 class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
     """
@@ -86,3 +92,4 @@ class AnalyticsLiveTestCase(AnalyticsBaseTestCase):
         #for x in r:
         #    print type(x)
         #self.debug(r)
+
