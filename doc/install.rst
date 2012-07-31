@@ -46,9 +46,9 @@ web interface or the API.
 Enabling the analytics API
 --------------------------
 
-The analytics API works out of the box, no configuration needed.
-
-TODO for public access sites must have anonymous view access, security...
+The analytics API works out of the box, no configuration is needed. To view
+reports the viewer must have access. You could just give anonymous access to
+the data but it's probably better to use the auth token.
 
 Secure your install
 -------------------
@@ -57,4 +57,4 @@ First you should check the official docs at
 http://piwik.org/security/how-to-secure-piwik/.
 
 If you use the Pyton API exclusively you could consider password-protecting your
-Piwik install or binding the httpd to interfaces only etc.
+Piwik install or binding the httpd to local interfaces only etc.
