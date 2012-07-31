@@ -1,7 +1,13 @@
 Install
 =======
 
-You should get the source from github directly for the time being.
+Installing the API
+------------------
+
+You can get the source from
+`github <https://github.com/nkuttler/python-piwikapi>` or install it with pip::
+
+    pip install piwikapi
 
 Installing Piwik
 ----------------
