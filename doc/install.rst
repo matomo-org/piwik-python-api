@@ -5,7 +5,7 @@ Installing the API
 ------------------
 
 You can get the source from
-`github <https://github.com/nkuttler/python-piwikapi>` or install it with pip::
+`github <https://github.com/nkuttler/python-piwikapi>_` or install it with pip::
 
     pip install piwikapi
 
