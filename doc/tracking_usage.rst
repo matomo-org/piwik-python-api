@@ -72,9 +72,9 @@ to set the auth token of an admin for that site::
 
     pt = PiwikTracker(1, request) # 1 is the side ID you want to log to
     pt.set_api_url('http://yoursite.example.com/piwik.php')
-    pt.do_track_page_view("Some page title")
     pt.set_ip('192.0.2.134') # Your visitor's IP
     pt.set_token_auth('YOUR_AUTH_TOKEN_STRING')
+    pt.do_track_page_view("Some page title")
 
 That's all, happy tracking!
 

@@ -4,7 +4,8 @@ README
 
 This is a Python implementation of the Piwik tracking and analytics APIs.
 
-Supported:
+Supported
+=========
 
 - Normal tracking
 - Custom variables
@@ -12,7 +13,8 @@ Supported:
 - Goals
 - Actions
 
-Not supported yet:
+Not supported yet
+=================
 
 - Custom variables through cookies
 - Attribution info through cookies

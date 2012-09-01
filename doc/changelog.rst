@@ -1,14 +1,11 @@
 Changelog
 =========
 
-0.3 ()
-------
+0.2.1 (2012-)
+----------------
 
-- DONE: Goals plugin
-- TODO: SitesManager plugin
-- TODO: ImageGraph plugin
-- TODO: UserCountry plugin
-- TODO: VisitsSummary plugin
+- Goals plugin
+- A few small improvements
 
 0.2 (2012-04-15)
 ----------------
@@ -38,3 +35,7 @@ TODO
 - Refactor the tracking API code, it's not very pythonic
 - Verify all unit tests through the analytics API
 - Create sites etc. automatically if necessary for the tests
+- TODO: SitesManager plugin
+- TODO: ImageGraph plugin
+- TODO: UserCountry plugin
+- TODO: VisitsSummary plugin

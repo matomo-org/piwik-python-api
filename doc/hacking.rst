@@ -11,8 +11,14 @@ To run the unit tests you need to:
 - Create a settings module
 - Enable tracker debugging
 
+Creating a new site
+-------------------
+
 You want to create a **new site** specifically for running the unit tests as to
 not pollute a real site with test data.
+
+Creating the settings module
+----------------------------
 
 You must create a ``settings`` **module** somewhere in your Python path that
 contains a ``Settings`` class like this:
@@ -22,6 +28,9 @@ contains a ``Settings`` class like this:
 
 If you create the settings module in the test source directory it is also
 ignored by ``git`` for your convenience.
+
+Enabling tracker debugging
+--------------------------
 
 Some unit tests parse the output of the tracker script, so you have to **enable
 debugging** in your Piwik install's ``/piwik.php``::
