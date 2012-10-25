@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name = "piwikapi",
-    version = "0.2",
+    version = "0.2.1",
     author = "Nicolas Kuttler",
     author_email = "pypi@nicolaskuttler.com",
     description = "Python Piwik API",
