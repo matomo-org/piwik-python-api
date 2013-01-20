@@ -1,22 +1,25 @@
 import md5
 import os
 import pprint
+import sys
 import time
 import unittest
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 try:
     import settings
 except ImportError:
-    print "-- You haven't created the necessary settings module, please " \
-        "check the documentation."
-    raise
+    sys.stderr.write("You haven't created the necessary settings module, please check the documentation.")
+    if not on_rtd:
+        raise
 
 try:
     mysettings = settings.Settings()
 except NameError:
-    print "-- You haven't created the necessary Settings class, please " \
-        "check the documentation."
-    raise
+    sys.stderr.write("You haven't created the necessary Settings class, please check the documentation.")
+    if not on_rtd:
+        raise
 
 
 class PiwikAPITestCase(unittest.TestCase):
