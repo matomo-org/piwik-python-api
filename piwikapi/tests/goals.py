@@ -40,6 +40,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         """
         Make sure goal conversions are logged
         """
+        #self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
         r = self.pte.do_track_goal(self.goal_id)
         self.assertEqual(
             1,
