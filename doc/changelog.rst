@@ -1,10 +1,16 @@
 Changelog
 =========
 
-0.2.1 (2012-)
-----------------
+0.2.2 (2013-01-20)
+------------------
 
-- Goals plugin
+- Don't require anonymous view access for unit tests to pass
+- Test against Piwik 1.10
+- Fix readthedocs build
+
+0.2.1 (2012-10-25)
+------------------
+
 - A few small improvements
 
 0.2 (2012-04-15)

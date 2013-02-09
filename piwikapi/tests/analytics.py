@@ -53,6 +53,7 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
         self.a.set_method('ImageGraph.get')
         self.a.set_parameter('apiModule', 'UserCountry')
         self.a.set_parameter('apiAction', 'getCountry')
+        self.a.set_parameter('token_auth', self.settings.PIWIK_TOKEN_AUTH)
         r = self.a.send_request()
         try:
             im = Image.open(StringIO(r))

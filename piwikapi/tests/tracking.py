@@ -468,6 +468,7 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
         Get a variable from the last visit
         """
         try:
+            self.a.set_parameter('token_auth', self.settings.PIWIK_TOKEN_AUTH)
             data = json.loads(self.a.send_request())
             data = data[-1]
         except IndexError:
@@ -488,6 +489,7 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
         Get an action variable from the last visit
         """
         try:
+            self.a.set_parameter('token_auth', self.settings.PIWIK_TOKEN_AUTH)
             data = json.loads(self.a.send_request())[-1]['actionDetails'][0]
         except IndexError:
             print "Request apparently not logged!"
@@ -549,6 +551,7 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         """
         url = 'http://out.example.com/out/15'
         r = self.pt.do_track_action(url, 'link')
+        self.a.set_parameter('token_auth', self.settings.PIWIK_TOKEN_AUTH)
         data = json.loads(self.a.send_request())[0]
         self.assertEqual(
             url,

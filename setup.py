@@ -5,9 +5,9 @@ except ImportError:
 
 setup(
     name = "piwikapi",
-    version = "0.2",
+    version = "0.2.2",
     author = "Nicolas Kuttler",
-    author_email = "pypi@nicolaskuttler.com",
+    author_email = "pypi@kuttler.eu",
     description = "Python Piwik API",
     long_description = open("README.rst").read(),
     license = "BSD",
@@ -15,7 +15,7 @@ setup(
     packages = ['piwikapi'],
     include_package_data = True,
     classifiers = [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
