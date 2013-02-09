@@ -380,7 +380,7 @@ class PiwikTracker(object):
             'idsite': id_site,
             'rec': 1,
             'apiv': self.VERSION,
-            'r': random.randint(0, 99999),
+            'rand': random.randint(0, 99999),
             'url': self.page_url,
             'urlref': self.referer,
             'id': self.visitor_id,
