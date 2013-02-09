@@ -43,7 +43,7 @@ class PiwikAnalytics(object):
         """
         Removes a query parameter
 
-        :param key: The parameter to remove 
+        :param key: The parameter to remove
         """
         if key in self.p:
             del self.p[key]
