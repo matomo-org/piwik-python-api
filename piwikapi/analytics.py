@@ -48,7 +48,6 @@ class PiwikAnalytics(object):
         if key in self.p:
             del self.p[key]
 
-
     def get_parameter(self, key):
         """
         Get a query parameter
