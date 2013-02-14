@@ -10,7 +10,6 @@ Source and development at https://github.com/nkuttler/python-piwikapi
 import datetime
 import json
 import logging
-import md5
 import os
 import random
 import urllib
@@ -19,7 +18,7 @@ import urlparse
 
 from exceptions import ConfigurationError
 from exceptions import InvalidParameter
-
+from hashlib import md5
 
 class PiwikTracker(object):
     """
@@ -523,7 +522,7 @@ class PiwikTracker(object):
         :type length: inte
         :rtype: str
         """
-        return md5.new(os.urandom(length)).hexdigest()
+        return md5(os.urandom(length).hexdigest()
 
     def get_random_visitor_id(self):
         """
