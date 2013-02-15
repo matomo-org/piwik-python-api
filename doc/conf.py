@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'python-piwikapi'
-copyright = u'2012, Nicolas Kuttler'
+copyright = u'2012-2013, Nicolas Kuttler'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

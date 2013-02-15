@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012, Nicolas Kuttler.
+Copyright (c) 2012-2013, Nicolas Kuttler.
 All rights reserved.
 
 License: BSD, see LICENSE for details
