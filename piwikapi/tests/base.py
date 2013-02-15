@@ -1,9 +1,9 @@
-import md5
 import os
 import pprint
 import sys
 import time
 import unittest
+from hashlib import md5
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -50,7 +50,7 @@ class PiwikAPITestCase(unittest.TestCase):
         :type length: inte
         :rtype: str
         """
-        return md5.new(os.urandom(500)).hexdigest()
+        return md5(os.urandom(500)).hexdigest()
 
     def get_unique_string(self, length=20):
         epoch = str(time.time())

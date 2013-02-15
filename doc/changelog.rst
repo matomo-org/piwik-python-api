@@ -4,7 +4,7 @@ Changelog
 0.3 (2013-02-)
 ----------------
 
-- Switch to setuptools
+- Switch to setuptools and hashlib
 
 0.2.2 (2013-01-20)
 ------------------
