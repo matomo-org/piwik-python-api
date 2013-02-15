@@ -13,7 +13,7 @@ setup(
     description = "Python Piwik API",
     license = "BSD",
     long_description = open("README.rst").read(),
-    url = "http://github.com/nkuttler/python-piwikapi",
+    url = "https://github.com/piwik/piwik-python-api",
     classifiers = [
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",

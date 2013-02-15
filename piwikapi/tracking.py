@@ -4,7 +4,7 @@ All rights reserved.
 
 License: BSD, see LICENSE for details
 
-Source and development at https://github.com/nkuttler/python-piwikapi
+Source and development at https://github.com/piwik/piwik-python-api
 """
 
 import datetime
