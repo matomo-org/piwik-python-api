@@ -1,9 +1,9 @@
-.. python-piwikapi documentation master file, created by
+.. piwikapi documentation master file, created by
    sphinx-quickstart on Thu Apr  5 10:25:54 2012.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to python-piwikapi's documentation!
+Welcome to piwikapi's documentation!
 ===========================================
 
 .. image:: pic/piwik_logo.jpg
@@ -28,7 +28,7 @@ Contents:
 About
 =====
 
-``python-piwikapi`` is a Python implementation of the Piwik tracking and the
+``piwikapi`` is a Python implementation of the Piwik tracking and the
 analytics API. You can use it to track visitors, ecommerce, actions, goals,
 generate reports and much more.
 
@@ -36,7 +36,7 @@ The package was originally written for Django and expects a Django HttpRequest
 object. However, you don't need to use Django, you can create a
 :ref:`mockup object<usage-without-django>` instead.
 
-As ``python-piwikapi`` only implements a Python interface to the Piwik APIs
+As ``piwikapi`` only implements a Python interface to the Piwik APIs
 you'll want to check their official documentation as well.
 
 Tracking API:
@@ -59,7 +59,7 @@ Misc:
 
 The project is in alpha status and the API interface might change in the
 future. The full source is available at
-https://github.com/nkuttler/python-piwikapi.
+https://github.com/piwik/piwik-python-api.
 
 Advantages over client-side tracking
 ------------------------------------

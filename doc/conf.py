@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# python-piwikapi documentation build configuration file, created by
+# piwikapi documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr  5 11:33:58 2012.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -48,7 +48,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'python-piwikapi'
+project = u'piwikapi'
 copyright = u'2012-2013, Nicolas Kuttler'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -172,7 +172,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'python-piwikapidoc'
+htmlhelp_basename = 'piwikapidoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -191,7 +191,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'python-piwikapi.tex', u'python-piwikapi Documentation',
+  ('index', 'piwikapi.tex', u'piwikapi Documentation',
    u'Nicolas Kuttler', 'manual'),
 ]
 
@@ -221,7 +221,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'python-piwikapi', u'python-piwikapi Documentation',
+    ('index', 'piwikapi', u'piwikapi Documentation',
      [u'Nicolas Kuttler'], 1)
 ]
 
@@ -235,8 +235,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'python-piwikapi', u'python-piwikapi Documentation',
-   u'Nicolas Kuttler', 'python-piwikapi', 'One line description of project.',
+  ('index', 'piwikapi', u'piwikapi Documentation',
+   u'Nicolas Kuttler', 'piwikapi', 'One line description of project.',
    'Miscellaneous'),
 ]
 

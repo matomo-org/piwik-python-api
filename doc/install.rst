@@ -4,7 +4,7 @@ Install
 Installing the API
 ------------------
 
-You can get the source from https://github.com/nkuttler/python-piwikapi or
+You can get the source from https://github.com/piwik/piwik-python-api or
 install it with pip::
 
     pip install piwikapi
