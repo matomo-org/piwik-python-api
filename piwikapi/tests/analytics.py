@@ -15,8 +15,8 @@ class AnalyticsBaseTestCase(PiwikAPITestCase):
         """
         super(AnalyticsBaseTestCase, self).setUp()
         self.a = PiwikAnalytics()
-        self.a.set_api_url(self.settings.PIWIK_ANALYTICS_API_URL)
-        self.a.set_id_site(self.settings.PIWIK_SITE_ID)
+        self.a.set_api_url(self.settings['PIWIK_ANALYTICS_API_URL'])
+        self.a.set_id_site(self.settings['PIWIK_SITE_ID'])
         self.a.set_format('json')
         self.a.set_period('day')
         self.a.set_date('today')
@@ -53,7 +53,7 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
         self.a.set_method('ImageGraph.get')
         self.a.set_parameter('apiModule', 'UserCountry')
         self.a.set_parameter('apiAction', 'getCountry')
-        self.a.set_parameter('token_auth', self.settings.PIWIK_TOKEN_AUTH)
+        self.a.set_parameter('token_auth', self.settings['PIWIK_TOKEN_AUTH'])
         r = self.a.send_request()
         try:
             im = Image.open(StringIO(r))

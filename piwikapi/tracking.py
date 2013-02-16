@@ -582,7 +582,7 @@ class PiwikTracker(object):
         :raises: ConfigurationError if the API URL was not set
         :rtype: str
         """
-        if self.api_url == '':
+        if not self.api_url:
             raise ConfigurationError('API URL not set')
         parsed = urlparse.urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)

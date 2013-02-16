@@ -1,0 +1,21 @@
+language: python
+php:
+- 2.7
+env:
+  # Dev test server
+  global:
+    - secure: "mG++xOmt9mj6JpYpdRPZR88ATsoRt7JaQE7osVu5pjiay3EwBIOPN6OToh7Q\nDq7hYpFJBPRTtJCl7NmbeaZcqZdJy6pnQU9C3UoU8OwK+NMv62opb+8gk3k8\nBzp22uK6ZEZazl2Lo5Quilsb3slSrsjG/HpnEYqqeL5yJpIqKB0="
+    - secure: "Ym8QVYhOoPqbERE5p8sw6UYpi6EyOc9DdF8t/ez2iEHPXjOOijxk0GjWAJcM\n7/QnXXGbUjOdCvY7XicF83Reu3EgibwYnGaQa9kLD6wppsWaD9nOKDAYj/ez\nTsCrWVscOwujAhmsCJrrTetJbLwBHKHkARU8Ni+uRP5assX9d+Y="
+    - secure: "KxjYYynxnUYfFZizglKs4IqTkVN3rQEujcwFUF71Vf4BnoFtnIw3sKmTW1e5\npq3VyU9GuxpW63L36uTT401DmkOdtdaEUYSH6Yra1362CGbSXHQwzVyjDwT9\n2q+3zXgHDOn+oaTRrN7z5wiVwzlyMuhCi2H1Tle2TWU+5Oaa8oI="
+    - secure: "d63KPgn5i10RMJOODfGMKKpk9xeqJPUFO9504CQFKgcdGIHEvlHAWQMc7sNe\nvdrARzgi8QpDiu9QQsCezBBUvWfqo+BPSib6LePvKx7wyjXWhj24ukjGeLDG\nGJtETOk3Wd3ucjrX2RLAs5pW5RyP2qui6g+7GfpU0I/UvvC+CXQ="
+script: make test
+notifications:
+  irc:
+    skip_join: true
+    on_success: change
+    on_failure: change
+    channels:
+    - irc.freenode.org##nkuttler
+  email:
+    on_success: never
+    on_failure: change

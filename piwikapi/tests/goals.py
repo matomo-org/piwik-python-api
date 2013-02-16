@@ -11,28 +11,28 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         """
         super(GoalsTestCase, self).setUp()
 
-        self.pg = PiwikGoals(self.settings.PIWIK_ANALYTICS_API_URL)
+        self.pg = PiwikGoals(self.settings['PIWIK_ANALYTICS_API_URL'])
         self.pg.set_format('json')
-        if self.settings.PIWIK_GOAL_ID is None:
+        if self.settings['PIWIK_GOAL_ID'] is None:
             # Create a test goal
             r = self.pg.add_goal(
-                self.settings.PIWIK_SITE_ID,
+                self.settings['PIWIK_SITE_ID'],
                 'Auto Goal %s' % self.get_unique_string(),
                 'manually',
                 'nononono-nevermatchanyting-pattern-this-sucks',
                 'contains',
-                self.settings.PIWIK_TOKEN_AUTH,
+                self.settings['PIWIK_TOKEN_AUTH'],
             )
             data = json.loads(r)
             self.goal_id = int(data['value'])
         else:
-            self.goal_id = self.settings.PIWIK_GOAL_ID
+            self.goal_id = self.settings['PIWIK_GOAL_ID']
 
     def tearDown(self):
-        if self.settings.PIWIK_GOAL_ID is None:
+        if self.settings['PIWIK_GOAL_ID'] is None:
             # Delete the test goal
             r = self.pg.delete_goal(
-                self.settings.PIWIK_SITE_ID,
+                self.settings['PIWIK_SITE_ID'],
                 self.goal_id,
             )
 
@@ -40,7 +40,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         """
         Make sure goal conversions are logged
         """
-        #self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
+        #self.pte.set_token_auth(self.settings['PIWIK_TOKEN_AUTH'])
         r = self.pte.do_track_goal(self.goal_id)
         self.assertEqual(
             1,
@@ -52,7 +52,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         #for i in (181, ):
         #    print i,
         #    print self.pg.delete_goal(
-        #        self.settings.PIWIK_SITE_ID,
+        #        self.settings['PIWIK_SITE_ID'],
         #        i,
         #    )
 
@@ -61,12 +61,12 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         This is superfluous when we create a goal on the fly
         """
         r = self.pg.add_goal(
-            self.settings.PIWIK_SITE_ID,
+            self.settings['PIWIK_SITE_ID'],
             'Auto Goal %s' % self.get_unique_string(),
             'manually',
             'nononono-nevermatchanyting-pattern-this-sucks',
             'contains',
-            self.settings.PIWIK_TOKEN_AUTH,
+            self.settings['PIWIK_TOKEN_AUTH'],
         )
         data = json.loads(r)
         goal_id = int(data['value'])
@@ -76,7 +76,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
         )
 
         r = self.pg.delete_goal(
-            self.settings.PIWIK_SITE_ID,
+            self.settings['PIWIK_SITE_ID'],
             goal_id,
         )
         data = json.loads(r)

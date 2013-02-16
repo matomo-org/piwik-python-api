@@ -7,20 +7,6 @@ from hashlib import md5
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
-try:
-    import settings
-except ImportError:
-    sys.stderr.write("You haven't created the necessary settings module, please check the documentation.")
-    if not on_rtd:
-        raise
-
-try:
-    mysettings = settings.Settings()
-except NameError:
-    sys.stderr.write("You haven't created the necessary Settings class, please check the documentation.")
-    if not on_rtd:
-        raise
-
 
 class PiwikAPITestCase(unittest.TestCase):
     """
@@ -29,7 +15,19 @@ class PiwikAPITestCase(unittest.TestCase):
     Provides a fake request, PiwikTracker and PiwikTrackerEcommerce instances.
     """
     def setUp(self):
-        self.settings = settings.Settings()
+        try:
+            keys = (
+                'PIWIK_TRACKING_API_URL',
+                'PIWIK_ANALYTICS_API_URL',
+                'PIWIK_TOKEN_AUTH',
+                'PIWIK_SITE_ID',
+            )
+            self.settings = {}
+            for key in keys:
+                self.settings[key] = os.environ.get(key)
+            self.settings['PIWIK_GOAL_ID'] = os.environ.get('PIWIK_GOAL_ID', None)
+        except:
+            raise
 
     def debug(self, value):
         """

@@ -45,11 +45,11 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
         super(TrackerEcommerceBaseTestCase, self).setUp()
         # Set different IP for each test run
         # TODO also randomize referers etc...
-        self.pte = PiwikTrackerEcommerce(self.settings.PIWIK_SITE_ID,
+        self.pte = PiwikTrackerEcommerce(self.settings['PIWIK_SITE_ID'],
                                          self.request)
-        self.pte.set_api_url(self.settings.PIWIK_TRACKING_API_URL)
+        self.pte.set_api_url(self.settings['PIWIK_TRACKING_API_URL'])
         self.pte.set_ip(self.get_random_ip())
-        self.pte.set_token_auth(self.settings.PIWIK_TOKEN_AUTH)
+        self.pte.set_token_auth(self.settings['PIWIK_TOKEN_AUTH'])
         self.pte.set_custom_variable(
             5,
             'testsegment',
