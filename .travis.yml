@@ -1,5 +1,7 @@
 language: python
-php:
+python:
+- 2.5
+- 2.6
 - 2.7
 env:
   # Dev test server
