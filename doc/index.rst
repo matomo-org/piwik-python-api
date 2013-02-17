@@ -27,7 +27,6 @@ Contents:
 
 About
 =====
-
 ``piwikapi`` is a Python implementation of the Piwik tracking and the
 analytics API. You can use it to track visitors, ecommerce, actions, goals,
 generate reports and much more.
@@ -63,7 +62,6 @@ https://github.com/piwik/piwik-python-api.
 
 Advantages over client-side tracking
 ------------------------------------
-
 My first implementation of the Piwik tracking API was written for a client who
 needed to track 301 and 302 redirects on a Django site. So JavaScript logging
 obviously wouldn't work. Doing the tracking API requests from the server
@@ -80,7 +78,6 @@ into some task queue.
 
 Disadvantages
 -------------
-
 You can't check all client-side features from the server, such as plugin
 support, screen resolution, click goals etc. This could be accomplished by
 using some JavaScript code though if necessary.
@@ -121,7 +118,6 @@ object to the API.
 
 News
 ====
-
 The API code itself isn't very nice, and if I find enough time I'll rewrite it
 entirely. It is my intention to continue supporting the old API interface for a
 while and to raise deprecation warnings when necessary.
@@ -131,9 +127,10 @@ setup class won't be supported any more. The project was also moved into the
 Piwik project on github, but this shouldn't affect you unless you were checking
 out the code from the old repository.
 
+Todo
+====
 Supported
-=========
-
+---------
 - Normal tracking
 - Custom variables
 - Ecommerce
@@ -141,8 +138,7 @@ Supported
 - Actions
 
 Not supported yet
-=================
-
+-----------------
 - Custom variables through cookies
 - Attribution info through cookies
 - probably more
