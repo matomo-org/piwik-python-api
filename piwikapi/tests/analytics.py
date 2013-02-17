@@ -1,6 +1,9 @@
-import json
 from PIL import Image
 from StringIO import StringIO
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 from piwikapi.exceptions import ConfigurationError
 from piwikapi.analytics import PiwikAnalytics

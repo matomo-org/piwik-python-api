@@ -8,7 +8,10 @@ Source and development at https://github.com/piwik/piwik-python-api
 """
 
 import datetime
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 import logging
 import os
 import random

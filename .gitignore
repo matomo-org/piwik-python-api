@@ -9,3 +9,4 @@ piwikapi/tests/settings.py
 doc/_build
 doc/_static
 doc/_templates
+MANIFEST

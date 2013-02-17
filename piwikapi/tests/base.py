@@ -2,8 +2,12 @@ import os
 import pprint
 import sys
 import time
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 from hashlib import md5
+
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 

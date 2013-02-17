@@ -1,6 +1,9 @@
-import json
 import urllib
 from random import randint
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 from piwikapi.tracking import PiwikTrackerEcommerce
 from piwikapi.plugins.goals import PiwikGoals

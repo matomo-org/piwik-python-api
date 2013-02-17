@@ -1,4 +1,7 @@
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 from piwikapi.plugins.goals import PiwikGoals
 from ecommerce import TrackerEcommerceBaseTestCase

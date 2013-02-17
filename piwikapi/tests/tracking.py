@@ -1,9 +1,15 @@
 import cgi
 import datetime
-import json
 import random
 import re
-import unittest
+try:
+    import json
+except ImportError:
+    import simplejson as json
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from piwikapi.analytics import PiwikAnalytics
 from piwikapi.exceptions import InvalidParameter

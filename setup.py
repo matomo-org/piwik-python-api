@@ -1,11 +1,15 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 
 setup(
     name = "piwikapi",
     version = "0.2.2",
-    packages = find_packages(),
-    test_suite = 'piwikapi.tests',
+    packages = (
+        'piwikapi',
+        'piwikapi.plugins',
+        'piwikapi.tests',
+    ),
+    #test_suite = 'piwikapi.tests',
 
     # PyPI
     author = "Nicolas Kuttler",
@@ -21,5 +25,12 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.5",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
     ],
+    extras_require = {
+        'Python 2.5 json':  ["json", ],
+    }
 )

@@ -4,7 +4,8 @@ Changelog
 0.3 (2013-02-)
 ----------------
 
-- Switch to setuptools and hashlib
+- Switch hashlib
+- Test 'builds' on travis
 
 0.2.2 (2013-01-20)
 ------------------

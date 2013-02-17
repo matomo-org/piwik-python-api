@@ -22,7 +22,7 @@ clean:
 
 .PHONY: test
 test:
-	python setup.py test
+	python piwikapi/tests/
 
 .PHONY: html
 html:
