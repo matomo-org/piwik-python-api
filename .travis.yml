@@ -16,7 +16,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then pip install -q --use-mirrors simplejson; fi
   # 2.6 doesn't support assertRegexpMatches etc.
   - if [[ $TRAVIS_PYTHON_VERSION < '2.7' ]]; then pip install -q --use-mirrors unittest2; fi
-  - python setup.py install
+  - python setup.py install -q
 script: if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then python piwikapi/tests/__main__.py; else python piwikapi/tests/; fi
 notifications:
   irc:
