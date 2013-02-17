@@ -9,6 +9,9 @@ install it with pip::
 
     pip install piwikapi
 
+On Python 2.5 you'll also have to install `simplejson
+<http://pypi.python.org/pypi/simplejson/>`_.
+
 Installing Piwik
 ----------------
 
