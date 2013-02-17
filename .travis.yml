@@ -24,7 +24,8 @@ notifications:
     on_success: change
     on_failure: change
     channels:
-    - irc.freenode.org##nkuttler
+    - "irc.freenode.org#piwik-dev"
+    - "irc.freenode.org##nkuttler"
   email:
     on_success: never
     on_failure: change
