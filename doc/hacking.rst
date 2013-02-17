@@ -20,13 +20,14 @@ not pollute a real site with test data.
 Configuring your environment
 ----------------------------
 
-The tests assume that the following variables are set in your environment:
+The tests assume that the following variables are set in your shell
+environment::
 
-PIWIK_SITE_ID = '<ID of your test site>'
-PIWIK_TRACKING_API_URL = '<Your Piwik tracker API URL>'
-PIWIK_ANALYTICS_API_URL = '<Your Piwik API URL>'
-PIWIK_TOKEN_AUTH = '<Your Piwik auth token>'
-PIWIK_GOAL_ID = None
+    PIWIK_SITE_ID = '<ID of your test site>'
+    PIWIK_TRACKING_API_URL = '<Your Piwik tracker API URL>'
+    PIWIK_ANALYTICS_API_URL = '<Your Piwik API URL>'
+    PIWIK_TOKEN_AUTH = '<Your Piwik auth token>'
+    PIWIK_GOAL_ID = None
 
 ``PIWIK_TRACKING_API_URL`` must contain the URL to your Piwik install's
 /piwik.php, something like 'http://example.com/piwik.php'.

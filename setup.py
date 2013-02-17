@@ -31,6 +31,6 @@ setup(
         "Programming Language :: Python :: 2.7",
     ],
     extras_require = {
-        'Python 2.5 json':  ["json", ],
+        'Python 2.5':  ["simplejson", ],
     }
 )
