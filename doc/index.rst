@@ -3,31 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-====================================
-Welcome to piwikapi's documentation!
-====================================
+About
+=====
 
 .. image:: pic/piwik_logo.jpg
    :alt: Piwik
    :align: right
 
-Contents:
-
-.. toctree::
-   :maxdepth: 3
-
-   install
-   tracking_usage
-   tracking_reference
-   analytics_usage
-   analytics_reference
-   plugins_reference
-   hacking
-   hacking_reference
-   changelog
-
-About
-=====
 ``piwikapi`` is a Python implementation of the Piwik tracking and the
 analytics API. You can use it to track visitors, ecommerce, actions, goals,
 generate reports and much more.
@@ -130,6 +112,10 @@ out the code from the old repository.
 
 Todo
 ====
+- Abstraction for various request models (Django, webob, ...?)
+- API rewrite
+- CLI client (?)
+
 Supported
 ---------
 - Normal tracking
@@ -150,6 +136,18 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. toctree::
+
+   install
+   tracking_usage
+   tracking_reference
+   analytics_usage
+   analytics_reference
+   plugins_reference
+   hacking
+   hacking_reference
+   changelog
 
 ..
     TODO What happens if we have one client-side request followed only by
