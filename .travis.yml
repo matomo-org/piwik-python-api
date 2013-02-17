@@ -11,11 +11,11 @@ env:
     - secure: "KxjYYynxnUYfFZizglKs4IqTkVN3rQEujcwFUF71Vf4BnoFtnIw3sKmTW1e5\npq3VyU9GuxpW63L36uTT401DmkOdtdaEUYSH6Yra1362CGbSXHQwzVyjDwT9\n2q+3zXgHDOn+oaTRrN7z5wiVwzlyMuhCi2H1Tle2TWU+5Oaa8oI="
     - secure: "d63KPgn5i10RMJOODfGMKKpk9xeqJPUFO9504CQFKgcdGIHEvlHAWQMc7sNe\nvdrARzgi8QpDiu9QQsCezBBUvWfqo+BPSib6LePvKx7wyjXWhj24ukjGeLDG\nGJtETOk3Wd3ucjrX2RLAs5pW5RyP2qui6g+7GfpU0I/UvvC+CXQ="
 install:
-  - pip install --use-mirrors PIL
+  - pip install -q --use-mirrors PIL
   # 2.5 misses json
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then pip install --use-mirrors simplejson; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then pip install -q --use-mirrors simplejson; fi
   # 2.6 doesn't support assertRegexpMatches etc.
-  - if [[ $TRAVIS_PYTHON_VERSION < '2.7' ]]; then pip install --use-mirrors unittest2; fi
+  - if [[ $TRAVIS_PYTHON_VERSION < '2.7' ]]; then pip install -q --use-mirrors unittest2; fi
   - python setup.py install
 script: if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then python piwikapi/tests/__main__.py; else python piwikapi/tests/; fi
 notifications:
