@@ -1,5 +1,4 @@
-from PIL import Image
-from StringIO import StringIO
+import imghdr
 try:
     import json
 except ImportError:
@@ -58,14 +57,10 @@ class AnalyticsTestCase(AnalyticsBaseTestCase):
         self.a.set_parameter('apiAction', 'getCountry')
         self.a.set_parameter('token_auth', self.settings['PIWIK_TOKEN_AUTH'])
         r = self.a.send_request()
-        try:
-            im = Image.open(StringIO(r))
-            got_image = True
-        except:
-            got_image = False
-        self.assertTrue(
-            got_image,
-            "Couldn't get an ImageGraph"
+        self.assertEqual(
+            'png',
+            imghdr.what(None, r),
+            "Couldn't get a PNG ImageGraph"
         )
 
     def test_remove_parameter(self):
