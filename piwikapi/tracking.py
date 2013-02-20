@@ -9,17 +9,21 @@ Source and development at https://github.com/piwik/piwik-python-api
 
 import sys
 import datetime
+from hashlib import md5
+import logging
+import os
+import random
 try:
     import json
 except ImportError:
     import simplejson as json
-import logging
-import os
-import random
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
-import urllib.parse
-from hashlib import md5
+try:
+    from urllib.request import Request, urlopen
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib2 import Request, urlopen
+    from urllib import urlencode
+    from urlparse import urlparse
 
 from .exceptions import ConfigurationError
 from .exceptions import InvalidParameter
@@ -413,9 +417,9 @@ class PiwikTracker(object):
                 2: '_refts',
                 3: '_ref',
             }.items():
-                query_vars[var] = urllib.parse.quote(self.attribution_info[i])
+                query_vars[var] = quote(self.attribution_info[i])
 
-        url = urllib.parse.urlencode(query_vars)
+        url = urlencode(query_vars)
         if self.debug_append_url:
             url += self.debug_append_url
         return url
@@ -431,7 +435,7 @@ class PiwikTracker(object):
         """
         url = self._get_request(self.id_site)
         if document_title:
-            url += '&%s' % urllib.parse.urlencode({'action_name': document_title})
+            url += '&%s' % urlencode({'action_name': document_title})
         return url
 
     def __get_url_track_action(self, action_url, action_type):
@@ -442,7 +446,7 @@ class PiwikTracker(object):
         :type action_type: str
         """
         url = self._get_request(self.id_site)
-        url += "&%s" % urllib.parse.urlencode({action_type: action_url})
+        url += "&%s" % urlencode({action_type: action_url})
         return url
 
     def __get_cookie_matching_name(self, name):
@@ -588,9 +592,9 @@ class PiwikTracker(object):
         """
         if not self.api_url:
             raise ConfigurationError('API URL not set')
-        parsed = urllib.parse.urlparse(self.api_url)
+        parsed = urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        request = urllib.request.Request(url)
+        request = Request(url)
         request.add_header('User-Agent', self.user_agent)
         request.add_header('Accept-Language', self.accept_language)
         if not self.cookie_support:
@@ -599,7 +603,7 @@ class PiwikTracker(object):
             #print 'Adding cookie', self.request_cookie
             request.add_header('Cookie', self.request_cookie)
 
-        response = urllib.request.urlopen(request)
+        response = urlopen(request)
         #print response.info()
         body = response.read()
         # The cookie in the response will be set in the next request
@@ -746,7 +750,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         """
         url = self.__get_url_track_ecommerce(grand_total, sub_total, tax,
                                            shipping, discount)
-        url += '&%s' % urllib.parse.urlencode({'ec_id': order_id})
+        url += '&%s' % urlencode({'ec_id': order_id})
         self.ecommerce_last_order_timestamp = self._get_timestamp()
         return url
 
@@ -764,7 +768,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         params['idgoal'] = id_goal
         if revenue:
             params['revenue'] = revenue
-        url += '&%s' % urllib.parse.urlencode(params)
+        url += '&%s' % urlencode(params)
         return url
 
     def __get_url_track_ecommerce(self, grand_total, sub_total=False,
@@ -808,7 +812,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
             items = list(self.ecommerce_items.values())
             args['ec_items'] = json.dumps(items)
         self.ecommerce_items.clear()
-        url += '&%s' % urllib.parse.urlencode(args)
+        url += '&%s' % urlencode(args)
         return url
 
     def __get_url_track_ecommerce_cart_update(self, grand_total):

@@ -7,8 +7,12 @@ License: BSD, see LICENSE for details
 Source and development at https://github.com/piwik/piwik-python-api
 """
 
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+try:
+    from urllib.request import Request, urlopen
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib2 import Request, urlopen
+    from urllib import urlencode
 
 from .exceptions import ConfigurationError
 
@@ -139,7 +143,7 @@ class PiwikAnalytics(object):
         if len(self.p):
             qs = self.api_url
             qs += '?'
-            qs += urllib.parse.urlencode(self.p)
+            qs += urlencode(self.p)
         else:
             pass
         return qs
@@ -150,7 +154,7 @@ class PiwikAnalytics(object):
 
         :rtype: str
         """
-        request = urllib.request.Request(self.get_query_string())
-        response = urllib.request.urlopen(request)
+        request = Request(self.get_query_string())
+        response = urlopen(request)
         body = response.read()
         return body

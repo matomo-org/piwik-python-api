@@ -1,11 +1,16 @@
 import sys
 import unittest
-import urllib.request, urllib.parse, urllib.error
 from random import randint
 try:
     import json
 except ImportError:
     import simplejson as json
+try:
+    from urllib.request import Request, urlopen
+    from urllib.parse import urlencode, quote
+except ImportError:
+    from urllib2 import Request, urlopen
+    from urllib import urlencode, quote
 
 from piwikapi.tracking import PiwikTrackerEcommerce
 from piwikapi.plugins.goals import PiwikGoals
@@ -86,7 +91,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
     def test_ecommerce_view(self):
         # View a product
         product = self.products['book']
-        script = "/view/%s/" % urllib.parse.quote(product['name'])
+        script = "/view/%s/" % quote(product['name'])
         self.pte._set_script(script)
         self.pte.set_ecommerce_view(
             product['sku'],
