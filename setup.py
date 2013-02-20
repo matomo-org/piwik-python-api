@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name = "piwikapi",
-    version = "0.2.2",
+    version = "0.3",
     packages = (
         'piwikapi',
         'piwikapi.plugins',
@@ -29,6 +29,8 @@ setup(
         "Programming Language :: Python :: 2.5",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.2",
     ],
     extras_require = {
         'Python 2.5':  ["simplejson", ],
