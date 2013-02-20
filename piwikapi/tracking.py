@@ -7,6 +7,7 @@ License: BSD, see LICENSE for details
 Source and development at https://github.com/piwik/piwik-python-api
 """
 
+import sys
 import datetime
 try:
     import json
@@ -15,13 +16,13 @@ except ImportError:
 import logging
 import os
 import random
-import urllib
-import urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 from hashlib import md5
 
-from exceptions import ConfigurationError
-from exceptions import InvalidParameter
+from .exceptions import ConfigurationError
+from .exceptions import InvalidParameter
 
 
 class PiwikTracker(object):
@@ -403,7 +404,7 @@ class PiwikTracker(object):
         if self.visitor_custom_var:
             query_vars['_cvar'] = json.dumps(self.visitor_custom_var)
         if len(self.plugins):
-            for plugin, version in self.plugins.iteritems():
+            for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
         if len(self.attribution_info):
             for i, var in {
@@ -411,10 +412,10 @@ class PiwikTracker(object):
                 1: '_rck',
                 2: '_refts',
                 3: '_ref',
-            }.iteritems():
-                query_vars[var] = urllib.quote(self.attribution_info[i])
+            }.items():
+                query_vars[var] = urllib.parse.quote(self.attribution_info[i])
 
-        url = urllib.urlencode(query_vars)
+        url = urllib.parse.urlencode(query_vars)
         if self.debug_append_url:
             url += self.debug_append_url
         return url
@@ -430,7 +431,7 @@ class PiwikTracker(object):
         """
         url = self._get_request(self.id_site)
         if document_title:
-            url += '&%s' % urllib.urlencode({'action_name': document_title})
+            url += '&%s' % urllib.parse.urlencode({'action_name': document_title})
         return url
 
     def __get_url_track_action(self, action_url, action_type):
@@ -441,7 +442,7 @@ class PiwikTracker(object):
         :type action_type: str
         """
         url = self._get_request(self.id_site)
-        url += "&%s" % urllib.urlencode({action_type: action_url})
+        url += "&%s" % urllib.parse.urlencode({action_type: action_url})
         return url
 
     def __get_cookie_matching_name(self, name):
@@ -587,9 +588,9 @@ class PiwikTracker(object):
         """
         if not self.api_url:
             raise ConfigurationError('API URL not set')
-        parsed = urlparse.urlparse(self.api_url)
+        parsed = urllib.parse.urlparse(self.api_url)
         url = "%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        request = urllib2.Request(url)
+        request = urllib.request.Request(url)
         request.add_header('User-Agent', self.user_agent)
         request.add_header('Accept-Language', self.accept_language)
         if not self.cookie_support:
@@ -598,7 +599,7 @@ class PiwikTracker(object):
             #print 'Adding cookie', self.request_cookie
             request.add_header('Cookie', self.request_cookie)
 
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         #print response.info()
         body = response.read()
         # The cookie in the response will be set in the next request
@@ -609,6 +610,10 @@ class PiwikTracker(object):
         #    # (ie. XDEBUG puts its cookie first in the list)
         #    #print header, value
         #    self.request_cookie = ''
+
+        # Work around urllib updates, we need a string
+        if sys.version_info[0] >= 3 and type(body) == bytes:
+            body = str(body)
         return body
 
     def set_custom_variable(self, id, name, value, scope='visit'):
@@ -651,11 +656,11 @@ class PiwikTracker(object):
         :type kwargs: dict of {str: int}
         :rtype: None
         """
-        for plugin, version in kwargs.iteritems():
-            if plugin not in self.KNOWN_PLUGINS.keys():
+        for plugin, version in kwargs.items():
+            if plugin not in list(self.KNOWN_PLUGINS.keys()):
                 raise ConfigurationError("Unknown plugin %s, please use one "
                                          "of %s" % (plugin,
-                                                    self.KNOWN_PLUGINS.keys()))
+                                                    list(self.KNOWN_PLUGINS.keys())))
             self.plugins[self.KNOWN_PLUGINS[plugin]] = int(version)
 
     def get_custom_variable(self, id, scope='visit'):
@@ -741,7 +746,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         """
         url = self.__get_url_track_ecommerce(grand_total, sub_total, tax,
                                            shipping, discount)
-        url += '&%s' % urllib.urlencode({'ec_id': order_id})
+        url += '&%s' % urllib.parse.urlencode({'ec_id': order_id})
         self.ecommerce_last_order_timestamp = self._get_timestamp()
         return url
 
@@ -759,7 +764,7 @@ class PiwikTrackerEcommerce(PiwikTracker):
         params['idgoal'] = id_goal
         if revenue:
             params['revenue'] = revenue
-        url += '&%s' % urllib.urlencode(params)
+        url += '&%s' % urllib.parse.urlencode(params)
         return url
 
     def __get_url_track_ecommerce(self, grand_total, sub_total=False,
@@ -800,10 +805,10 @@ class PiwikTrackerEcommerce(PiwikTracker):
             args['ec_dt'] = discount
         if len(self.ecommerce_items):
             # Remove the SKU index in the list before JSON encoding
-            items = self.ecommerce_items.values()
+            items = list(self.ecommerce_items.values())
             args['ec_items'] = json.dumps(items)
         self.ecommerce_items.clear()
-        url += '&%s' % urllib.urlencode(args)
+        url += '&%s' % urllib.parse.urlencode(args)
         return url
 
     def __get_url_track_ecommerce_cart_update(self, grand_total):

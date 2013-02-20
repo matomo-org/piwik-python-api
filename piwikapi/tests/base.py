@@ -58,3 +58,22 @@ class PiwikAPITestCase(unittest.TestCase):
         epoch = str(time.time())
         epoch += self.get_random_string()
         return epoch[:length]
+
+    # Python2/3 wrappers
+    def assertRegexpMatches(self, text, regexp, msg):
+        if sys.version_info[0] >= 3:
+            self.assertRegex(text, regexp, msg)
+        else:
+            super(PiwikAPITestCase, self).assertRegexpMatches(text, regexp, msg)
+
+    def assertNotRegexpMatches(self, text, regexp, msg):
+        if sys.version_info[0] >= 3:
+            self.assertNotRegex(text, regexp, msg)
+        else:
+            super(PiwikAPITestCase, self).assertNotRegexpMatches(text, regexp, msg)
+
+    def assertEquals(self, first, second, msg=''):
+        if sys.version_info[0] >= 3:
+            self.assertEqual(first, second, msg)
+        else:
+            super(PiwikAPITestCase, self).assertEquals(first, second, msg)

@@ -26,7 +26,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
                 'contains',
                 self.settings['PIWIK_TOKEN_AUTH'],
             )
-            data = json.loads(r)
+            data = json.loads(r.decode('utf-8'))
             self.goal_id = int(data['value'])
         else:
             self.goal_id = self.settings['PIWIK_GOAL_ID']
@@ -71,7 +71,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
             'contains',
             self.settings['PIWIK_TOKEN_AUTH'],
         )
-        data = json.loads(r)
+        data = json.loads(r.decode('utf-8'))
         goal_id = int(data['value'])
         self.assertTrue(
             goal_id > 0,
@@ -82,7 +82,7 @@ class GoalsTestCase(TrackerEcommerceBaseTestCase):
             self.settings['PIWIK_SITE_ID'],
             goal_id,
         )
-        data = json.loads(r)
+        data = json.loads(r.decode('utf-8'))
         self.assertEqual(
             data['result'],
             'success',

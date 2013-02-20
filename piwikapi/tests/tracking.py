@@ -2,6 +2,7 @@ import cgi
 import datetime
 import random
 import re
+import sys
 try:
     import json
 except ImportError:
@@ -317,7 +318,8 @@ class TrackerVerifyDebugTestCase(TrackerBaseTestCase):
         self.assertRegexpMatches(
             r,
             re.escape(action_title),
-            "Action title not found, expected %s" % action_title
+            "Action title not found"
+            #"Action title not found, expected %s" % action_title
         )
 
     def test_default_user_is_not_authenticated(self):
@@ -475,10 +477,13 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
         """
         try:
             self.a.set_parameter('token_auth', self.settings['PIWIK_TOKEN_AUTH'])
-            data = json.loads(self.a.send_request())
+            if sys.version_info[0] >= 3:
+                data = json.loads(self.a.send_request().decode('utf-8'))
+            else:
+                data = json.loads(self.a.send_request())
             data = data[-1]
         except IndexError:
-            print "Request apparently not logged!"
+            print("Request apparently not logged!")
             raise
         except KeyError:
             self.debug(data)
@@ -496,9 +501,12 @@ class TrackerVerifyBaseTestCase(TrackerBaseTestCase, AnalyticsBaseTestCase):
         """
         try:
             self.a.set_parameter('token_auth', self.settings['PIWIK_TOKEN_AUTH'])
-            data = json.loads(self.a.send_request())[-1]['actionDetails'][0]
+            if sys.version_info[0] >= 3:
+                data = json.loads(self.a.send_request().decode('utf-8'))[-1]['actionDetails'][0]
+            else:
+                data = json.loads(self.a.send_request())[-1]['actionDetails'][0]
         except IndexError:
-            print "Request apparently not logged!"
+            print("Request apparently not logged!")
             raise
         try:
             return data[key]
@@ -558,7 +566,10 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         url = 'http://out.example.com/out/15'
         r = self.pt.do_track_action(url, 'link')
         self.a.set_parameter('token_auth', self.settings['PIWIK_TOKEN_AUTH'])
-        data = json.loads(self.a.send_request())[0]
+        if sys.version_info[0] >= 3:
+            data = json.loads(self.a.send_request().decode('utf-8'))[0]
+        else:
+            data = json.loads(self.a.send_request())[0]
         self.assertEqual(
             url,
             self.get_av('url'),
