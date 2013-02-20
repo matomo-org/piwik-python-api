@@ -24,21 +24,21 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
             'sku': '1',
             'name': 'Book',
             'category': ('book category', 'books', ),
-            'price': 9.99,
+            'price': 999,
             'quantity': 3,
         },
         'car': {
             'sku': '2',
             'name': 'Car',
             'category': ('car category', 'cars', ),
-            'price': 5.25,
+            'price': 525,
             'quantity': 3,
         },
         'ball': {
             'sku': '3',
             'name': 'Ball',
             'category': ('ball category', 'balls', ),
-            'price': 7.39,
+            'price': 739,
             'quantity': 7,
         },
     }
@@ -148,7 +148,7 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
                         "Incorrect product quantity",
                     )
                     self.assertEqual(
-                        "%.2f" % product['price'],
+                        product['price'],
                         item['price'],
                         "Incorrect product price",
                     )
@@ -171,7 +171,6 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
             "Unexpected visit status %s" % visit_status,
         )
 
-    @unittest.skipIf(sys.version_info[0] >= 3, "TODO")
     def test_track_ecommerce_order(self):
         """
         TODO We could test that each product was added, not only the sums
@@ -192,16 +191,15 @@ class TrackerEcommerceVerifyTestCase(TrackerEcommerceBaseTestCase):
         # Order the products
         script = "/cart/checkout/"
         self.pte._set_script(script)
-        grand_total_string = "%.2f" % grand_total
         r = self.pte.do_track_ecommerce_order(
             self.get_unique_string(),
             grand_total,
         )
         revenue = self.get_av('revenue')
         self.assertEqual(
-            grand_total_string,
+            grand_total,
             revenue,
-            "Grand total %s, not %s" % (revenue, grand_total_string),
+            "Grand total %s, not %d" % (revenue, grand_total),
         )
         items = self.get_av('items')
         self.assertEqual(
