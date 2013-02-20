@@ -19,7 +19,7 @@ except ImportError:
     import simplejson as json
 try:
     from urllib.request import Request, urlopen
-    from urllib.parse import urlencode
+    from urllib.parse import urlencode, urlparse
 except ImportError:
     from urllib2 import Request, urlopen
     from urllib import urlencode
