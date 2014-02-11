@@ -31,7 +31,8 @@ environment::
 
 ``PIWIK_TRACKING_API_URL`` must contain the URL to your Piwik install's
 /piwik.php, something like 'http://example.com/piwik.php'.
-``PIWIK_TRACKING_API_URL`` must contain the URL to your Piwik install's root.
+``PIWIK_TRACKING_API_URL`` must contain the URL to your Piwik install's root, so
+'http://example.com/'.
 
 The auth token must have admin access for the site defined in
 ``PIWIK_SITE_ID``. The ``goal id`` doesn't have to be set, the goal can be
