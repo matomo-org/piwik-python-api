@@ -19,10 +19,10 @@ except ImportError:
     import simplejson as json
 try:
     from urllib.request import Request, urlopen
-    from urllib.parse import urlencode, urlparse
+    from urllib.parse import urlencode, urlparse, quote
 except ImportError:
     from urllib2 import Request, urlopen
-    from urllib import urlencode
+    from urllib import urlencode, quote
     from urlparse import urlparse
 
 from .exceptions import ConfigurationError
