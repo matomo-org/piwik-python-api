@@ -36,7 +36,7 @@ should consider using SSL to submit the data to your server.
 Enabling ecommerce tracking
 ---------------------------
 
-You need to enable ecommerc tracking inside Piwik, see
+You need to enable ecommerce tracking inside Piwik, see
 http://piwik.org/docs/ecommerce-analytics/#toc-enable-ecommerce-for-the-website
 
 See also :ref:`enable_tracking`.
@@ -59,5 +59,5 @@ Secure your install
 First you should check the official docs at
 http://piwik.org/security/how-to-secure-piwik/.
 
-If you use the Pyton API exclusively you could consider password-protecting your
+If you use the Python API exclusively you could consider password-protecting your
 Piwik install or binding the httpd to local interfaces only etc.
