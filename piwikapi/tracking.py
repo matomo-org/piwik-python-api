@@ -403,6 +403,8 @@ class PiwikTracker(object):
             query_vars['res'] = '%dx%d' % (self.width, self.height)
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
+        if self.forced_datetime:
+            query_vars['cdt'] = self.forced_datetime.isoformat(' ')
         if self.page_custom_var:
             query_vars['cvar'] = json.dumps(self.page_custom_var)
         if self.visitor_custom_var:
