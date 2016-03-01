@@ -392,6 +392,9 @@ class PiwikTracker(object):
             'url': self.page_url,
             'urlref': self.referer,
             'id': self.visitor_id,
+            'h': self.local_hour,
+            'm': self.local_minute,
+            's': self.local_second,
         }
         if self.ip:
             query_vars['cip'] = self.ip
