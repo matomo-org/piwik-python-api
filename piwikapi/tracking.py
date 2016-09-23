@@ -86,6 +86,7 @@ class PiwikTracker(object):
         self.debug_append_url = False
         self.page_custom_var = {}
         self.visitor_custom_var = {}
+        self.dimensions = {}
         self.plugins = {}
         self.attribution_info = {}
 
@@ -407,6 +408,8 @@ class PiwikTracker(object):
             query_vars['cvar'] = json.dumps(self.page_custom_var)
         if self.visitor_custom_var:
             query_vars['_cvar'] = json.dumps(self.visitor_custom_var)
+        for dimension, value in self.dimensions.items():
+            query_vars[dimension] = value
         if len(self.plugins):
             for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
@@ -646,6 +649,20 @@ class PiwikTracker(object):
             self.visitor_custom_var[id] = (name, value)
         else:
             raise InvalidParameter("Invalid scope parameter value %s" % scope)
+
+    def set_dimension(self, name, value):
+        """
+        Set a custom dimension
+
+        See http://piwik.org/docs/custom-dimensions/
+
+        :param name: Variable name
+        :type name: str
+        :param value: Variable value
+        :type value: str
+        :rtype: None
+        """
+        self.dimensions[name] = value
 
     def set_plugins(self, **kwargs):
         """
