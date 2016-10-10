@@ -438,6 +438,17 @@ class PiwikTracker(object):
             url += '&%s' % urlencode({'action_name': document_title})
         return url
 
+    def __get_url_track_variable(self, category, action, name, value):
+        url = self._get_request(self.id_site)
+	params = {}
+	params['e_c'] = category
+	params['e_a'] = action
+	params['e_n'] = name
+	params['e_v' ] = value
+        url += '&%s' % urlencode(params)
+        return url
+
+
     def __get_url_track_action(self, action_url, action_type):
         """
         :param action_url: URL of the download or outlink
@@ -564,6 +575,10 @@ class PiwikTracker(object):
         """
         url = self.__get_url_track_page_view(document_title)
         return self._send_request(url)
+
+    def do_track_variable(self, category, action, name, value):
+	url = self.__get_url_track_variable(category, action, name, value)
+	return self._send_request(url)
 
     def do_track_action(self, action_url, action_type):
         """
