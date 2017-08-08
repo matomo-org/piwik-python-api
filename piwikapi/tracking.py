@@ -492,6 +492,17 @@ class PiwikTracker(object):
             url += "&%s" % urlencode({'e_v': value})
         return url
 
+    def __get_url_track_content(self, content_name, content_piece, content_target, content_interaction):
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'c_n': content_name})
+        if content_piece:
+            url += "&%s" % urlencode({'c_p': content_piece})
+        if name:
+            url += "&%s" % urlencode({'c_t': content_target})
+        if value:
+            url += "&%s" % urlencode({'c_i': content_interaction})
+        return url
+
     def __get_cookie_matching_name(self, name):
         """
         **NOT SUPPORTED**
@@ -656,6 +667,31 @@ class PiwikTracker(object):
         :type name: str
         :param value: The event value. Must be a float or integer value (numeric), not a string.
         :type value: numeric
+        :rtype: str
+        """
+        url = self.__get_url_track_event(category, action, name, value)
+        return self._send_request(url)
+
+    def do_track_content(self, content_name, content_piece=None,
+                         content_target=None, content_interaction=None):
+        """
+        Track the performance of pieces of content on a page.
+
+        To track a content impression set content_name and optionally 
+        content_piece and content_target. To track a content interaction
+        set content_interaction and content_name and optionally
+        content_piece and content_target. To map an interaction to an
+        impression make sure to set the same value for content_name and
+        content_piece. It is recommended to set a value for content_piece.
+
+        :param content_name: The name of the content. Must not be empty. For instance 'Ad Foo Bar'
+        :type content_name: str
+        :param content_piece: The actual content piece. For instance the path to an image, video, audio, any text
+        :type content_piece: str
+        :param content_target: The target of the content. For instance the URL of a landing page
+        :type content_target: str
+        :param content_interaction: The name of the interaction with the content. For instance a 'click'
+        :type content_interaction: str
         :rtype: str
         """
         url = self.__get_url_track_event(category, action, name, value)
