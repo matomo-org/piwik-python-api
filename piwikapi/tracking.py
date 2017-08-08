@@ -463,6 +463,16 @@ class PiwikTracker(object):
         url += "&%s" % urlencode({action_type: action_url})
         return url
 
+    def __get_url_track_event(self, category, action, name, value):
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'e_c': category})
+        url += "&%s" % urlencode({'e_a': action})
+        if name:
+            url += "&%s" % urlencode({'e_n': name})
+        if value:
+            url += "&%s" % urlencode({'e_v': value})
+        return url
+
     def __get_cookie_matching_name(self, name):
         """
         **NOT SUPPORTED**
@@ -597,6 +607,23 @@ class PiwikTracker(object):
         if action_type not in ('download', 'link'):
             raise InvalidParameter("Illegal action parameter %s" % action_type)
         url = self.__get_url_track_action(action_url, action_type)
+        return self._send_request(url)
+
+    def do_track_event(self, category, action, name=None, value=None):
+        """
+        Track an event, return the request body
+
+        :param category: The event category. Must not be empty. (eg. Videos, Music, Games...)
+        :type category: str
+        :param action: The event action. Must not be empty. (eg. Play, Pause, Duration, Add Playlist, Downloaded, Clicked...)
+        :type action: str
+        :param name: The event name. (eg. a Movie name, or Song name, or File name...)
+        :type name: str
+        :param value: The event value. Must be a float or integer value (numeric), not a string.
+        :type value: numeric
+        :rtype: str
+        """
+        url = self.__get_url_track_event(category, action, name, value)
         return self._send_request(url)
 
     def _send_request(self, url):
