@@ -81,6 +81,7 @@ class PiwikTracker(object):
         self.has_cookies = False
         self.width = False
         self.height = False
+        self.uid = False
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
         self.debug_append_url = False
@@ -192,6 +193,8 @@ class PiwikTracker(object):
 
     def set_visitor_id(self, visitor_id):
         """
+        Set the visitor's unique User ID. See https://piwik.org/docs/user-id/
+        
         :param visitor_id: Visitor I
         :type visitor_id: str
         :raises: InvalidParameter if the visitor_id has an incorrect length
@@ -201,6 +204,14 @@ class PiwikTracker(object):
             raise InvalidParameter("set_visitor_id() expects a visitor ID of "
                                    "length %s" % self.LENGTH_VISITOR_ID)
         self.forced_visitor_id = visitor_id
+
+    def set_uid(self, uid):
+        """
+        :param uid: User ID
+        :type visitor_id: str
+        :rtype: None
+        """
+        self.uid = uid
 
     def set_debug_string_append(self, string):
         """
@@ -402,6 +413,8 @@ class PiwikTracker(object):
             query_vars['cookie'] = 1
         if self.width and self.height:
             query_vars['res'] = '%dx%d' % (self.width, self.height)
+        if self.uid:
+            query_vars['uid'] = self.uid
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
         if self.page_custom_var:
