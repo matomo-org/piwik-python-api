@@ -463,6 +463,25 @@ class PiwikTracker(object):
         url += "&%s" % urlencode({action_type: action_url})
         return url
 
+    def __get_url_track_site_search(self, search, search_cat, search_count):
+        """
+        param search: Search query
+        :type search: str
+        :param search_cat: optional search category
+        :type search_cat: str
+        :param search_count: umber of search results displayed in the page. If 
+        search_count=0, the request will appear in "No Result Search Keyword"
+        :type search_count: int
+        :rtype: None
+        """
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'search': search})
+        if name:
+            url += "&%s" % urlencode({'search_cat': search_cat})
+        if value:
+            url += "&%s" % urlencode({'search_count': search_count})
+        return url
+
     def __get_url_track_event(self, category, action, name, value):
         url = self._get_request(self.id_site)
         url += "&%s" % urlencode({'e_c': category})
@@ -607,6 +626,22 @@ class PiwikTracker(object):
         if action_type not in ('download', 'link'):
             raise InvalidParameter("Illegal action parameter %s" % action_type)
         url = self.__get_url_track_action(action_url, action_type)
+        return self._send_request(url)
+
+    def do_track_site_search(self, search, search_cat=None, search_count=None):
+        """
+        Track a Site Search query.
+
+        param search: Search query
+        :type search: str
+        :param search_cat: optional search category
+        :type search_cat: str
+        :param search_count: umber of search results displayed in the page. If 
+        search_count=0, the request will appear in "No Result Search Keyword"
+        :type search_count: int
+        :rtype: None
+        """
+        url = self.__get_url_track_site_search(search, search_cat, search_count)
         return self._send_request(url)
 
     def do_track_event(self, category, action, name=None, value=None):
