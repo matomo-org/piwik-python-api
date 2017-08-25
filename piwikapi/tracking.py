@@ -70,18 +70,17 @@ class PiwikTracker(object):
         self.request_cookie = ''
         self.user_agent = None
         self.accept_language = None
-        self.ip = False
-        self.token_auth = False
-        self.forced_datetime = False
+        self.ip = None
+        self.token_auth = None
+        self.forced_datetime = None
         self.set_local_time(self._get_timestamp())
         self.page_url = None
         self.cookie_support = True
         self.has_cookies = False
-        self.width = False
-        self.height = False
-        self.uid = False
+        self.width = None
+        self.height = None
         self.visitor_id = self.get_random_visitor_id()
-        self.forced_visitor_id = False
+        self.forced_visitor_id = None
         self.debug_append_url = False
         self.page_custom_var = {}
         self.visitor_custom_var = {}
@@ -191,7 +190,7 @@ class PiwikTracker(object):
     def set_visitor_id(self, visitor_id):
         """
         Set the visitor's unique User ID. See https://piwik.org/docs/user-id/
-        
+
         :param visitor_id: Visitor I
         :type visitor_id: str
         :raises: InvalidParameter if the visitor_id has an incorrect length
@@ -229,14 +228,6 @@ class PiwikTracker(object):
         """
         self.send_image = False
         return True
-
-    def set_uid(self, uid):
-        """
-        :param uid: User ID
-        :type visitor_id: str
-        :rtype: None
-        """
-        self.uid = uid
 
     def set_debug_string_append(self, string):
         """
@@ -336,11 +327,9 @@ class PiwikTracker(object):
 
         :rtype: datetime.datetime object
         """
-        if self.forced_datetime:
-            r = self.forced_datetime
-        else:
-            r = datetime.datetime.now()
-        return r
+        if self.forced_datetime is not None:
+            return self.forced_datetime
+        return datetime.datetime.now()
 
     def _get_request(self, id_site):
         """
@@ -359,17 +348,15 @@ class PiwikTracker(object):
             'urlref': self.referer,
             'id': self.visitor_id,
         }
-        if self.ip:
+        if self.ip is not None:
             query_vars['cip'] = self.ip
-        if self.token_auth:
+        if self.token_auth is not None:
             query_vars['token_auth'] = self.token_auth
         if self.has_cookies:
             query_vars['cookie'] = 1
-        if self.width and self.height:
+        if self.width is not None and self.height is not None:
             query_vars['res'] = '%dx%d' % (self.width, self.height)
-        if self.uid:
-            query_vars['uid'] = self.uid
-        if self.forced_visitor_id:
+        if self.forced_visitor_id is not None:
             query_vars['cid'] = self.forced_visitor_id
         if self.user_id is not None:
             query_vars['uid'] = to_string(self.user_id)
@@ -414,11 +401,11 @@ class PiwikTracker(object):
 
     def __get_url_track_variable(self, category, action, name, value):
         url = self._get_request(self.id_site)
-	params = {}
-	params['e_c'] = category
-	params['e_a'] = action
-	params['e_n'] = name
-	params['e_v' ] = value
+        params = {}
+        params['e_c'] = category
+        params['e_a'] = action
+        params['e_n'] = name
+        params['e_v' ] = value
         url += '&%s' % urlencode(params)
         return url
 
@@ -440,8 +427,9 @@ class PiwikTracker(object):
         :type search: str
         :param search_cat: optional search category
         :type search_cat: str
-        :param search_count: umber of search results displayed in the page. If 
-        search_count=0, the request will appear in "No Result Search Keyword"
+        :param search_count: umber of search results displayed in the page. If
+            search_count=0, the request will appear in
+            "No Result Search Keyword"
         :type search_count: int
         :rtype: None
         """
@@ -512,7 +500,7 @@ class PiwikTracker(object):
 
         :rtype: str
         """
-        if self.forced_visitor_id:
+        if self.forced_visitor_id is not None:
             visitor_id = self.forced_visitor_id
         else:
             logging.warn(self.UNSUPPORTED_WARNING % 'get_visitor_id()')
@@ -574,10 +562,11 @@ class PiwikTracker(object):
         By default, PiwikTracker will read third party cookies from the
         response and sets them in the next request.
 
-        :rtype: None
+        :rtype: bool
         """
         logging.warn(self.UNSUPPORTED_WARNING % 'disable_cookie_support()')
         self.cookie_support = False
+        return True
 
     def do_track_page_view(self, document_title):
         """
@@ -591,8 +580,8 @@ class PiwikTracker(object):
         return self._send_request(url)
 
     def do_track_variable(self, category, action, name, value):
-	url = self.__get_url_track_variable(category, action, name, value)
-	return self._send_request(url)
+        url = self.__get_url_track_variable(category, action, name, value)
+        return self._send_request(url)
 
     def do_track_action(self, action_url, action_type):
         """
@@ -618,7 +607,7 @@ class PiwikTracker(object):
         :type search: str
         :param search_cat: optional search category
         :type search_cat: str
-        :param search_count: umber of search results displayed in the page. If 
+        :param search_count: umber of search results displayed in the page. If
         search_count=0, the request will appear in "No Result Search Keyword"
         :type search_count: int
         :rtype: None
@@ -630,13 +619,19 @@ class PiwikTracker(object):
         """
         Track an event, return the request body
 
-        :param category: The event category. Must not be empty. (eg. Videos, Music, Games...)
+        :param category:
+            The event category. Must not be empty. (eg. Videos, Music, Games...)
         :type category: str
-        :param action: The event action. Must not be empty. (eg. Play, Pause, Duration, Add Playlist, Downloaded, Clicked...)
+        :param action:
+            The event action. Must not be empty. (eg. Play, Pause,
+            Duration, Add Playlist, Downloaded, Clicked...)
         :type action: str
-        :param name: The event name. (eg. a Movie name, or Song name, or File name...)
+        :param name:
+            The event name. (eg. a Movie name, or Song name, or File name...)
         :type name: str
-        :param value: The event value. Must be a float or integer value (numeric), not a string.
+        :param value:
+            The event value. Must be a float or integer value (numeric),
+            not a string.
         :type value: numeric
         :rtype: str
         """
@@ -648,20 +643,27 @@ class PiwikTracker(object):
         """
         Track the performance of pieces of content on a page.
 
-        To track a content impression set content_name and optionally 
+        To track a content impression set content_name and optionally
         content_piece and content_target. To track a content interaction
         set content_interaction and content_name and optionally
         content_piece and content_target. To map an interaction to an
         impression make sure to set the same value for content_name and
         content_piece. It is recommended to set a value for content_piece.
 
-        :param content_name: The name of the content. Must not be empty. For instance 'Ad Foo Bar'
+        :param content_name:
+            The name of the content. Must not be empty.
+            For instance 'Ad Foo Bar'
         :type content_name: str
-        :param content_piece: The actual content piece. For instance the path to an image, video, audio, any text
+        :param content_piece:
+            The actual content piece. For instance the path to an
+            image, video, audio, any text
         :type content_piece: str
-        :param content_target: The target of the content. For instance the URL of a landing page
+        :param content_target:
+            The target of the content.
+            For instance the URL of a landing page
         :type content_target: str
-        :param content_interaction: The name of the interaction with the content. For instance a 'click'
+        :param content_interaction:
+            The name of the interaction with the content. For instance a 'click'
         :type content_interaction: str
         :rtype: str
         """
