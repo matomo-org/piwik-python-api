@@ -79,11 +79,13 @@ class PiwikTracker(object):
         self.has_cookies = False
         self.width = False
         self.height = False
+        self.uid = False
         self.visitor_id = self.get_random_visitor_id()
         self.forced_visitor_id = False
         self.debug_append_url = False
         self.page_custom_var = {}
         self.visitor_custom_var = {}
+        self.dimensions = {}
         self.plugins = {}
         self.attribution_info = {}
         self.user_id = None
@@ -188,6 +190,8 @@ class PiwikTracker(object):
 
     def set_visitor_id(self, visitor_id):
         """
+        Set the visitor's unique User ID. See https://piwik.org/docs/user-id/
+        
         :param visitor_id: Visitor I
         :type visitor_id: str
         :raises: InvalidParameter if the visitor_id has an incorrect length
@@ -225,6 +229,14 @@ class PiwikTracker(object):
         """
         self.send_image = False
         return True
+
+    def set_uid(self, uid):
+        """
+        :param uid: User ID
+        :type visitor_id: str
+        :rtype: None
+        """
+        self.uid = uid
 
     def set_debug_string_append(self, string):
         """
@@ -355,6 +367,8 @@ class PiwikTracker(object):
             query_vars['cookie'] = 1
         if self.width and self.height:
             query_vars['res'] = '%dx%d' % (self.width, self.height)
+        if self.uid:
+            query_vars['uid'] = self.uid
         if self.forced_visitor_id:
             query_vars['cid'] = self.forced_visitor_id
         if self.user_id is not None:
@@ -365,6 +379,8 @@ class PiwikTracker(object):
             query_vars['cvar'] = json.dumps(self.page_custom_var)
         if self.visitor_custom_var:
             query_vars['_cvar'] = json.dumps(self.visitor_custom_var)
+        for dimension, value in self.dimensions.items():
+            query_vars[dimension] = value
         if len(self.plugins):
             for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
@@ -396,6 +412,17 @@ class PiwikTracker(object):
             url += '&%s' % urlencode({'action_name': document_title})
         return url
 
+    def __get_url_track_variable(self, category, action, name, value):
+        url = self._get_request(self.id_site)
+	params = {}
+	params['e_c'] = category
+	params['e_a'] = action
+	params['e_n'] = name
+	params['e_v' ] = value
+        url += '&%s' % urlencode(params)
+        return url
+
+
     def __get_url_track_action(self, action_url, action_type):
         """
         :param action_url: URL of the download or outlink
@@ -405,6 +432,46 @@ class PiwikTracker(object):
         """
         url = self._get_request(self.id_site)
         url += "&%s" % urlencode({action_type: action_url})
+        return url
+
+    def __get_url_track_site_search(self, search, search_cat, search_count):
+        """
+        param search: Search query
+        :type search: str
+        :param search_cat: optional search category
+        :type search_cat: str
+        :param search_count: umber of search results displayed in the page. If 
+        search_count=0, the request will appear in "No Result Search Keyword"
+        :type search_count: int
+        :rtype: None
+        """
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'search': search})
+        if name:
+            url += "&%s" % urlencode({'search_cat': search_cat})
+        if value:
+            url += "&%s" % urlencode({'search_count': search_count})
+        return url
+
+    def __get_url_track_event(self, category, action, name, value):
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'e_c': category})
+        url += "&%s" % urlencode({'e_a': action})
+        if name:
+            url += "&%s" % urlencode({'e_n': name})
+        if value:
+            url += "&%s" % urlencode({'e_v': value})
+        return url
+
+    def __get_url_track_content(self, content_name, content_piece, content_target, content_interaction):
+        url = self._get_request(self.id_site)
+        url += "&%s" % urlencode({'c_n': content_name})
+        if content_piece:
+            url += "&%s" % urlencode({'c_p': content_piece})
+        if name:
+            url += "&%s" % urlencode({'c_t': content_target})
+        if value:
+            url += "&%s" % urlencode({'c_i': content_interaction})
         return url
 
     def __get_cookie_matching_name(self, name):
@@ -523,6 +590,10 @@ class PiwikTracker(object):
         url = self.__get_url_track_page_view(document_title)
         return self._send_request(url)
 
+    def do_track_variable(self, category, action, name, value):
+	url = self.__get_url_track_variable(category, action, name, value)
+	return self._send_request(url)
+
     def do_track_action(self, action_url, action_type):
         """
         Track a download or outlink
@@ -537,6 +608,64 @@ class PiwikTracker(object):
         if action_type not in ('download', 'link'):
             raise InvalidParameter("Illegal action parameter %s" % action_type)
         url = self.__get_url_track_action(action_url, action_type)
+        return self._send_request(url)
+
+    def do_track_site_search(self, search, search_cat=None, search_count=None):
+        """
+        Track a Site Search query.
+
+        param search: Search query
+        :type search: str
+        :param search_cat: optional search category
+        :type search_cat: str
+        :param search_count: umber of search results displayed in the page. If 
+        search_count=0, the request will appear in "No Result Search Keyword"
+        :type search_count: int
+        :rtype: None
+        """
+        url = self.__get_url_track_site_search(search, search_cat, search_count)
+        return self._send_request(url)
+
+    def do_track_event(self, category, action, name=None, value=None):
+        """
+        Track an event, return the request body
+
+        :param category: The event category. Must not be empty. (eg. Videos, Music, Games...)
+        :type category: str
+        :param action: The event action. Must not be empty. (eg. Play, Pause, Duration, Add Playlist, Downloaded, Clicked...)
+        :type action: str
+        :param name: The event name. (eg. a Movie name, or Song name, or File name...)
+        :type name: str
+        :param value: The event value. Must be a float or integer value (numeric), not a string.
+        :type value: numeric
+        :rtype: str
+        """
+        url = self.__get_url_track_event(category, action, name, value)
+        return self._send_request(url)
+
+    def do_track_content(self, content_name, content_piece=None,
+                         content_target=None, content_interaction=None):
+        """
+        Track the performance of pieces of content on a page.
+
+        To track a content impression set content_name and optionally 
+        content_piece and content_target. To track a content interaction
+        set content_interaction and content_name and optionally
+        content_piece and content_target. To map an interaction to an
+        impression make sure to set the same value for content_name and
+        content_piece. It is recommended to set a value for content_piece.
+
+        :param content_name: The name of the content. Must not be empty. For instance 'Ad Foo Bar'
+        :type content_name: str
+        :param content_piece: The actual content piece. For instance the path to an image, video, audio, any text
+        :type content_piece: str
+        :param content_target: The target of the content. For instance the URL of a landing page
+        :type content_target: str
+        :param content_interaction: The name of the interaction with the content. For instance a 'click'
+        :type content_interaction: str
+        :rtype: str
+        """
+        url = self.__get_url_track_event(category, action, name, value)
         return self._send_request(url)
 
     def _send_request(self, url):
@@ -607,6 +736,20 @@ class PiwikTracker(object):
         else:
             raise InvalidParameter("Invalid scope parameter value %s" % scope)
         return True
+
+    def set_dimension(self, name, value):
+        """
+        Set a custom dimension
+
+        See http://piwik.org/docs/custom-dimensions/
+
+        :param name: Variable name
+        :type name: str
+        :param value: Variable value
+        :type value: str
+        :rtype: None
+        """
+        self.dimensions[name] = value
 
     def set_plugins(self, **kwargs):
         """
