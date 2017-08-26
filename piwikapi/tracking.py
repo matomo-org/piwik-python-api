@@ -20,12 +20,12 @@ try:
 except ImportError:
     import simplejson as json
 try:
-    from urllib.request import Request, urlopen
     from urllib.parse import urlencode, urlparse, quote
 except ImportError:
-    from urllib2 import Request, urlopen
     from urllib import urlencode, quote
     from urlparse import urlparse
+import urllib3
+import requests
 
 from .exceptions import ConfigurationError
 from .exceptions import InvalidParameter
@@ -86,6 +86,7 @@ class PiwikTracker(object):
     attribution_info = None
     user_id = None
     send_image = None
+    ssl_verify = None
 
     def __init__(self, id_site):
         u"""
@@ -99,7 +100,7 @@ class PiwikTracker(object):
         self.ecommerce_items = {}
         self.id_site = id_site
         self.api_url = None
-        self.request_cookie = None
+        self.request_cookies = None
         self.user_agent = None
         self.accept_language = None
         self.ip = None
@@ -120,7 +121,8 @@ class PiwikTracker(object):
         self.plugins = {}
         self.attribution_info = {}
         self.user_id = None
-        self.send_image = None
+        self.send_image = False
+        self.ssl_verify = True
         return
 
     def set_local_time(self, datetime):
@@ -261,6 +263,16 @@ class PiwikTracker(object):
         self.send_image = False
         return True
 
+    def enable_send_image_response(self):
+        u"""
+        If image response is disabled Piwik will respond with a
+        HTTP 204 header instead of responding with a gif.
+
+        :rtype: bool
+        """
+        self.send_image = True
+        return True
+
     def set_debug_string_append(self, string):
         u"""
         :param string: str to append
@@ -343,15 +355,14 @@ class PiwikTracker(object):
         self.forced_datetime = datetime
         return True
 
-    def __set_request_cookie(self, cookie):
+    def __set_request_cookie(self, cookies):
         u"""
         Set the request cookie, for testing purposes
 
-        :param cookie: Request cookie
-        :type cookie: str
+        :param cookies: Dict
         :rtype: bool
         """
-        self.request_cookie = cookie
+        self.request_cookies = cookies
         return True
 
     def _get_timestamp(self):
@@ -742,31 +753,46 @@ class PiwikTracker(object):
             raise ConfigurationError(u"API URL not set")
         parsed = urlparse(self.api_url)
         url = u"%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
-        request = Request(url)
+        req_headers = {}
+        req_cookies = {}
         if self.user_agent is not None:
-            request.add_header(u"User-Agent", self.user_agent)
+            req_headers[u"User-Agent"] = self.user_agent
         if self.accept_language is not None:
-            request.add_header(u"Accept-Language", self.accept_language)
-        if not self.cookie_support:
-            self.request_cookie = None
-        elif self.request_cookie is not None:
-            #print "Adding cookie", self.request_cookie
-            request.add_header(u"Cookie", self.request_cookie)
-        response = urlopen(request)
-        #print response.info()
-        body = response.read()
-        ## The cookie in the response will be set in the next request
-        #for header, value in response.getheaders():
-        #    # TODO handle cookies
-        #    # set cookie to la
-        #    # in case several cookies returned, we keep only the latest one
-        #    # (ie. XDEBUG puts its cookie first in the list)
-        #    #print header, value
-        #    self.request_cookie = ""
-        ## Work around urllib updates, we need a string
-        if sys.version_info[0] >= 3 and type(body) == bytes:
-            body = str(body)
-        return body
+            req_headers[u"Accept-Language"] = self.accept_language
+        if self.cookie_support:
+            if self.request_cookies is not None:
+                req_cookies = self.request_cookies
+        req = (
+            requests.Request(
+                method="GET",
+                url=url,
+                headers=req_headers,
+                cookies=req_cookies
+            )
+        )
+        sess = requests.Session()
+        if not self.ssl_verify:
+            ##
+            ## See: https://stackoverflow.com/a/28002687
+            ##
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            sess.verify = False
+        prep = sess.prepare_request(req)
+        response = sess.send(prep)
+        ok = response.status_code in [200, 204]
+        err = (not ok)
+        ret = {
+            "body_bytes": response.content,
+            "body_str": response.text,
+            "status": response.status_code,
+            "ok": ok,
+            "error": err
+        }
+        return ret
+
+    def disable_ssl_verify(self):
+        self.ssl_verify = False
+        return True
 
     def set_custom_variable(self, id, name, value, scope="visit"):
         u"""
