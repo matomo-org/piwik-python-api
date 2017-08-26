@@ -1,6 +1,6 @@
 # README
 
-This is a fork of the [https://github.com/piwik/piwik-python-api](Piwik Python API SDK).
+This is a fork of the [Piwik Python API SDK](https://github.com/piwik/piwik-python-api).
 This fork is an on-going refactor of the original project.
 As of now, the tests/build do not pass, and the documentation is not updated for this
 fork.
