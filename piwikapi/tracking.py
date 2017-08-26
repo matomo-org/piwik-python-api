@@ -60,6 +60,7 @@ class PiwikTracker(object):
         u"probably does not work as expected anyway."
     )
 
+    action_name = None
     ecommerce_items = None
     id_site = None
     api_url = None
@@ -86,6 +87,8 @@ class PiwikTracker(object):
     attribution_info = None
     user_id = None
     send_image = None
+    id_goal = None
+    revenue = None
     ssl_verify = None
 
     def __init__(self, id_site):
@@ -97,6 +100,7 @@ class PiwikTracker(object):
         :rtype: None
         """
         random.seed()
+        self.action_name = None
         self.ecommerce_items = {}
         self.id_site = id_site
         self.api_url = None
@@ -122,6 +126,8 @@ class PiwikTracker(object):
         self.attribution_info = {}
         self.user_id = None
         self.send_image = False
+        self.id_goal = None
+        self.revenue = None
         self.ssl_verify = True
         return
 
@@ -395,6 +401,8 @@ class PiwikTracker(object):
             u"urlref": self.referer,
             u"id": self.visitor_id,
         }
+        if self.action_name is not None:
+            query_vars[u"action_name"] = self.action_name
         if self.local_time is not None:
             query_vars[u"h"] = self.local_time.hour
             query_vars[u"m"] = self.local_time.minute
@@ -434,6 +442,10 @@ class PiwikTracker(object):
                 3: u"_ref",
             }.items():
                 query_vars[var] = quote(self.attribution_info[i])
+        if self.id_goal is not None:
+            query_vars[u"idgoal"] = self.id_goal
+            if self.revenue is not None:
+                query_vars[u"revenue"] = self.revenue
         url = urlencode(query_vars)
         if self.debug_append_url:
             url += self.debug_append_url
@@ -633,7 +645,7 @@ class PiwikTracker(object):
         self.cookie_support = False
         return True
 
-    def do_track_page_view(self, document_title):
+    def set_action_name(self, action_name):
         u"""
         Track a page view, return the request body
 
@@ -641,7 +653,11 @@ class PiwikTracker(object):
         :type document_title: str
         :rtype: str
         """
-        url = self.__get_url_track_page_view(document_title)
+        self.action_name = action_name
+        return True
+
+    def execute(self):
+        url = self._get_request(self.id_site)
         return self._send_request(url)
 
     def do_track_variable(self, category, action, name, value):
@@ -790,8 +806,8 @@ class PiwikTracker(object):
         }
         return ret
 
-    def disable_ssl_verify(self):
-        self.ssl_verify = False
+    def set_ssl_verify(self, verify):
+        self.ssl_verify = verify
         return True
 
     def set_custom_variable(self, id, name, value, scope="visit"):
@@ -955,23 +971,6 @@ class PiwikTracker(object):
         )
         url += u"&%s" % urlencode({u"ec_id": order_id})
         self.ecommerce_last_order_timestamp = self._get_timestamp()
-        return url
-
-    def __get_url_track_goal(self, id_goal, revenue=False):
-        u"""
-        Return the goal tracking URL
-
-        :param id_goal: Goal ID
-        :type id_goal: int
-        :param revenue: Revenue for this conversion
-        :type revenue: int (TODO why int here and not float!?)
-        """
-        url = self._get_request(self.id_site)
-        params = {}
-        params[u"idgoal"] = id_goal
-        if revenue:
-            params[u"revenue"] = revenue
-        url += u"&%s" % urlencode(params)
         return url
 
     def __get_url_track_ecommerce(
@@ -1140,7 +1139,7 @@ class PiwikTracker(object):
         )
         return self._send_request(url)
 
-    def do_track_goal(self, id_goal, revenue=False):
+    def set_track_goal(self, id_goal, revenue=None):
         u"""
         Record a goal conversion
 
@@ -1150,8 +1149,10 @@ class PiwikTracker(object):
         :type revenue: int (TODO why int here and not float!?)
         :rtype: str
         """
-        url = self.__get_url_track_goal(id_goal, revenue)
-        return self._send_request(url)
+        self.id_goal = id_goal
+        if revenue is not None:
+            self.revenue = revenue
+        return True
 
     def set_ecommerce_view(
             self,
