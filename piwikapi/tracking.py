@@ -464,7 +464,12 @@ class PiwikTracker(object):
         url += u"&%s" % urlencode({action_type: action_url})
         return url
 
-    def __get_url_track_site_search(self, search, search_cat, search_count):
+    def __get_url_track_site_search(
+            self,
+            search,
+            search_cat=None,
+            search_count=None
+    ):
         u"""
         param search: Search query
         :type search: str
@@ -478,9 +483,9 @@ class PiwikTracker(object):
         """
         url = self._get_request(self.id_site)
         url += u"&%s" % urlencode({u"search": search})
-        if name:
+        if search_cat is not None:
             url += u"&%s" % urlencode({u"search_cat": search_cat})
-        if value:
+        if search_count is not None:
             url += u"&%s" % urlencode({u"search_count": search_count})
         return url
 
