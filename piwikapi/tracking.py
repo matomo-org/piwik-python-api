@@ -12,6 +12,7 @@ Source and development at https://github.com/piwik/piwik-python-api
 import sys
 import datetime
 from hashlib import md5
+import math
 import logging
 import os
 import random
@@ -78,9 +79,10 @@ class PiwikTracker(object):
     width = None
     height = None
     visitor_id = None
-    forced_visitor_id = None
     debug_append_url = None
+    event_custom_var = None
     page_custom_var = None
+    event_tracking = None
     visitor_custom_var = None
     dimensions = None
     plugins = None
@@ -89,6 +91,7 @@ class PiwikTracker(object):
     send_image = None
     id_goal = None
     revenue = None
+    debug = None
     ssl_verify = None
 
     def __init__(self, id_site):
@@ -116,11 +119,12 @@ class PiwikTracker(object):
         self.has_cookies = False
         self.width = None
         self.height = None
-        self.visitor_id = self.get_random_visitor_id()
-        self.forced_visitor_id = None
+        self.visitor_id = None
         self.debug_append_url = False
+        self.event_custom_var = {}
         self.page_custom_var = {}
         self.visitor_custom_var = {}
+        self.event_tracking = {}
         self.dimensions = {}
         self.plugins = {}
         self.attribution_info = {}
@@ -128,6 +132,7 @@ class PiwikTracker(object):
         self.send_image = False
         self.id_goal = None
         self.revenue = None
+        self.debug = False
         self.ssl_verify = True
         return
 
@@ -225,6 +230,13 @@ class PiwikTracker(object):
         self.height = height
         return True
 
+    def set_new_visitor_id(self):
+        u"""
+        Sets the current visitor ID to a random new one.
+        """
+        self.visitor_id = self.build_random_visitor_id()
+        return True
+
     def set_visitor_id(self, visitor_id):
         u"""
         Set the visitor's unique User ID. See https://piwik.org/docs/user-id/
@@ -239,7 +251,7 @@ class PiwikTracker(object):
                 u"set_visitor_id() expects a visitor ID of "
                 u"length %s" % self.LENGTH_VISITOR_ID
             )
-        self.forced_visitor_id = visitor_id
+        self.visitor_id = visitor_id
         return True
 
     def set_user_id(self, user_id):
@@ -259,33 +271,23 @@ class PiwikTracker(object):
         self.user_id = user_id
         return True
 
-    def disable_send_image_response(self):
+    def set_send_image_response(self, should_send):
         u"""
         If image response is disabled Piwik will respond with a
         HTTP 204 header instead of responding with a gif.
 
         :rtype: bool
         """
-        self.send_image = False
+        self.send_image = should_send
         return True
 
-    def enable_send_image_response(self):
-        u"""
-        If image response is disabled Piwik will respond with a
-        HTTP 204 header instead of responding with a gif.
-
-        :rtype: bool
-        """
-        self.send_image = True
-        return True
-
-    def set_debug_string_append(self, string):
+    def set_debug(self, should_debug):
         u"""
         :param string: str to append
         :type string: str
         :rtype: bool
         """
-        self.debug_append_url = string
+        self.debug = should_debug
         return True
 
     def set_url_referer(self, referer):
@@ -310,10 +312,14 @@ class PiwikTracker(object):
         self.page_url = url
         return True
 
-    def set_attribution_info(self, json_encoded):
+    def set_attribution_info(
+            self,
+            campaign_name,
+            campaign_keyword,
+            referral_datetime,
+            referral_url
+    ):
         u"""
-        **NOT SUPPORTED**
-
         Set the attribution info for the visit, so that subsequent goal
         conversions are properly attributed to the right referer, timestamp,
         campaign name and keyword.
@@ -327,21 +333,12 @@ class PiwikTracker(object):
         :raises: InvalidParameter if the json_encoded data is incorrect
         :rtype: bool
         """
-        logging.warn(self.UNSUPPORTED_WARNING % u"set_attribution_info()")
-        decoded = json.loads(json_encoded)
-        if type(decoded) != type(list()):
-            raise InvalidParameter(
-                u"set_attribution_info() is expecting a "
-                u"JSON encoded string, %s given" %
-                json_encoded
-            )
-        if len(decoded) != 4:
-            raise InvalidParameter(
-                u"set_attribution_info() is expecting a "
-                u"JSON encoded string, that contains a list "
-                u"with four items, %s given" % json_encoded
-            )
-        self.attribution_info = decoded
+        self.attribution_info = {
+            u"campaign_name" = campaign_name,
+            u"campaign_keyword" = campaign_keyword,
+            u"referral_datetime" = referral_datetime,
+            u"referral_url" = referral_url
+        }
         return True
 
     def set_force_visit_date_time(self, datetime):
@@ -361,7 +358,7 @@ class PiwikTracker(object):
         self.forced_datetime = datetime
         return True
 
-    def __set_request_cookie(self, cookies):
+    def set_request_cookie(self, cookies):
         u"""
         Set the request cookie, for testing purposes
 
@@ -392,15 +389,14 @@ class PiwikTracker(object):
         :type id_site: int
         :rtype: str
         """
-        query_vars = {
-            u"idsite": id_site,
-            u"rec": 1,
-            u"apiv": self.VERSION,
-            u"rand": random.randint(0, 99999),
-            u"url": self.page_url,
-            u"urlref": self.referer,
-            u"id": self.visitor_id,
-        }
+        query_vars = {}
+        query_vars[u"idsite"] = id_site
+        query_vars[u"rec"] = "1"
+        query_vars[u"url"] = self.page_url
+        query_vars[u"apiv"] = self.VERSION
+        query_vars[u"rand"] = random.randint(0, 99999)
+        if self.referer is not None:
+            query_vars[u"referer"] = self.referer
         if self.action_name is not None:
             query_vars[u"action_name"] = self.action_name
         if self.local_time is not None:
@@ -415,12 +411,15 @@ class PiwikTracker(object):
             query_vars[u"cookie"] = 1
         if self.width is not None and self.height is not None:
             query_vars[u"res"] = u"%dx%d" % (self.width, self.height)
-        if self.forced_visitor_id is not None:
-            query_vars[u"cid"] = self.forced_visitor_id
+        if self.visitor_id is not None:
+            query_vars[u"cid"] = self.visitor_id
+            query_vars[u"_id"] = self.visitor_id
         if self.user_id is not None:
             query_vars[u"uid"] = to_string(self.user_id)
         if self.send_image is not None:
             query_vars[u"send_image"] = u"1" if self.send_image else u"0"
+        if self.event_custom_var is not None and len(self.page_custom_var) > 0:
+            query_vars[u"e_cvar"] = json.dumps(self.event_custom_var)
         if self.page_custom_var is not None and len(self.page_custom_var) > 0:
             query_vars[u"cvar"] = json.dumps(self.page_custom_var)
         if (
@@ -428,6 +427,11 @@ class PiwikTracker(object):
                 len(self.visitor_custom_var) > 0
         ):
             query_vars[u"_cvar"] = json.dumps(self.visitor_custom_var)
+        if self.event_tracking is not None and len(self.event_tracking) > 0:
+            query_vars[u"e_c"] = self.event_tracking[u"category"]
+            query_vars[u"e_a"] = self.event_tracking[u"action"]
+            query_vars[u"e_n"] = self.event_tracking[u"name"]
+            query_vars[u"e_v"] = self.event_tracking[u"value"]
         if self.dimensions is not None and len(self.dimensions) > 0:
             for dimension, value in self.dimensions.items():
                 query_vars[dimension] = value
@@ -435,46 +439,21 @@ class PiwikTracker(object):
             for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
         if self.attribution_info is not None and len(self.attribution_info) > 0:
-            for i, var in {
-                0: u"_rcn",
-                1: u"_rck",
-                2: u"_refts",
-                3: u"_ref",
-            }.items():
-                query_vars[var] = quote(self.attribution_info[i])
+            query_vars[u"_rcn"] = self.attribution_info[u"campaign_name"]
+            query_vars[u"_rck"] = self.attribution_info[u"campaign_keyword"]
+            query_vars[u"_refts"] = (
+                math.floor(
+                    self.attribution_info[u"referral_datetime"].timestamp()
+                )
+            )
+            query_vars[u"_ref"] = self.attribution_info[u"referral_url"]
         if self.id_goal is not None:
             query_vars[u"idgoal"] = self.id_goal
             if self.revenue is not None:
                 query_vars[u"revenue"] = self.revenue
-        url = urlencode(query_vars)
-        if self.debug_append_url:
-            url += self.debug_append_url
-        return url
-
-    def __get_url_track_page_view(self, document_title=None):
-        """
-        Returns the URL to piwik.php with all parameters set to track the
-        pageview
-
-        :param document_title: The title of the page the user is on
-        :type document_title: str
-        :rtype: str
-        """
-        url = self._get_request(self.id_site)
-        if document_title is not None:
-            url += u"&%s" % urlencode({u"action_name": document_title})
-        return url
-
-    def __get_url_track_variable(self, category, action, name, value):
-        url = self._get_request(self.id_site)
-        params = {}
-        params[u"e_c"] = category
-        params[u"e_a"] = action
-        params[u"e_n"] = name
-        params[u"e_v" ] = value
-        url += u"&%s" % urlencode(params)
-        return url
-
+        if self.debug is True:
+            query_vars[u"debug"] = "1"
+        return query_vars
 
     def __get_url_track_action(self, action_url, action_type):
         u"""
@@ -577,21 +556,7 @@ class PiwikTracker(object):
 
         :rtype: str
         """
-        if self.forced_visitor_id is not None:
-            visitor_id = self.forced_visitor_id
-        else:
-            logging.warn(self.UNSUPPORTED_WARNING % u"get_visitor_id()")
-            id_cookie_name = u"id.%s." % self.id_site
-            id_cookie = self.__get_cookie_matching_name(id_cookie_name)
-            visitor_id = self.visitor_id
-            if id_cookie:
-                #print "id_cookie is", id_cookie
-                visitor_id = id_cookie
-                #$visitorId = substr($idCookie, 0, strpos($idCookie, "."));
-                #if(strlen($visitorId) == self::LENGTH_VISITOR_ID)
-                #{
-                #    return $visitorId;
-        return visitor_id
+        return self.visitor_id
 
     def get_attribution_info(self):
         u"""
@@ -623,7 +588,7 @@ class PiwikTracker(object):
         """
         return md5(os.urandom(length)).hexdigest()
 
-    def get_random_visitor_id(self):
+    def build_random_visitor_id(self):
         u"""
         Return a random visitor ID
 
@@ -660,9 +625,14 @@ class PiwikTracker(object):
         url = self._get_request(self.id_site)
         return self._send_request(url)
 
-    def do_track_variable(self, category, action, name, value):
-        url = self.__get_url_track_variable(category, action, name, value)
-        return self._send_request(url)
+    def set_event_tracking(self, category, action, name, value):
+        self.event_tracking = {
+            u"category": category,
+            u"action": action,
+            u"name": name,
+            u"value": value
+        }
+        return True
 
     def do_track_action(self, action_url, action_type):
         u"""
@@ -694,29 +664,6 @@ class PiwikTracker(object):
         :rtype: None
         """
         url = self.__get_url_track_site_search(search, search_cat, search_count)
-        return self._send_request(url)
-
-    def do_track_event(self, category, action, name=None, value=None):
-        u"""
-        Track an event, return the request body
-
-        :param category:
-            The event category. Must not be empty. (eg. Videos, Music, Games...)
-        :type category: str
-        :param action:
-            The event action. Must not be empty. (eg. Play, Pause,
-            Duration, Add Playlist, Downloaded, Clicked...)
-        :type action: str
-        :param name:
-            The event name. (eg. a Movie name, or Song name, or File name...)
-        :type name: str
-        :param value:
-            The event value. Must be a float or integer value (numeric),
-            not a string.
-        :type value: numeric
-        :rtype: str
-        """
-        url = self.__get_url_track_event(category, action, name, value)
         return self._send_request(url)
 
     def do_track_content(
@@ -756,7 +703,7 @@ class PiwikTracker(object):
         url = self.__get_url_track_event(category, action, name, value)
         return self._send_request(url)
 
-    def _send_request(self, url):
+    def _send_request(self, query_vars):
         """
         Make the tracking API request, return the request body
 
@@ -767,8 +714,6 @@ class PiwikTracker(object):
         """
         if self.api_url is None:
             raise ConfigurationError(u"API URL not set")
-        parsed = urlparse(self.api_url)
-        url = u"%s://%s%s?%s" % (parsed.scheme, parsed.netloc, parsed.path, url)
         req_headers = {}
         req_cookies = {}
         if self.user_agent is not None:
@@ -776,14 +721,18 @@ class PiwikTracker(object):
         if self.accept_language is not None:
             req_headers[u"Accept-Language"] = self.accept_language
         if self.cookie_support:
-            if self.request_cookies is not None:
+            if (
+                    self.request_cookies is not None and
+                    len(self.request_cookies) > 0
+            ):
                 req_cookies = self.request_cookies
         req = (
             requests.Request(
                 method="GET",
-                url=url,
+                url=self.api_url,
                 headers=req_headers,
-                cookies=req_cookies
+                cookies=req_cookies,
+                params=query_vars
             )
         )
         sess = requests.Session()
@@ -834,6 +783,8 @@ class PiwikTracker(object):
             )
         if scope == u"page":
             self.page_custom_var[id] = (name, value)
+        elif scopr == u"event":
+            self.event_custom_var[id] = (name, value)
         elif scope == u"visit":
             self.visitor_custom_var[id] = (name, value)
         else:
@@ -878,10 +829,8 @@ class PiwikTracker(object):
             self.plugins[self.KNOWN_PLUGINS[plugin]] = int(version)
         return True
 
-    def get_custom_variable(self, id, scope="visit"):
+    def get_custom_variable(self, id, scope):
         u"""
-        **PARTIAL, no cookie support**
-
         Returns the current custom variable stored in a first party cookie.
 
         :param id: Custom variable slot ID, 1-5
@@ -890,42 +839,20 @@ class PiwikTracker(object):
         :type scope: str
         :rtype: mixed stuff TODO
         """
-        if type(id) != type(int()):
-            raise InvalidParameter(
-                u"Parameter id must be int, not %s" %
-                type(id)
-            )
-        if scope == u"page":
-            r = self.page_custom_var[id]
-        elif scope == u"visit":
-            if self.visitor_custom_var[id]:
-                r = self.visitor_custom_var[id]
-            else:
-                logging.warn(
-                    self.UNSUPPORTED_WARNING %
-                    u"get_custom_variable()"
-                )
-                # TODO test this code...
-                custom_vars_cookie = u"cvar.%d." % self.id_site
-                cookie = self.__get_cookie_matching_name(custom_vars_cookie)
-                if not cookie:
-                    r = False
-                else:
-                    cookie_decoded = json.loads(cookie)
-                    #$cookieDecoded = json_decode($cookie, $assoc = true);
-                    #print "decoded cookie json", cookie_decode
-                    #print "decoded cookie json", repr(cookie_decode)
-                    if type(cookie_decoded) == type(list()):
-                        r = False
-                    elif id not in cookie_decoded:
-                        r = False
-                    elif len(cookie_decoded[id]) != 2:
-                        r = False
-                    else:
-                        r = cookie_decoded[id]
+        var_map = None
+        if scope == u"visit":
+            var_map = self.visitor_custom_var
+        elif scope == u"event":
+            var_map = self.event_custom_var
+        elif scope == u"page":
+            var_map = self.page_custom_var
         else:
-            raise InvalidParameter(u"Invalid scope parameter value %s" % scope)
-        return r
+            raise InvalidParameter(
+                u"Bad scope: %s" % scope
+            )
+        if id not in var_map:
+            return None
+        return var_map[id]
 
     def __get_url_track_ecommerce_order(
             self,
