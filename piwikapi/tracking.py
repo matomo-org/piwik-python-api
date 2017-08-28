@@ -16,6 +16,8 @@ import math
 import logging
 import random
 import string
+import hashlib
+from pprint import pprint
 try:
     import json
 except ImportError:
@@ -65,6 +67,7 @@ class PiwikTracker(object):
     user_agent = None
     accept_language = None
     ip = None
+    referer = None
     token_auth = None
     local_time = None
     forced_datetime = None
@@ -110,6 +113,7 @@ class PiwikTracker(object):
         self.user_agent = None
         self.accept_language = None
         self.ip = None
+        self.referer = None
         self.token_auth = None
         self.forced_datetime = None
         self.local_time = None
@@ -254,6 +258,18 @@ class PiwikTracker(object):
                 u"length %s" % self.LENGTH_VISITOR_ID
             )
         self.visitor_id = visitor_id
+        return True
+
+    def set_visitor_id_hash(self, orig_visitor_id):
+        self.visitor_id = (
+            hashlib
+            .sha512(
+                orig_visitor_id.encode("utf8")
+            )
+            .hexdigest()[:16]
+            .upper()
+        )
+        pprint(self.visitor_id)
         return True
 
     def set_user_id(self, user_id):
@@ -498,6 +514,7 @@ class PiwikTracker(object):
                 )
         if self.debug is True:
             query_vars[u"debug"] = "1"
+        #pprint(query_vars)
         return query_vars
 
     def set_track_content(
@@ -581,7 +598,7 @@ class PiwikTracker(object):
         :type document_title: str
         :rtype: str
         """
-        self.action_name = action_name
+        self.action_name = "/".join(action_name)
         return True
 
     def execute(self):
