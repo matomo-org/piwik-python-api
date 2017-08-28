@@ -9,23 +9,19 @@ License: BSD, see LICENSE for details
 Source and development at https://github.com/piwik/piwik-python-api
 """
 
+import os
 import sys
 import datetime
-from hashlib import md5
 import math
 import logging
-import os
 import random
+import string
 try:
     import json
 except ImportError:
     import simplejson as json
-try:
-    from urllib.parse import urlencode, urlparse, quote
-except ImportError:
-    from urllib import urlencode, quote
-    from urlparse import urlparse
 import urllib3
+
 import requests
 
 from .exceptions import ConfigurationError
@@ -340,10 +336,10 @@ class PiwikTracker(object):
         :rtype: bool
         """
         self.attribution_info = {
-            u"campaign_name" = campaign_name,
-            u"campaign_keyword" = campaign_keyword,
-            u"referral_datetime" = referral_datetime,
-            u"referral_url" = referral_url
+            u"campaign_name": campaign_name,
+            u"campaign_keyword": campaign_keyword,
+            u"referral_datetime": referral_datetime,
+            u"referral_url": referral_url
         }
         return True
 
@@ -387,7 +383,7 @@ class PiwikTracker(object):
             return self.forced_datetime
         return datetime.datetime.now()
 
-    def _get_request(self, id_site):
+    def _get_request(self):
         u"""
         This oddly named method returns the query var string.
 
@@ -396,7 +392,7 @@ class PiwikTracker(object):
         :rtype: str
         """
         query_vars = {}
-        query_vars[u"idsite"] = id_site
+        query_vars[u"idsite"] = self.id_site
         query_vars[u"rec"] = "1"
         query_vars[u"url"] = self.page_url
         query_vars[u"apiv"] = self.VERSION
@@ -436,8 +432,8 @@ class PiwikTracker(object):
             query_vars[u"e_n"] = self.event_tracking[u"name"]
             query_vars[u"e_v"] = self.event_tracking[u"value"]
         if self.dimensions is not None:
-            for dimension, value in self.dimensions.items():
-                query_vars[dimension] = value
+            for dim_key, dim_val in self.dimensions.items():
+                query_vars["dimension%s" % dim_key] = dim_val
         if self.plugins is not None:
             for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
@@ -519,26 +515,6 @@ class PiwikTracker(object):
         }
         return True
 
-    def __get_cookie_matching_name(self, name):
-        u"""
-        **NOT SUPPORTED**
-
-        Get a cookie"s value by name
-
-        :param name: Cookie name
-        :type name: str
-        :rtype: str
-        """
-        logging.warn(self.UNSUPPORTED_WARNING % u"__get_cookie_matching_name()")
-        cookie_value = False
-        if self.request.COOKIES:
-            for name in self.request.COOKIES:
-                #print "cookie name", name
-                #print "cookie is", cookie_value
-                cookie_value = self.request.COOKIES[name]
-        #print self.request.COOKIES
-        return cookie_value
-
     def get_visitor_id(self):
         u"""
         **PARTIAL, no cookie support**
@@ -559,27 +535,7 @@ class PiwikTracker(object):
         """
         return self.visitor_id
 
-    def get_attribution_info(self):
-        u"""
-        **NOT SUPPORTED**
-
-        To support this we"d need to parse the cookies in the request obejct.
-        Not sure if this makes sense...
-
-        Return the currently assigned attribution info stored in a first party
-        cookie.
-
-        This method only works if the user is initiating the current request
-        and his cookies can be read by this API.
-
-        :rtype: string, JSON encoded string containing the referer info for
-            goal conversion attribution
-        """
-        logging.warn(self.UNSUPPORTED_WARNING % u"get_attribution_info()")
-        attribution_cookie_name = u"ref.%d." % self.id_site
-        return self.__get_cookie_matching_name(attribution_cookie_name)
-
-    def __get_random_string(self, length=500):
+    def __get_random_string(self, length):
         u"""
         Return a random string
 
@@ -587,7 +543,14 @@ class PiwikTracker(object):
         :type length: inte
         :rtype: str
         """
-        return md5(os.urandom(length)).hexdigest()
+        return (
+            u"".join(
+                random.choice(
+                    string.ascii_uppercase + string.digits
+                )
+            for _ in range(length)
+            )
+        )
 
     def build_random_visitor_id(self):
         u"""
@@ -595,8 +558,7 @@ class PiwikTracker(object):
 
         :rtype: str
         """
-        visitor_id = self.__get_random_string()
-        return visitor_id[:self.LENGTH_VISITOR_ID]
+        return self.__get_random_string(self.LENGTH_VISITOR_ID)
 
     def disable_cookie_support(self):
         u"""
@@ -623,7 +585,7 @@ class PiwikTracker(object):
         return True
 
     def execute(self):
-        url = self._get_request(self.id_site)
+        url = self._get_request()
         return self._send_request(url)
 
     def set_track_event(self, category, action, name, value):
@@ -753,13 +715,17 @@ class PiwikTracker(object):
                 u"Parameter id must be int, not %s" %
                 type(id)
             )
-        if self.page_custom_var is None:
-            self.page_custom_var = {}
         if scope == u"page":
+            if self.page_custom_var is None:
+                self.page_custom_var = {}
             self.page_custom_var[id] = (name, value)
-        elif scopr == u"event":
+        elif scope == u"event":
+            if self.event_custom_var is None:
+                self.event_custom_var = {}
             self.event_custom_var[id] = (name, value)
         elif scope == u"visit":
+            if self.visitor_custom_var is None:
+                self.visitor_custom_var = {}
             self.visitor_custom_var[id] = (name, value)
         else:
             raise InvalidParameter(u"Invalid scope parameter value %s" % scope)
@@ -777,6 +743,8 @@ class PiwikTracker(object):
         :type value: str
         :rtype: None
         """
+        if self.dimensions is None:
+            self.dimensions = {}
         self.dimensions[name] = value
         return True
 
@@ -922,7 +890,7 @@ class PiwikTracker(object):
             self.page_custom_var[5] = (u"_pkc", category)
         if sku is not None:
             self.page_custom_var[3] = (u"_pks", sku)
-        if price is not None
+        if price is not None:
             self.page_custom_var[2] = (u"_pkp", price)
         if name is not None:
             self.page_custom_var[4] = (u"_pkn", name)
