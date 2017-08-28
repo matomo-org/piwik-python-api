@@ -83,15 +83,18 @@ class PiwikTracker(object):
     event_custom_var = None
     page_custom_var = None
     event_tracking = None
+    action_tracking = None
+    search_tracking = None
+    content_tracking = None
     visitor_custom_var = None
     dimensions = None
     plugins = None
     attribution_info = None
     user_id = None
     send_image = None
-    id_goal = None
-    revenue = None
+    goal = None
     debug = None
+    ecomm_order = None
     ssl_verify = None
 
     def __init__(self, id_site):
@@ -121,18 +124,21 @@ class PiwikTracker(object):
         self.height = None
         self.visitor_id = None
         self.debug_append_url = False
-        self.event_custom_var = {}
-        self.page_custom_var = {}
-        self.visitor_custom_var = {}
-        self.event_tracking = {}
-        self.dimensions = {}
-        self.plugins = {}
-        self.attribution_info = {}
+        self.event_custom_var = None
+        self.page_custom_var = None
+        self.visitor_custom_var = None
+        self.event_tracking = None
+        self.action_tracking = None
+        self.search_tracking = None
+        self.content_tracking = None
+        self.dimensions = None
+        self.plugins = None
+        self.attribution_info = None
         self.user_id = None
         self.send_image = False
-        self.id_goal = None
-        self.revenue = None
+        self.goal = None
         self.debug = False
+        self.ecomm_order = None
         self.ssl_verify = True
         return
 
@@ -418,27 +424,24 @@ class PiwikTracker(object):
             query_vars[u"uid"] = to_string(self.user_id)
         if self.send_image is not None:
             query_vars[u"send_image"] = u"1" if self.send_image else u"0"
-        if self.event_custom_var is not None and len(self.page_custom_var) > 0:
+        if self.event_custom_var is not None:
             query_vars[u"e_cvar"] = json.dumps(self.event_custom_var)
-        if self.page_custom_var is not None and len(self.page_custom_var) > 0:
+        if self.page_custom_var is not None:
             query_vars[u"cvar"] = json.dumps(self.page_custom_var)
-        if (
-                self.visitor_custom_var is not None and
-                len(self.visitor_custom_var) > 0
-        ):
+        if self.visitor_custom_var is not None:
             query_vars[u"_cvar"] = json.dumps(self.visitor_custom_var)
-        if self.event_tracking is not None and len(self.event_tracking) > 0:
+        if self.event_tracking is not None:
             query_vars[u"e_c"] = self.event_tracking[u"category"]
             query_vars[u"e_a"] = self.event_tracking[u"action"]
             query_vars[u"e_n"] = self.event_tracking[u"name"]
             query_vars[u"e_v"] = self.event_tracking[u"value"]
-        if self.dimensions is not None and len(self.dimensions) > 0:
+        if self.dimensions is not None:
             for dimension, value in self.dimensions.items():
                 query_vars[dimension] = value
-        if self.plugins is not None and len(self.plugins) > 0:
+        if self.plugins is not None:
             for plugin, version in self.plugins.items():
                 query_vars[plugin] = version
-        if self.attribution_info is not None and len(self.attribution_info) > 0:
+        if self.attribution_info is not None:
             query_vars[u"_rcn"] = self.attribution_info[u"campaign_name"]
             query_vars[u"_rck"] = self.attribution_info[u"campaign_keyword"]
             query_vars[u"_refts"] = (
@@ -447,76 +450,74 @@ class PiwikTracker(object):
                 )
             )
             query_vars[u"_ref"] = self.attribution_info[u"referral_url"]
-        if self.id_goal is not None:
-            query_vars[u"idgoal"] = self.id_goal
-            if self.revenue is not None:
-                query_vars[u"revenue"] = self.revenue
+        if self.action_tracking is not None:
+            if self.action_tracking[u"type"] == u"download":
+                query_vars[u"download"] = self.action_tracking[u"url"]
+            if self.action_tracking[u"type"] == u"link":
+                query_vars[u"link"] = self.action_tracking[u"url"]
+        if self.goal is not None:
+            query_vars[u"idgoal"] = self.goal[u"id"]
+            if u"revenue" in self.goal:
+                query_vars[u"revenue"] = self.goal[u"revenue"]
+        if self.search_tracking is not None:
+            query_vars[u"search"] = self.search_tracking[u"query"]
+            if u"category" in self.search_tracking:
+                query_vars[u"search_cat"] = self.search_tracking[u"category"]
+            if u"count" in self.search_tracking:
+                query_vars[u"search_count"] = self.search_tracking[u"count"]
+        if self.content_tracking is not None:
+            query_vars[u"c_n"] = self.content_tracking[u"name"]
+            query_vars[u"c_p"] = self.content_tracking[u"value"]
+            query_vars[u"c_t"] = self.content_tracking[u"target"]
+            query_vars[u"c_p"] = self.content_tracking[u"value"]
+        if self.ecomm_order is not None:
+            if u"id" in self.ecomm_order:
+                query_vars[u"ec_id"] = self.ecomm_order[u"id"]
+            if u"sub_total" in self.ecomm_order:
+                query_vars[u"ec_st"] = self.ecomm_order[u"sub_total"]
+            if u"tax" in self.ecomm_order:
+                query_vars[u"ec_tx"] = self.ecomm_order[u"tax"]
+            if u"dt" in self.ecomm_order:
+                query_vars[u"ec_dt"] = self.ecomm_order[u"discount"]
+            if u"track_datetime" in self.ecomm_order:
+                query_vars[u"_ects"] = (
+                    math.floor(self.ecomm_order[u"track_datetime"].timestamp())
+                )
+            if u"items" in self.ecomm_order:
+                query_vars[u"ec_items"] = (
+                    json.dumps(
+                        list(
+                            map(
+                                lambda r: (
+                                    r[u"sku"],
+                                    r[u"name"],
+                                    r[u"category"],
+                                    r[u"price"],
+                                    r[u"quantity"]
+                                ),
+                                self.ecomm_order[u"items"]
+                            )
+                        )
+                    )
+                )
         if self.debug is True:
             query_vars[u"debug"] = "1"
         return query_vars
 
-    def __get_url_track_action(self, action_url, action_type):
-        u"""
-        :param action_url: URL of the download or outlink
-        :type action_url: str
-        :param action_type: Type of the action, either "download" or "link"
-        :type action_type: str
-        """
-        url = self._get_request(self.id_site)
-        url += u"&%s" % urlencode({action_type: action_url})
-        return url
-
-    def __get_url_track_site_search(
+    def set_track_content(
             self,
-            search,
-            search_cat=None,
-            search_count=None
+            name,
+            value,
+            target,
+            interaction
     ):
-        u"""
-        param search: Search query
-        :type search: str
-        :param search_cat: optional search category
-        :type search_cat: str
-        :param search_count: umber of search results displayed in the page. If
-            search_count=0, the request will appear in
-            "No Result Search Keyword"
-        :type search_count: int
-        :rtype: None
-        """
-        url = self._get_request(self.id_site)
-        url += u"&%s" % urlencode({u"search": search})
-        if search_cat is not None:
-            url += u"&%s" % urlencode({u"search_cat": search_cat})
-        if search_count is not None:
-            url += u"&%s" % urlencode({u"search_count": search_count})
-        return url
-
-    def __get_url_track_event(self, category, action, name, value):
-        url = self._get_request(self.id_site)
-        url += u"&%s" % urlencode({u"e_c": category})
-        url += u"&%s" % urlencode({u"e_a": action})
-        if name:
-            url += u"&%s" % urlencode({u"e_n": name})
-        if value:
-            url += u"&%s" % urlencode({u"e_v": value})
-        return url
-
-    def __get_url_track_content(
-            self,
-            content_name,
-            content_piece,
-            content_target,
-            content_interaction
-    ):
-        url = self._get_request(self.id_site)
-        url += u"&%s" % urlencode({u"c_n": content_name})
-        if content_piece:
-            url += u"&%s" % urlencode({u"c_p": content_piece})
-        if name:
-            url += u"&%s" % urlencode({u"c_t": content_target})
-        if value:
-            url += u"&%s" % urlencode({u"c_i": content_interaction})
-        return url
+        self.content_tracking = {
+            u"name": name,
+            u"value": value,
+            u"target": target,
+            u"interaction": interaction
+        }
+        return True
 
     def __get_cookie_matching_name(self, name):
         u"""
@@ -625,7 +626,7 @@ class PiwikTracker(object):
         url = self._get_request(self.id_site)
         return self._send_request(url)
 
-    def set_event_tracking(self, category, action, name, value):
+    def set_track_event(self, category, action, name, value):
         self.event_tracking = {
             u"category": category,
             u"action": action,
@@ -634,7 +635,7 @@ class PiwikTracker(object):
         }
         return True
 
-    def do_track_action(self, action_url, action_type):
+    def set_track_action(self, action_url, action_type):
         u"""
         Track a download or outlink
 
@@ -647,10 +648,13 @@ class PiwikTracker(object):
         """
         if action_type not in [u"download", u"link"]:
             raise InvalidParameter(u"Illegal action parameter %s" % action_type)
-        url = self.__get_url_track_action(action_url, action_type)
-        return self._send_request(url)
+        self.action_tracking = {
+            "type": action_type,
+            "url": action_url
+        }
+        return True
 
-    def do_track_site_search(self, search, search_cat=None, search_count=None):
+    def set_track_search(self, search, category=None, count=None):
         """
         Track a Site Search query.
 
@@ -663,45 +667,13 @@ class PiwikTracker(object):
         :type search_count: int
         :rtype: None
         """
-        url = self.__get_url_track_site_search(search, search_cat, search_count)
-        return self._send_request(url)
-
-    def do_track_content(
-            self,
-            content_name,
-            content_piece=None,
-            content_target=None,
-            content_interaction=None
-    ):
-        u"""
-        Track the performance of pieces of content on a page.
-
-        To track a content impression set content_name and optionally
-        content_piece and content_target. To track a content interaction
-        set content_interaction and content_name and optionally
-        content_piece and content_target. To map an interaction to an
-        impression make sure to set the same value for content_name and
-        content_piece. It is recommended to set a value for content_piece.
-
-        :param content_name:
-            The name of the content. Must not be empty.
-            For instance "Ad Foo Bar"
-        :type content_name: str
-        :param content_piece:
-            The actual content piece. For instance the path to an
-            image, video, audio, any text
-        :type content_piece: str
-        :param content_target:
-            The target of the content.
-            For instance the URL of a landing page
-        :type content_target: str
-        :param content_interaction:
-            The name of the interaction with the content. For instance a "click"
-        :type content_interaction: str
-        :rtype: str
-        """
-        url = self.__get_url_track_event(category, action, name, value)
-        return self._send_request(url)
+        self.search_tracking = {}
+        self.search_tracking["query"] = search
+        if category is not None:
+            self.search_tracking["category"] = category
+        if count is not None:
+            self.search_tracking["count"] = count
+        return True
 
     def _send_request(self, query_vars):
         """
@@ -781,6 +753,8 @@ class PiwikTracker(object):
                 u"Parameter id must be int, not %s" %
                 type(id)
             )
+        if self.page_custom_var is None:
+            self.page_custom_var = {}
         if scope == u"page":
             self.page_custom_var[id] = (name, value)
         elif scopr == u"event":
@@ -854,219 +828,49 @@ class PiwikTracker(object):
             return None
         return var_map[id]
 
-    def __get_url_track_ecommerce_order(
+    def set_track_ecommerce(
             self,
-            order_id,
-            grand_total,
-            sub_total=False,
-            tax=False,
-            shipping=False,
-            discount=False
+            id=None,
+            grand_total=None,
+            sub_total=None,
+            tax=None,
+            shipping=None,
+            discount=None,
+            track_datetime=None,
+            items=None
     ):
-        u"""
-        Returns an URL used to track ecommerce orders
-
-        Calling this method will reinitialize the property ecommerce_items to
-        an empty list. So items will have to be added again via
-        add_ecommerce_item().
-
-        :param order_id: Unique order ID (required). Used to avoid
-            re-recording an order on page reload.
-        :type order_id: str
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :param sub_total: Sub total amount, typicalle the sum of
-            item prices for all items in this order, before tax and shipping
-        :type sub_total: float or None
-        :param tax: Tax amount for this order
-        :type tax: float or None
-        :param shipping: Shipping amount for this order
-        :type shipping: float or None
-        :param discount: Discount for this order
-        :type discount: float or None
-        :rtype: str
-        """
-        url = (
-            self.__get_url_track_ecommerce(
-                grand_total,
-                sub_total,
-                tax,
-                shipping,
-                discount
-            )
-        )
-        url += u"&%s" % urlencode({u"ec_id": order_id})
-        self.ecommerce_last_order_timestamp = self._get_timestamp()
-        return url
-
-    def __get_url_track_ecommerce(
-            self,
-            grand_total,
-            sub_total=False,
-            tax=False,
-            shipping=False,
-            discount=False
-    ):
-        u"""
-        Returns the URL used to track ecommerce orders
-
-        Calling this method reinitializes the property ecommerce_items, so
-        items will have to be added again via add_ecommerce_item()
-
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :param sub_total: Sub total amount, typicalle the sum of
-            item prices for all items in this order, before tax and shipping
-        :type sub_total: float or None
-        :param tax: Tax amount for this order
-        :type tax: float or None
-        :param shipping: Shipping amount for this order
-        :type shipping: float or None
-        :param discount: Discount for this order
-        :type discount: float or None
-        :rtype: str
-        """
-        ## FIXME fix what?
-        url = self._get_request(self.id_site)
-        args = {
-            u"idgoal": 0,
-        }
-        args[u"revenue"] = grand_total
-        if sub_total:
-            args[u"ec_st"] = sub_total
-        if tax:
-            args[u"ec_tx"] = tax
-        if shipping:
-            args[u"ec_sh"] = shipping
-        if discount:
-            args[u"ec_dt"] = discount
-        if self.ecommerce_items is not None and len(self.ecommerce_items) > 0:
-            # Remove the SKU index in the list before JSON encoding
-            items = list(self.ecommerce_items.values())
-            args[u"ec_items"] = json.dumps(items)
-        self.ecommerce_items.clear()
-        url += u"&%s" % urlencode(args)
-        return url
-
-    def __get_url_track_ecommerce_cart_update(self, grand_total):
-        u"""
-        Returns the URL to track a cart update
-
-        :type grand_total: float
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :rtype: str
-        """
-        url = self.__get_url_track_ecommerce(grand_total)
-        return url
-
-    def add_ecommerce_item(
-            self,
-            sku,
-            name=False,
-            category=False,
-            price=False,
-            quantity=1
-    ):
-        u"""
-        Add an item to the ecommerce order.
-
-        This should be called before do_track_ecommerce_order() or before
-        do_track_ecommerce_cart_update().
-
-        This method can be called for all individual products in the
-        cart/order.
-
-        :param sku: Product SKU
-        :type SKU: str or None
-        :param name: Name of the product
-        :type name: str or None
-        :param category: Name of the category for the current
-            category page or the product
-        :type category: str, list or None
-        :param price: Price of the product
-        :type price: float or None
-        :param quantity: Product quantity, defaults to 1
-        :type price: int or None
-        :rtype: bool
-        """
-        self.ecommerce_items[sku] = (
-            sku,
-            name,
-            category,
-            price,
-            quantity,
-        )
+        self.goal = {}
+        self.goal[u"id"] = "0"
+        if grand_total is not None:
+            self.goal[u"revenue"] = grand_total
+        self.ecomm_order = {}
+        if id is not None:
+            self.ecomm_order[u"id"] = id
+        if sub_total is not None:
+            self.ecomm_order[u"sub_total"] = sub_total
+        if tax is not None:
+            self.ecomm_order[u"tax"] = tax
+        if shipping is not None:
+            self.ecomm_order[u"shipping"] = shipping
+        if discount is not None:
+            self.ecomm_order[u"discount"] = discount
+        if track_datetime is not None:
+            self.ecomm_order[u"track_datetime"] = track_datetime
+        if items is not None:
+            self.ecomm_order[u"items"] = []
+            for item in items:
+                if (
+                        u"sku" not in item or
+                        u"name" not in item or
+                        u"category" not in item or
+                        u"price" not in item or
+                        u"quantity" not in item
+                ):
+                    raise InvalidParameter(u"Bad item spec: %s" % item)
+                self.ecomm_order.append(item)
         return True
 
-    def do_track_ecommerce_cart_update(self, grand_total):
-        u"""
-        Track a cart update (add/remove/update item)
-
-        On every cart update you must call add_ecommerce_item() for each item
-        in the cart, including items which were in the previous cart. Items
-        get deleted until they are re-submitted.
-
-        :type grand_total: float
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :rtype: str
-        """
-        # FIXME
-        url = self.__get_url_track_ecommerce_cart_update(grand_total)
-        return self._send_request(url)
-
-    def do_track_ecommerce_order(
-            self,
-            order_id,
-            grand_total,
-            sub_total=False,
-            tax=False,
-            shipping=False,
-            discount=False
-    ):
-        u"""
-        Track an ecommerce order
-
-        If the order contains items you must call add_ecommerce_item() first
-        for each item.
-
-        All revenues will be individually summed and reported by Piwik.
-
-        :param order_id: Unique order ID (required). Used to avoid
-            re-recording an order on page reload.
-        :type order_id: str
-        :param grand_total: Grand total revenue of the transaction,
-            including taxes, shipping, etc.
-        :type grand_total: float
-        :param sub_total: Sub total amount, typicalle the sum of
-            item prices for all items in this order, before tax and shipping
-        :type sub_total: float or None
-        :param tax: Tax amount for this order
-        :type tax: float or None
-        :param shipping: Shipping amount for this order
-        :type shipping: float or None
-        :param discount: Discount for this order
-        :type discount: float or None
-        :rtype: str
-        """
-        url = (
-            self.__get_url_track_ecommerce_order(
-                order_id,
-                grand_total,
-                sub_total,
-                tax,
-                shipping,
-                discount
-            )
-        )
-        return self._send_request(url)
-
-    def set_track_goal(self, id_goal, revenue=None):
+    def set_track_goal(self, goal_id, revenue=None):
         u"""
         Record a goal conversion
 
@@ -1076,17 +880,18 @@ class PiwikTracker(object):
         :type revenue: int (TODO why int here and not float!?)
         :rtype: str
         """
-        self.id_goal = id_goal
-        if revenue is not None:
-            self.revenue = revenue
+        self.goal = {
+            "id": goal_id,
+            "revenue": revenue
+        }
         return True
 
     def set_ecommerce_view(
             self,
-            sku=False,
-            name=False,
-            category=False,
-            price=False
+            sku=None,
+            name=None,
+            category=None,
+            price=None
     ):
         u"""
         Set the page view as an item/product page view, or an ecommerce
@@ -1113,18 +918,12 @@ class PiwikTracker(object):
         :type price: float or None
         :rtype: bool
         """
-        if category:
-            if type(category) == type(list()):
-                category = json.dumps(category)
-        else:
-            category = u""
-        self.page_custom_var[5] = (u"_pkc", category)
-        if price:
+        if category is not None:
+            self.page_custom_var[5] = (u"_pkc", category)
+        if sku is not None:
+            self.page_custom_var[3] = (u"_pks", sku)
+        if price is not None
             self.page_custom_var[2] = (u"_pkp", price)
-        # On a category page do not record "Product name not defined"
-        if sku and name:
-            if sku:
-                self.page_custom_var[3] = (u"_pks", sku)
-            if name:
-                self.page_custom_var[4] = (u"_pkn", name)
+        if name is not None:
+            self.page_custom_var[4] = (u"_pkn", name)
         return True
