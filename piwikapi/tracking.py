@@ -59,7 +59,7 @@ class PiwikTracker(object):
         u"probably does not work as expected anyway."
     )
 
-    action_name = None
+    page_titles = None
     ecommerce_items = None
     id_site = None
     api_url = None
@@ -105,7 +105,7 @@ class PiwikTracker(object):
         :rtype: None
         """
         random.seed()
-        self.action_name = None
+        self.page_titles = None
         self.ecommerce_items = {}
         self.id_site = id_site
         self.api_url = None
@@ -269,7 +269,6 @@ class PiwikTracker(object):
             .hexdigest()[:16]
             .upper()
         )
-        pprint(self.visitor_id)
         return True
 
     def set_user_id(self, user_id):
@@ -415,8 +414,8 @@ class PiwikTracker(object):
         query_vars[u"rand"] = random.randint(0, 99999)
         if self.referer is not None:
             query_vars[u"referer"] = self.referer
-        if self.action_name is not None:
-            query_vars[u"action_name"] = self.action_name
+        if self.page_titles is not None:
+            query_vars[u"action_name"] = "/".join(self.page_titles)
         if self.local_time is not None:
             query_vars[u"h"] = self.local_time.hour
             query_vars[u"m"] = self.local_time.minute
@@ -445,8 +444,10 @@ class PiwikTracker(object):
         if self.event_tracking is not None:
             query_vars[u"e_c"] = self.event_tracking[u"category"]
             query_vars[u"e_a"] = self.event_tracking[u"action"]
-            query_vars[u"e_n"] = self.event_tracking[u"name"]
-            query_vars[u"e_v"] = self.event_tracking[u"value"]
+            if self.event_tracking[u"name"] is not None:
+                query_vars[u"e_n"] = self.event_tracking[u"name"]
+            if self.event_tracking[u"value"] is not None:
+                query_vars[u"e_v"] = self.event_tracking[u"value"]
         if self.dimensions is not None:
             for dim_key, dim_val in self.dimensions.items():
                 query_vars["dimension%s" % dim_key] = dim_val
@@ -514,7 +515,6 @@ class PiwikTracker(object):
                 )
         if self.debug is True:
             query_vars[u"debug"] = "1"
-        #pprint(query_vars)
         return query_vars
 
     def set_track_content(
@@ -590,7 +590,7 @@ class PiwikTracker(object):
         self.cookie_support = False
         return True
 
-    def set_action_name(self, action_name):
+    def set_page_titles(self, page_titles):
         u"""
         Track a page view, return the request body
 
@@ -598,14 +598,14 @@ class PiwikTracker(object):
         :type document_title: str
         :rtype: str
         """
-        self.action_name = "/".join(action_name)
+        self.page_titles = page_titles
         return True
 
     def execute(self):
         url = self._get_request()
         return self._send_request(url)
 
-    def set_track_event(self, category, action, name, value):
+    def set_track_event(self, category, action, name=None, value=None):
         self.event_tracking = {
             u"category": category,
             u"action": action,
