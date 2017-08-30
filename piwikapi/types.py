@@ -17,7 +17,13 @@ def check(val, match_types):
         if _check_type(val, match_type):
             return True
     bad_types_out = _repr_types(match_types)
-    bad_msg = u"Valid types are: %s" % bad_types_out
+    bad_msg = (
+        u"Value: %s; Type Found: %s; Valid types are: %s" % (
+            val,
+            type(val),
+            bad_types_out
+        )
+    )
     raise Exception(bad_msg)
 
 
@@ -63,7 +69,7 @@ def _check_type_for(val, match_type):
 
 
 def _repr_type(match_type_any):
-    if _check_type_string(match_type):
+    if _check_type_string(match_type_any):
         if match_type_any == u"string":
             return _repr_type_string()
         if match_type_any == u"bytes":
@@ -79,7 +85,7 @@ def _repr_type_string():
     raise Exception(u"Unknown Py version")
 
 
-def _repr_type_string():
+def _repr_type_bytes():
     if PY2:
         return u"str"
     if PY3:
