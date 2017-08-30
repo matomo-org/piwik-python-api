@@ -271,7 +271,7 @@ class PiwikTracker(object):
         return True
 
     def set_visitor_id_hash(self, orig_visitor_id):
-        check(visitor_id, [u"string"])
+        check(orig_visitor_id, [u"string"])
         self.visitor_id = (
             hashlib
             .sha512(
@@ -306,12 +306,12 @@ class PiwikTracker(object):
             or string that uniquely identifies a user or client.
         :rtype: bool
         """
-        check(user_id, [u"string", int])
+        check(orig_user_id, [UUID, u"string", int])
         self.user_id = (
             str(
                 UUID(
                     hashlib.sha512(
-                        orig_user_id.encode(u"UTF-8")
+                        to_string(orig_user_id).encode(u"UTF-8")
                     )
                     .hexdigest()[0:32]
                 )
@@ -617,6 +617,7 @@ class PiwikTracker(object):
 
     def execute(self):
         url = self._get_request()
+        #pprint(url)
         return self._send_request(url)
 
     def set_track_event(self, category, action, name=None, value=None):
