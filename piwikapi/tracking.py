@@ -336,6 +336,7 @@ class PiwikTracker(object):
         :type string: str
         :rtype: bool
         """
+        check(should_debug, [bool])
         self.debug = should_debug
         return True
 
@@ -347,6 +348,7 @@ class PiwikTracker(object):
         :type referer: str
         :rtype: bool
         """
+        check(referer, [u"string"])
         self.referer = referer
         return True
 
@@ -358,6 +360,7 @@ class PiwikTracker(object):
         :type url: str
         :rtype: bool
         """
+        check(url, [u"string"])
         self.page_url = url
         return True
 
