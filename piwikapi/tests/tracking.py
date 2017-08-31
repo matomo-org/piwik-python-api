@@ -16,7 +16,6 @@ from piwikapi.analytics import PiwikAnalytics
 from piwikapi.exceptions import InvalidParameter
 from piwikapi.exceptions import ConfigurationError
 from piwikapi.tracking import PiwikTracker
-from piwikapi.tracking import PiwikTrackerEcommerce
 
 from analytics import AnalyticsBaseTestCase
 from base import PiwikAPITestCase

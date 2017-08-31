@@ -46,7 +46,7 @@ def _check_type(val, match_type_any):
                     u"<class 'bytes'>"
                 ]
         ):
-            raise Exception("Bad match type: %s" % match_type_any)
+            raise Exception(u"Bad match type: %s" % match_type_any)
         return _check_type_for(val, match_type_any)
     if _check_type_string(match_type_any):
         if match_type_any == u"jsonable":

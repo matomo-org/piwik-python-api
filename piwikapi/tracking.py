@@ -35,8 +35,9 @@ from .types import check, to_string
 
 class PiwikTracker(object):
     u"""
-    The Piwik tracker class
+    The Piwik Tracker class
     """
+
     ## Piwik API version
     VERSION = 1
 
@@ -101,8 +102,6 @@ class PiwikTracker(object):
         u"""
         :param id_site: Site ID
         :type id_site: int
-        :param request: Request
-        :type request: A Django-like request object
         :rtype: None
         """
         check(id_site, [int])
@@ -147,8 +146,8 @@ class PiwikTracker(object):
         u"""
         Set the time
 
-        :param datetime: Time
-        :type datetime: datetime.datetime object
+        :param dt: DateTime of the request
+        :type dt: datetime.datetime
         :rtype: bool
         """
         check(dt, [datetime.datetime])
@@ -161,7 +160,7 @@ class PiwikTracker(object):
         user management section of your Piwik install.
 
         :param token_auth: Auth token
-        :type token_auth: str
+        :type token_auth: unicode (python2), str (python3)
         :rtype: bool
         """
         check(token_auth, [u"string"])
@@ -173,7 +172,7 @@ class PiwikTracker(object):
         Set which Piwik API URL to use
 
         :param api_url: API URL
-        :type api_url: str
+        :type api_url: unicode (python2), str (python3)
         :rtype: bool
         """
         check(api_url, [u"string"])
@@ -188,7 +187,7 @@ class PiwikTracker(object):
         Requires setting the auth token.
 
         :param ip: IP
-        :type ip: str
+        :type ip: unicode (python2), str (python3)
         :rtype: bool
         """
         check(ip, [u"string"])
@@ -210,7 +209,7 @@ class PiwikTracker(object):
         origin when GeoIP is not enabled
 
         :param language: Accept-Language
-        :type language: str
+        :type language: unicode (python2), str (python3)
         :rtype: bool
         """
         check(language, [u"string"])
@@ -222,7 +221,7 @@ class PiwikTracker(object):
         Set the user agent. By default the original request"s UA is used.
 
         :param user_agent: User agent
-        :type user_agent: str
+        :type user_agent: unicode (python2), str (python3)
         :rtype: bool
         """
         check(user_agent, [u"string"])
@@ -234,9 +233,9 @@ class PiwikTracker(object):
         Set the visitor"s screen width and height
 
         :param width: Screen width
-        :type width: int or str
+        :type width: int
         :param height: Screen height
-        :type height: int or str
+        :type height: int
         :rtype: bool
         """
         check(width, [int])
@@ -254,10 +253,12 @@ class PiwikTracker(object):
 
     def set_visitor_id(self, visitor_id):
         u"""
-        Set the visitor's unique User ID. See https://piwik.org/docs/user-id/
+        Set the unique visitor ID. This is commonly associated
+        with a session ID.
 
-        :param visitor_id: Visitor I
-        :type visitor_id: str
+        :param visitor_id:
+          Visitor ID. This must be a fixed length of 16 characters.
+        :type visitor_id: unicode (python2), str (python3)
         :raises: InvalidParameter if the visitor_id has an incorrect length
         :rtype: bool
         """
@@ -271,6 +272,16 @@ class PiwikTracker(object):
         return True
 
     def set_visitor_id_hash(self, orig_visitor_id):
+        u"""
+        Set the unique hashed representation of a visitor ID.
+        This is commonly associated with a session ID.
+
+        :param orig_visitor_id:
+          Visitor ID.  This can be any length, since it will be hashed
+          and truncated to the correct length.
+        :type orig_visitor_id: unicode (python2), str (python3)
+        :rtype: bool
+        """
         check(orig_visitor_id, [u"string"])
         self.visitor_id = (
             hashlib
@@ -284,12 +295,15 @@ class PiwikTracker(object):
 
     def set_user_id(self, user_id):
         u"""
-        Force the action to be recorded for a specific User.
+        Set a user ID. This is usually some kind of unique identifying
+        ID which is not just associated with a session, but associated
+        with a user account.
 
         :param user_id:
             The User ID is a string representing a given user in your system.
             A User ID can be a username, UUID or an email address, or any number
             or string that uniquely identifies a user or client.
+        :type user_id: unicode (python2), str (python3), int
         :rtype: bool
         """
         check(user_id, [u"string", int])
@@ -298,12 +312,16 @@ class PiwikTracker(object):
 
     def set_user_id_hash(self, orig_user_id):
         u"""
-        Force the action to be recorded for a specific User.
+        Set a hashed UUID representation of a user ID for obfuscation purposes.
+        This is usually some kind of unique identifying
+        ID which is not just associated with a session, but associated
+        with a user account.
 
-        :param user_id:
+        :param orig_user_id:
             The User ID is a string representing a given user in your system.
             A User ID can be a username, UUID or an email address, or any number
             or string that uniquely identifies a user or client.
+        :type user_id: unicode (python2), str (python3), int, UUID
         :rtype: bool
         """
         check(orig_user_id, [UUID, u"string", int])
@@ -324,6 +342,8 @@ class PiwikTracker(object):
         If image response is disabled Piwik will respond with a
         HTTP 204 header instead of responding with a gif.
 
+        :param should_send: Should server send image response.
+        :type should_send: bool
         :rtype: bool
         """
         check(should_send, [bool])
@@ -332,8 +352,10 @@ class PiwikTracker(object):
 
     def set_debug(self, should_debug):
         u"""
-        :param string: str to append
-        :type string: str
+        Should send debug flag.
+
+        :param should_debug: Should send debug flag to server
+        :type should_debug: bool
         :rtype: bool
         """
         check(should_debug, [bool])
@@ -345,7 +367,7 @@ class PiwikTracker(object):
         Set the referer URL
 
         :param referer: Referer
-        :type referer: str
+        :type referer: unicode (python2), str (python3)
         :rtype: bool
         """
         check(referer, [u"string"])
@@ -357,7 +379,7 @@ class PiwikTracker(object):
         Set URL being tracked
 
         :param url: URL
-        :type url: str
+        :type url: unicode (python2), str (python3)
         :rtype: bool
         """
         check(url, [u"string"])
@@ -380,9 +402,14 @@ class PiwikTracker(object):
         the Javascript API, see function getAttributionInfo() in
         http://dev.piwik.org/trac/browser/trunk/js/piwik.js
 
-        :param json_encoded: JSON encoded list containing attribution info
-        :type json_encoded: string
-        :raises: InvalidParameter if the json_encoded data is incorrect
+        :param campaign_name: Name of campaign
+        :type campaign_name: unicode (python2), str (python3)
+        :param campaign_keyword: Keyword of campaign
+        :type campaign_keyword: unicode (python2), str (python3)
+        :param campaign_datetime: DateTime of campaign
+        :type campaign_datetime: datetime.datetime
+        :param referral_url: Referral URL of campaign
+        :type referral_url: unicode (python2), str (python3)
         :rtype: bool
         """
         check(campaign_name, [u"string"])
@@ -407,8 +434,8 @@ class PiwikTracker(object):
 
         Requires setting the auth token.
 
-        :param datetime: datetime
-        :type datetime: datetime.datetime object
+        :param dt: DateTime
+        :type dt: datetime.datetime
         :rtype: bool
         """
         check(dt, [datetime.datetime])
@@ -417,11 +444,10 @@ class PiwikTracker(object):
 
     def _get_request(self):
         u"""
-        This oddly named method returns the query var string.
+        Returns a dictionary of all piwik request variables which
+        will be added to the request URL.
 
-        :param id_site: Site ID
-        :type id_site: int
-        :rtype: str
+        :rtype: dict
         """
         query_vars = {}
         query_vars[u"idsite"] = to_string(self.id_site)
@@ -547,6 +573,44 @@ class PiwikTracker(object):
             value=None,
             target=None
     ):
+        u"""
+        We built a way to determine the performance of the pieces of
+        content on any page of the website or app. You might be
+        wondering how often a specific ad or a banner was displayed
+        and viewed by your visitors on any of your pages and how
+        often a visitor actually interacted with them. We call these
+        two parts content impression and content interaction.
+
+        This feature is not only limited to ads or banners.
+        You can use it for any kind of content. Once a page has loaded
+        we log a content impression for each content block that
+        is visible to the user. A content block consists of a
+        content name (My Product 1), a content piece
+        ('product1.jpg' or 'Buy Product 1 now') and a content
+        target (http://landingpage.example.com). As soon as a
+        visitor clicks on a content block a content interaction is
+        logged allowing you to analyze the ratio of content impressions
+        to content interactions. As soon as a visitor scrolls down the
+        page and sees more ads/banners/blocks, we automatically log
+        the impression for each block.
+
+        :param name: The name of the content. For instance 'Ad Foo Bar'
+        :type name: unicode (python2), str (python3)
+        :param interaction:
+          The name of the interaction with the content.
+          For instance a 'click'
+        :type interaction: unicode (python2), str (python3)
+        :param value:
+          The actual content piece. For instance the path
+          to an image, video, audio, any text
+        :type value:
+          Any object which can be stringified. This is
+          determined by having the `__str__` method.
+        :param target:
+          The target of the content. For instance the URL of a landing page
+        :type target: unicode (python2), str (python3), None
+        :rtype: bool
+        """
         check(name, [u"string"])
         check(interaction, [u"string"])
         check(value, [u"stringable", None])
@@ -561,19 +625,9 @@ class PiwikTracker(object):
 
     def get_visitor_id(self):
         u"""
-        If the user initiating the request has the Piwik first party cookie,
-        this function will try and return the ID parsed from this first party
-        cookie.
+        Get the visitor ID which was set
 
-        If you call this function from a server, where the call is triggered by
-        a cron or script not initiated by the actual visitor being tracked,
-        then it will return the random Visitor ID that was assigned to this
-        visit object.
-
-        This can be used if you wish to record more visits, actions or goals
-        for this visitor ID later on.
-
-        :rtype: str
+        :rtype: unicode (python2), str (python3)
         """
         return self.visitor_id
 
@@ -582,8 +636,8 @@ class PiwikTracker(object):
         Return a random string
 
         :param length: Length
-        :type length: inte
-        :rtype: str
+        :type length: int
+        :rtype: unicode (python2), str (python3)
         """
         check(length, [int])
         return (
@@ -599,28 +653,63 @@ class PiwikTracker(object):
         u"""
         Return a random visitor ID
 
-        :rtype: str
+        :rtype: unicode (python2), str (python3)
         """
         return self.__get_random_string(self.LENGTH_VISITOR_ID)
 
     def set_page_titles(self, page_titles):
         u"""
-        Track a page view, return the request body
+        Set page titles. The Piwik docs call this `action_name`.
 
-        :param document_title: The title of the page the user is on
-        :type document_title: str
-        :rtype: str
+        :param page_titles: A list of the titles of the page the user is on
+        :type page_titles:
+          list[x], where x is unicode (python2) or str (python3)
+        :rtype: bool
         """
         check(page_titles, [list])
         self.page_titles = page_titles
         return True
 
     def execute(self):
+        u"""
+        Build all the parameters and send the request to the piwik server.
+
+        :rtype: {
+          "body_bytes": str (python2) or bytes (python3)
+          "body_str": unicode (python2) or str (python3)
+          "status": int
+          "ok": bool
+          "error": unicode (python2) or str (python3)}
+
+        """
         url = self._get_request()
         #pprint(url)
         return self._send_request(url)
 
     def set_track_event(self, category, action, name=None, value=None):
+        u"""
+        Tracking Events is a very useful way to measure interactions your
+        users make with your website content, which are not directly page
+        views or downloads. Typically events are used to track clicks on
+        elements in your pages such as menu, widgets, Flash elements, AJAX
+        actions, or even actions within games or media content.
+
+        :param category:
+          The event category. Must not be empty. (eg. Videos, Music, Games...)
+        :type category: unicode (python2), str (python3)
+        :param action:
+          The event action. Must not be empty. (eg. Play, Pause, Duration,
+          Add Playlist, Downloaded, Clicked...)
+        :type action: unicode (python2), str (python3)
+        :param name:
+          The event name. (eg. a Movie name, or Song name, or File name...)
+        :type name: unicode (python2), str (python3), None
+        :param value:
+          The event value. Must be a float or integer value
+          (numeric), not a string.
+        :type value: int, None
+        :rtype: bool
+        """
         check(category, [u"string"])
         check(action, [u"string"])
         check(name, [u"string", None])
@@ -638,11 +727,11 @@ class PiwikTracker(object):
         Track a download or outlink
 
         :param action_url: URL of the download or outlink
-        :type action_url: str
-        :param action_type: Type of the action, either "download" or "link"
-        :type action_type: str
+        :type action_url: unicode (python2), str (python3)
+        :param action_type: Type of the action, either 'download' or 'link'
+        :type action_type: unicode (python2), str (python3), None
         :raises: InvalidParameter if action type is unknown
-        :rtype: str
+        :rtype: bool
         """
         check(action_type, [u"string"])
         check(action_url, [u"string"])
@@ -658,14 +747,15 @@ class PiwikTracker(object):
         """
         Track a Site Search query.
 
-        param search: Search query
-        :type search: str
+        :param search: Search query
+        :type search: unicode (python2), str (python3), None
         :param search_cat: optional search category
-        :type search_cat: str
-        :param search_count: umber of search results displayed in the page. If
-        search_count=0, the request will appear in "No Result Search Keyword"
+        :type search_cat: unicode (python2), str (python3), None
+        :param search_count:
+          Number of search results displayed in the page. If
+          search_count=0, the request will appear in "No Result Search Keyword"
         :type search_count: int
-        :rtype: None
+        :rtype: bool
         """
         check(search, [u"string"])
         check(category, [u"string", None])
@@ -680,12 +770,18 @@ class PiwikTracker(object):
 
     def _send_request(self, query_vars):
         """
-        Make the tracking API request, return the request body
+        Make the tracking API request
 
-        :param url: TODO
-        :type url: str
+        :param query_vars: Query dictionary
+        :type query_vars" dict
         :raises: ConfigurationError if the API URL was not set
-        :rtype: str
+        :rtype: {
+          "body_bytes": str (python2) or bytes (python3)
+          "body_str": unicode (python2) or str (python3)
+          "status": int
+          "ok": bool
+          "error": unicode (python2) or str (python3)
+        }
         """
         check(query_vars, [dict])
         if self.api_url is None:
@@ -731,6 +827,16 @@ class PiwikTracker(object):
         return ret
 
     def set_ssl_verify(self, verify):
+        u"""
+        Set whether to set ssl verification.
+        The default is true, but you can disable it
+        if you want to.
+
+        :param verify: Should verify
+        :type verify: bool
+        :rtype: bool
+        """
+
         check(verify, [bool])
         self.ssl_verify = verify
         return True
@@ -741,15 +847,18 @@ class PiwikTracker(object):
 
         See http://piwik.org/docs/custom-variables/
 
-        :param id: Custom variable slot ID, 1-5
-        :type id: int
+        :param _id: Custom variable slot ID, 1-5
+        :type _id: int
         :param name: Variable name
-        :type name: str
+        :type name: unicode (python2), str (python3)
         :param value: Variable value
-        :type value: str
-        :param scope: Variable scope, either visit or page,
-            defaults to visit
-        :type scope: str or None
+        :type value:
+          unicode (python2), str (python3), float, int
+        :param scope:
+          Variable scope, either visit or page,
+          defaults to visit
+        :type scope: unicode (python2), str (python3)
+        :raises InvalidParameter: If bad scope variable
         :rtype: bool
         """
         check(_id, [int])
@@ -779,10 +888,12 @@ class PiwikTracker(object):
         See http://piwik.org/docs/custom-dimensions/
 
         :param name: Variable name
-        :type name: str
-        :param value: Variable value
-        :type value: str
-        :rtype: None
+        :type name: unicode (python2), str (python3)
+        :param value:
+          Any object which can be stringified. This is
+          determined by having the `__str__` method.
+        :type value: unicode (python2), str (python3)
+        :rtype: bool
         """
         check(name, [int])
         check(value, [u"stringable"])
@@ -794,14 +905,11 @@ class PiwikTracker(object):
     def set_plugins(self, plugins):
         u"""
         Set supported plugins
-
-        >>> piwiktrackerinstance.set_plugins(flash=True)
-
         See KNOWN_PLUGINS keys for valid values.
 
-        :param kwargs: A plugin: version dict, e.g. {"java": 6}, see also
-            KNOWN_PLUGINS
-        :type kwargs: dict of {str: int}
+        :param plugins:
+          A dict of plugins. Keys are plugin name. Values are versions.
+        :type plugins: dict of {str: int}
         :rtype: bool
         """
         check(plugins, [dict])
@@ -819,11 +927,12 @@ class PiwikTracker(object):
         u"""
         Returns the current custom variable stored in a first party cookie.
 
-        :param id: Custom variable slot ID, 1-5
+        :param _id: Custom variable slot ID, 1-5
         :type id: int
         :param scope: Variable scope, either visit or page
-        :type scope: str
-        :rtype: mixed stuff TODO
+        :type scope: unicode (python2), str (python3)
+        :rtype:
+          unicode (python2), str (python3), float, int, None
         """
         check(_id, [int])
         check(scope, [u"string"])
@@ -853,6 +962,43 @@ class PiwikTracker(object):
             track_datetime=None,
             items=None
     ):
+        u"""
+        Set Ecommerce information
+
+        :param _id:
+          The unique string identifier for the ecommerce order
+          (required when tracking an ecommerce order)
+        :type _id: int, None
+        :param grand_total:
+          The grand total for the ecommerce order (required when
+          tracking an ecommerce order)
+        :type grand_total: Decimal, None
+        :param sub_total:
+          The sub total of the order; excludes shipping.
+        :type sub_total: Decimal, None
+        :param tax: Tax Amount of the order
+        :type tax: Decimal, None
+        :param shipping: Shipping cost of the Order
+        :type shipping: Decimal, None
+        :param discount: Discount offered
+        :type discount: Decimal, None
+        :param track_datetime:
+          The DateTime of this customer's last ecommerce order.
+          This value is used to process the "Days since last order" report.
+        :type track_datetime: datetime.datetime, None
+        :param items:
+          Items in the Ecommerce order. This is a JSON encoded array of
+          items. Each item is an array with the following info in this
+          order: item sku, item name, item category, item price, item quantity.
+        :type items:
+          None or list of dicts of {
+            "sku": unicode (python2) or str (python3)
+            "name": unicode (python2) or str (python3)
+            "category": unicode (python2) or str (python3)
+            "price": Decimal
+            "quantity": int}
+        :rtype: bool
+        """
         check(_id, [int, None])
         check(grand_total, [Decimal, None])
         check(sub_total, [Decimal, None])
@@ -900,8 +1046,8 @@ class PiwikTracker(object):
         :param id_goal: Goal ID
         :type id_goal: int
         :param revenue: Revenue for this conversion
-        :type revenue: int (TODO why int here and not float!?)
-        :rtype: str
+        :type revenue: Decimal
+        :rtype: bool
         """
         check(goal_id, [int])
         check(revenue, [Decimal, None])
@@ -932,15 +1078,16 @@ class PiwikTracker(object):
 
         To enable ecommerce tracking see doc/install.rst
 
-        :param SKU: Product SKU being viewed
-        :type SKU: str or None
+        :param sku: Product SKU being viewed
+        :type sku: unicode (python2), str (python3), None
         :param name: Name of the product
-        :type name: str or None
-        :param category: Name of the category for the current
-            category page or the product
-        :type category: str, list or None
+        :type name: unicode (python2), str (python3), None
+        :param category:
+          Name of the category for the current
+          category page or the product
+        :type category: unicode (python2), str (python3), None
         :param price: Price of the product
-        :type price: float or None
+        :type price: Decimal, None
         :rtype: bool
         """
         check(sku, [u"string", None])

@@ -16,8 +16,3 @@ PiwikTracker
 
 .. _piwiktracker-ecommerce-reference:
 
-PiwikTrackerEcommerce
----------------------
-
-.. autoclass:: piwikapi.tracking.PiwikTrackerEcommerce
-   :members:

@@ -12,7 +12,7 @@ except ImportError:
     from urllib2 import Request, urlopen
     from urllib import urlencode, quote
 
-from piwikapi.tracking import PiwikTrackerEcommerce
+from piwikapi.tracking import PiwikTracker
 from piwikapi.plugins.goals import PiwikGoals
 
 from tracking import TrackerVerifyBaseTestCase
@@ -55,8 +55,7 @@ class TrackerEcommerceBaseTestCase(TrackerVerifyBaseTestCase):
         super(TrackerEcommerceBaseTestCase, self).setUp()
         # Set different IP for each test run
         # TODO also randomize referers etc...
-        self.pte = PiwikTrackerEcommerce(self.settings['PIWIK_SITE_ID'],
-                                         self.request)
+        self.pte = PiwikTracker(self.settings['PIWIK_SITE_ID'])
         self.pte.set_api_url(self.settings['PIWIK_TRACKING_API_URL'])
         self.pte.set_ip(self.get_random_ip())
         self.pte.set_token_auth(self.settings['PIWIK_TOKEN_AUTH'])
