@@ -459,6 +459,14 @@ class PiwikTracker(object):
             query_vars[u"referer"] = self.referer
         if self.page_titles is not None:
             query_vars[u"action_name"] = "/".join(self.page_titles)
+        if self.forced_datetime is not None:
+            query_vars[u"cdt"] = (
+                to_string(
+                    math.floor(
+                        self.forced_datetime.timestamp()
+                    )
+                )
+            )
         if self.local_time is not None:
             query_vars[u"h"] = to_string(self.local_time.hour)
             query_vars[u"m"] = to_string(self.local_time.minute)
