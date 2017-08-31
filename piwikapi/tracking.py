@@ -675,10 +675,10 @@ class PiwikTracker(object):
         Build all the parameters and send the request to the piwik server.
 
         :rtype: {
-          "body_bytes": str (python2) or bytes (python3)
-          "body_str": unicode (python2) or str (python3)
-          "status": int
-          "ok": bool
+          "body_bytes": str (python2) or bytes (python3),
+          "body_str": unicode (python2) or str (python3),
+          "status": int,
+          "ok": bool,
           "error": unicode (python2) or str (python3)}
 
         """
@@ -992,10 +992,10 @@ class PiwikTracker(object):
           order: item sku, item name, item category, item price, item quantity.
         :type items:
           None or list of dicts of {
-            "sku": unicode (python2) or str (python3)
-            "name": unicode (python2) or str (python3)
-            "category": unicode (python2) or str (python3)
-            "price": Decimal
+            "sku": unicode (python2) or str (python3),
+            "name": unicode (python2) or str (python3),
+            "category": unicode (python2) or str (python3),
+            "price": Decimal,
             "quantity": int}
         :rtype: bool
         """
