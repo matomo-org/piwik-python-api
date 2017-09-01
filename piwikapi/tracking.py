@@ -303,10 +303,10 @@ class PiwikTracker(object):
             The User ID is a string representing a given user in your system.
             A User ID can be a username, UUID or an email address, or any number
             or string that uniquely identifies a user or client.
-        :type user_id: unicode (python2), str (python3), int
+        :type user_id: unicode (python2), str (python3), int, UUID
         :rtype: bool
         """
-        check(user_id, [u"string", int])
+        check(user_id, [u"string", int, UUID])
         self.user_id = user_id
         return True
 
@@ -326,13 +326,11 @@ class PiwikTracker(object):
         """
         check(orig_user_id, [UUID, u"string", int])
         self.user_id = (
-            str(
-                UUID(
-                    hashlib.sha512(
-                        to_string(orig_user_id).encode(u"UTF-8")
-                    )
-                    .hexdigest()[0:32]
+            UUID(
+                hashlib.sha512(
+                    to_string(orig_user_id).encode(u"UTF-8")
                 )
+                .hexdigest()[0:32]
             )
         )
         return True
