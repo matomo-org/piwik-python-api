@@ -18,7 +18,7 @@ setup(
     author_email = "pypi@kuttler.eu",
     description = "Python Piwik API",
     license = "BSD",
-    long_description = open("README.md").read(),
+    long_description = open("README.rst").read(),
     url = "https://github.com/piwik/piwik-python-api",
     classifiers = [
         "Development Status :: 4 - Beta",
