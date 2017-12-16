@@ -97,6 +97,9 @@ class PiwikTracker(object):
     debug = None
     ecomm_order = None
     ssl_verify = None
+    country = None
+    region = None
+    city = None
 
     def __init__(self, id_site):
         u"""
@@ -140,7 +143,25 @@ class PiwikTracker(object):
         self.debug = False
         self.ecomm_order = None
         self.ssl_verify = True
+        self.country = None
+        self.region = None
+        self.city = None
         return
+
+    def set_geo(self, country=None, region=None, city=None):
+        u"""
+        Set country, region, and city
+        """
+        check(country, [None, u"string"])
+        check(region, [None, u"string"])
+        check(city, [None, u"string"])
+        if country is not None:
+            self.country = country
+        if region is not None:
+            self.region = region
+        if city is not None:
+            self.city = city
+        return True
 
     def set_local_time(self, dt):
         u"""
@@ -453,6 +474,12 @@ class PiwikTracker(object):
         query_vars[u"url"] = self.page_url
         query_vars[u"apiv"] = to_string(self.VERSION)
         query_vars[u"rand"] = to_string(random.randint(0, 99999))
+        if self.country is not None:
+            query_vars[u"country"] = self.country
+        if self.region is not None:
+            query_vars[u"region"] = self.region
+        if self.city is not None:
+            query_vars[u"city"] = self.city
         if self.referer is not None:
             query_vars[u"referer"] = self.referer
         if self.page_titles is not None:
