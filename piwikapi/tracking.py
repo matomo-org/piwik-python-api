@@ -62,6 +62,7 @@ class PiwikTracker(object):
         u"probably does not work as expected anyway."
     )
 
+    request_timeout = 0.5
     page_titles = None
     ecommerce_items = None
     id_site = None
@@ -147,6 +148,11 @@ class PiwikTracker(object):
         self.region = None
         self.city = None
         return
+
+    def set_request_timeout(self, value):
+        check(value, [float])
+        self.request_timeout = value
+        return True
 
     def set_geo(self, country=None, region=None, city=None):
         u"""
@@ -847,7 +853,7 @@ class PiwikTracker(object):
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
             sess.verify = False
         prep = sess.prepare_request(req)
-        response = sess.send(prep)
+        response = sess.send(prep, timeout=self.request_timeout)
         ok = response.status_code in [200, 204]
         err = (not ok)
         ret = {
