@@ -27,6 +27,7 @@ except ImportError:
 import urllib3
 
 import requests
+from requests.exceptions import ReadTimeout as RequestReadTimeout
 
 from .exceptions import ConfigurationError
 from .exceptions import InvalidParameter
@@ -62,7 +63,7 @@ class PiwikTracker(object):
         u"probably does not work as expected anyway."
     )
 
-    request_timeout = 0.5
+    request_timeout = 1.0
     page_titles = None
     ecommerce_items = None
     id_site = None
@@ -853,16 +854,28 @@ class PiwikTracker(object):
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
             sess.verify = False
         prep = sess.prepare_request(req)
-        response = sess.send(prep, timeout=self.request_timeout)
-        ok = response.status_code in [200, 204]
-        err = (not ok)
-        ret = {
-            u"body_bytes": response.content,
-            u"body_str": response.text,
-            u"status": response.status_code,
-            u"ok": ok,
-            u"error": err
-        }
+        try:
+            response = sess.send(prep, timeout=self.request_timeout)
+        except (RequestReadTimeout) as err:
+            ret = {
+                u"body_bytes": None,
+                u"body_str": None,
+                u"status": 500,
+                u"ok": False,
+                u"error": True,
+                u"msg": "error_timeout"
+            }
+        else:
+            ok = response.status_code in [200, 204]
+            err = (not ok)
+            ret = {
+                u"body_bytes": response.content,
+                u"body_str": response.text,
+                u"status": response.status_code,
+                u"ok": ok,
+                u"error": err,
+                u"msg": "ok"
+            }
         return ret
 
     def set_ssl_verify(self, verify):
