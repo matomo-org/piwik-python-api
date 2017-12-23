@@ -481,6 +481,10 @@ class PiwikTracker(object):
         query_vars[u"url"] = self.page_url
         query_vars[u"apiv"] = to_string(self.VERSION)
         query_vars[u"rand"] = to_string(random.randint(0, 99999))
+        if self.user_agent is not None:
+            query_vars[u"ua"] = self.user_agent
+        if self.accept_language is not None:
+            query_vars[u"lang"] = self.accept_language
         if self.country is not None:
             query_vars[u"country"] = self.country
         if self.region is not None:
@@ -828,10 +832,14 @@ class PiwikTracker(object):
             raise ConfigurationError(u"API URL not set")
         req_headers = {}
         req_cookies = {}
-        if self.user_agent is not None:
-            req_headers[u"User-Agent"] = self.user_agent
-        if self.accept_language is not None:
-            req_headers[u"Accept-Language"] = self.accept_language
+        ##
+        ## Instead of setting these here,
+        ## we set them at the api level
+        ##
+        #if self.user_agent is not None:
+        #    req_headers[u"User-Agent"] = self.user_agent
+        #if self.accept_language is not None:
+        #    req_headers[u"Accept-Language"] = self.accept_language
         if (
                 self.request_cookies is not None and
                 len(self.request_cookies) > 0
