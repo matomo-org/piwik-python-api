@@ -32,7 +32,7 @@ Here's an example for getting live data for the last five minutes::
     pa.set_date('today')
     pa.set_method('Live.getLastVisitsDetails')
     pa.set_parameter('lastMinutes', 5)
-    visits = json.loads(self.a.send_request())
+    visits = json.loads(pa.send_request())
 
 You can then inspect the data stored in ``visits``. Please refer to the
 :ref:`PiwikAnalytics reference<the-piwikanalytics-class>` for more details.
