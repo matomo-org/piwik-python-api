@@ -636,11 +636,11 @@ class TrackerVerifyTestCase(TrackerVerifyBaseTestCase):
         )
         self.assertEqual(
             'Firefox 3.6',
-            self.get_v('browserName'),
-            "Unexpected browserName value %s" % self.get_v('browserName'),
+            self.get_v('browser'),
+            "Unexpected browser value %s" % self.get_v('browserName'),
         )
         self.assertEqual(
-            'gecko',
+            'Gecko',
             self.get_v('browserFamily'),
             "Unexpected browserFamily value %s" % self.get_v('browserFamily'),
         )
