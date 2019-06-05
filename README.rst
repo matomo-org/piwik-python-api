@@ -8,5 +8,5 @@ There is an ongoing experimental rewrite of this library in the `refactor` branc
 
 Full Documentation at http://piwikapi.readthedocs.org/en/latest/index.html.
 
-.. image:: https://api.travis-ci.org/piwik/piwik-python-api.png
-  :target: https://travis-ci.org/piwik/piwik-python-api
+.. image:: https://api.travis-ci.org/matomo-org/piwik-python-api.png
+  :target: https://travis-ci.org/matomo-org/piwik-python-api

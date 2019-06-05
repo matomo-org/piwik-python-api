@@ -1,8 +1,9 @@
 language: python
+services:
+  - docker
 python:
-- 2.7
-- 3.4
-- 3.5
+  - 2.7
+  - 3.6
 env:
   # Dev test server
   global:
@@ -16,8 +17,11 @@ notifications:
     on_success: change
     on_failure: change
     channels:
-    - "irc.freenode.org#piwik-dev"
-    - "irc.freenode.org##nkuttler"
+      - "irc.freenode.org#piwik-dev"
+      - "irc.freenode.org##nkuttler"
   email:
     on_success: never
     on_failure: change
+
+script:
+  - ./runtests.sh
