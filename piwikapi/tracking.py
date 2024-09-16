@@ -13,6 +13,8 @@ from hashlib import md5
 import logging
 import os
 import random
+import ssl
+import certifi
 try:
     import json
 except ImportError:
@@ -603,7 +605,7 @@ class PiwikTracker(object):
             #print 'Adding cookie', self.request_cookie
             request.add_header('Cookie', self.request_cookie)
 
-        response = urlopen(request)
+        response = urlopen(request, context=ssl.create_default_context(cafile=certifi.where()))
         #print response.info()
         body = response.read()
         # The cookie in the response will be set in the next request
